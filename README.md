@@ -16,4 +16,4 @@ The development of this code was supported by the U.S. Department of Energy, Off
 
 ## Contact us
 
-For question and comments regarding this package, please email either James Neuhaus at [jneuhau1@utk.edu](mailto:jneuhau1@utk.edu) or Professor Steven Johnston at [sjohn145@utk.edu](mailto:sjohn145@utk.edu).
+For questions and comments regarding this package, please email either James Neuhaus at [jneuhau1@utk.edu](mailto:jneuhau1@utk.edu) or Professor Steven Johnston at [sjohn145@utk.edu](mailto:sjohn145@utk.edu).

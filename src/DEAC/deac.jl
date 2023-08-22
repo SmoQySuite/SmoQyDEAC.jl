@@ -575,7 +575,7 @@ function run_DEAC(Greens_tuple,
 
     # Merge data
     zero_avg, zero_err = jackknife(calculated_zeroth_moment)
-    gen_per_run = sum(generations ./ params.runs_per_bin)[1]
+    gen_per_run = sum(generations ./ params.runs_per_bin)[1]/params.N_bin
     differential = 100.0*abs(1.0-zero_avg[1])
     data, err = jackknife(bin_data)
     
