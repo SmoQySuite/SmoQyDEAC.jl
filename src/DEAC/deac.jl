@@ -254,7 +254,6 @@ function run_DEAC(Greens_tuple,
     true_fitness = params.stop_minimum_fitness
     total_runs = params.runs_per_bin*params.num_bins
     seed_vec = collect(params.base_seed:params.base_seed +(total_runs -1))
-    finished_runs = 0
     Δω = (params.out_ωs[end]-params.out_ωs[1])/(size(params.out_ωs,1)-1)
     
     # Utilize the correct kernel
@@ -267,18 +266,19 @@ function run_DEAC(Greens_tuple,
     # Load from checkpoint if applicable
     if autoresume_from_checkpoint
         chk_exists, chk_dict = find_checkpoint(params)
+
         if chk_exists
             if compare_checkpoint(chk_dict,params,Greens_tuple)
-                println("Checkpoint found at "*params.checkpoint_directory*"/DEAC_checkpoint.jld2")
+                println("Checkpoint found at ",joinpath(params.checkpoint_directory,"DEAC_checkpoint.jld2"))
                 start_bin = chk_dict["bin_num"] + 1
                 println("Parameters match. Resuming at bin ",start_bin,"\n")
                 bin_data = chk_dict["bin_data"]
-                generations = chk_dict["bin_data"]
+                generations = chk_dict["generations"]
                 seed_vec = chk_dict["seeds"]
                 calculated_zeroth_moment = chk_dict["zeroth"]
                 true_fitness = chk_dict["true_fitness"]
             else
-                println("Checkpoint found at "*params.checkpoint_directory*"/DEAC_checkpoint.jld2")
+                println("Checkpoint found at ",joinpath(params.checkpoint_directory,"DEAC_checkpoint.jld2"))
                 println("Mismatched parameters. Exiting")
                 exit()
             end
@@ -436,11 +436,15 @@ function run_DEAC(Greens_tuple,
         println(@sprintf("Using Ideal Fitness:  %01.5f\n",true_fitness))
     end
 
+
+    finished_runs = (start_bin -1) * params.runs_per_bin
+    Δt = 0.0
     CPUtic()
     # loop over bins*runs_per_bin
     Threads.@threads for thd in start_thread:total_runs
 
         # Each run utilizes its own RNG with a unique seed
+        # println("seed_vec ",1+thd-start_thread)
         seed = seed_vec[1+thd-start_thread]
         rng = Random.Xoshiro(seed)
         
@@ -540,7 +544,7 @@ function run_DEAC(Greens_tuple,
 
             # setting seed to 0 allows culling of used seeds in the checkpoint
             # ensuring each seed is used once
-            seed_vec[thd] = 0
+            seed_vec[1+thd-start_thread] = 0
 
             if verbose
                 println(@sprintf("  Bin %3u | Run %4u | Fitness %8.6f | Generations %u",curbin,thisrun,fit,numgen))
@@ -548,6 +552,7 @@ function run_DEAC(Greens_tuple,
 
             # Calculate bin data if enough to finish a bin, checkpoint
             if finished_runs % params.runs_per_bin == 0
+                
                 bin_data[:,curbin] = run_data[:,curbin] / params.runs_per_bin
                 calculated_zeroth_moment[1,curbin] = sum(bin_data[:,curbin]) .* Δω
                     
@@ -556,11 +561,13 @@ function run_DEAC(Greens_tuple,
                 if  occursin("bosonic",params.kernel_type)
                     bin_data[:,curbin] = bin_data[:,curbin] .* params.out_ωs
                 end
+                
                 if curbin != params.num_bins
                     save_checkpoint(bin_data,generations,curbin,params,Greens_tuple,calculated_zeroth_moment,true_fitness,seed_vec)
                 end
                  
                 println("Finished bin ",curbin," of ",params.num_bins)
+                
 
             end # bin completing
         end # lock(thread_lock)
@@ -570,8 +577,8 @@ function run_DEAC(Greens_tuple,
 
     # time stats
     Δt = CPUtoc()
-    t_per_run = Δt/total_runs
-    t_per_bin = Δt/params.num_bins
+    t_per_run = Δt/(total_runs - (start_bin-1)*params.runs_per_bin)
+    t_per_bin = Δt/(params.num_bins + 1 - start_bin)
 
     # Merge data
     zero_avg, zero_err = jackknife(calculated_zeroth_moment)

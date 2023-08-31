@@ -2,7 +2,7 @@
 # check if checkpoint file exists, if so return dictionary saved in
 # checkpoint file
 function find_checkpoint(params::DEACParameters)
-    file = params.checkpoint_directory*"/DEAC_checkpoint.jld2"
+    file = joinpath(params.checkpoint_directory,"DEAC_checkpoint.jld2")
     check_exists = isfile(file)
     if check_exists
         check_dict = FileIO.load(file)
@@ -23,7 +23,7 @@ end # compare_checkpoint()
 
 # Deletes checkpoint file
 function delete_checkpoint(params::DEACParameters)
-    file = params.checkpoint_directory*"/DEAC_checkpoint.jld2"
+    file = joinpath(params.checkpoint_directory,"DEAC_checkpoint.jld2")
     if isfile(file)
         rm(file)
     end
@@ -31,7 +31,7 @@ end # delete_checkpoint()
 
 # Save a checkpoint file
 function save_checkpoint(bin_data, generations, bin_num, params::DEACParameters,G_tuple,zeroth_momentum::AbstractArray,true_fitness,seed_vec)
-    file = params.checkpoint_directory*"/DEAC_checkpoint.jld2"
+    file = joinpath(params.checkpoint_directory,"DEAC_checkpoint.jld2")
     seeds = filter(x->x≠0,seed_vec)
     chk_data = Dict{String,Any}(
         "bin_data" => bin_data,
