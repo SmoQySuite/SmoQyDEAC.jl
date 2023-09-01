@@ -86,8 +86,6 @@ avg_generations = output_dictionary["avg_generations"];
 # Binned information - not available if `keep_bin_data=false`
 #md ## Bin data, 2D array size (nω,nbins)
 bin_data = output_dictionary["bin_data"];
-#md ## Standard error for each bin, 2D array size (nω,nbins)
-bin_σ = output_dictionary["bin_σ"];
 #md ## zeroth moment, 1D array (nbins)
 bin_zeroth = output_dictionary["bin_zeroth_moment"];
 

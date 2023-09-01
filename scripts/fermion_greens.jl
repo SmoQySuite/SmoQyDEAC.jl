@@ -41,10 +41,8 @@ zeroth_σ = output_dictionary["zeroth_moment_σ"];
 avg_generations = output_dictionary["avg_generations"];
 
 bin_data = output_dictionary["bin_data"];
-bin_σ = output_dictionary["bin_σ"];
 bin_zeroth = output_dictionary["bin_zeroth_moment"];
 
 test_dictionary = FileIO.load(output_file)
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-

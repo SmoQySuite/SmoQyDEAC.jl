@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "<unknown>/src/examples/fermion_greens.jl"
+EditURL = "fermion_greens.jl"
 ```
 
 # Example 1: Fermion Greens function
@@ -114,8 +114,6 @@ Binned information - not available if `keep_bin_data=false`
 ````@example fermion_greens
 # Bin data, 2D array size (nω,nbins)
 bin_data = output_dictionary["bin_data"];
-# Standard error for each bin, 2D array size (nω,nbins)
-bin_σ = output_dictionary["bin_σ"];
 # zeroth moment, 1D array (nbins)
 bin_zeroth = output_dictionary["bin_zeroth_moment"];
 nothing #hide
