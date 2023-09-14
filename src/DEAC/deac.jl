@@ -420,9 +420,8 @@ function run_DEAC(Greens_tuple,
                     lastFitness = minimum(fitness_new)
                     lastDelta = Delta
                     Delta = (last2Fitness-lastFitness)/lastFitness
-
+                    fitness[thd] = lastFitness
                     if (Delta < fit_check_difference) && (lastDelta < fit_check_difference)
-                        fitness[thd] = lastFitness
                         break
                     end
                 end # if fit_check_frequency
