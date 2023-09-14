@@ -388,16 +388,7 @@ function run_DEAC(Greens_tuple,
                 mutant_indices = get_mutant_indices(rng,params.population_size)
                 
                 # if mutate_indices, do mutation, else keep same
-                for pop in 1:params.population_size
-                    for ω in 1:size(params.out_ωs,1)
-                        if mutate_indices[pop,ω]
-                            population_new[ω,pop] = abs(population_old[ω,mutant_indices[1,pop]] + differential_weights_new[pop]*
-                                                        (population_old[ω,mutant_indices[2,pop]]-population_old[ω,mutant_indices[3,pop]]))
-                        else
-                            population_new[ω,pop] = population_old[ω,pop]
-                        end
-                    end # ω
-                end # pop
+                update_populations!(params,population_new,population_old,mutate_indices,differential_weights_new,mutant_indices)
                 
                 # calculate new fitness
                 model = *(Kp,population_new)
@@ -501,16 +492,7 @@ function run_DEAC(Greens_tuple,
             mutant_indices = get_mutant_indices(rng,params.population_size)
             
             # if mutate_indices, do mutation, else keep same
-            for pop in 1:params.population_size
-                for ω in 1:size(params.out_ωs,1)
-                    if mutate_indices[pop,ω]
-                        population_new[ω,pop] = abs(population_old[ω,mutant_indices[1,pop]] + differential_weights_new[pop]*
-                                                    (population_old[ω,mutant_indices[2,pop]]-population_old[ω,mutant_indices[3,pop]]))
-                    else
-                        population_new[ω,pop] = population_old[ω,pop]
-                    end
-                end
-            end
+            update_populations!(params,population_new,population_old,mutate_indices,differential_weights_new,mutant_indices)
             
             # get new fitness
             model = *(Kp,population_new)

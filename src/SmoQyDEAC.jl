@@ -7,6 +7,7 @@ using Printf
 using LinearAlgebra
 using CPUTime
 using JLD2
+using LoopVectorization
 
 include("DEAC/types.jl")
 include("DEAC/deac.jl")

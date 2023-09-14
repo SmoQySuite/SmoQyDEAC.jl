@@ -26,3 +26,11 @@ function get_mutant_indices(rng,pop_size)
     end
     return indices
 end # get_mutant_indices
+
+# Perform population updates
+function update_populations!(params,population_new,population_old,mutate_indices,differential_weights_new,mutant_indices)
+    @turbo for pop in 1:params.population_size, ω in 1:size(params.out_ωs,1)
+        population_new[ω,pop] = population_old[ω,pop]*(1.0-convert(Float64,mutate_indices[pop,ω])) + abs(population_old[ω,mutant_indices[1,pop]] + differential_weights_new[pop]*
+                                        (population_old[ω,mutant_indices[2,pop]]-population_old[ω,mutant_indices[3,pop]]))*convert(Float64,mutate_indices[pop,ω])
+    end # pop
+end
