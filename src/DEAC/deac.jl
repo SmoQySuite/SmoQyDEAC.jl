@@ -379,10 +379,10 @@ function run_DEAC(Greens_tuple,
                 end
 
                 # Randomly set some ω points to 'mutate'
-                mutate_indices_rnd = Random.rand(rng,Float64, (params.population_size,size(params.out_ωs,1))) 
-                mutate_indices = Array{Bool}(undef,(params.population_size,size(params.out_ωs,1)))
+                mutate_indices_rnd = Random.rand(rng,Float64, (size(params.out_ωs,1),params.population_size)) 
+                mutate_indices = Array{Bool}(undef,(size(params.out_ωs,1),params.population_size))
                 for pop in 1:params.population_size
-                    mutate_indices[pop,:] = mutate_indices_rnd[pop,:] .< crossover_probability_new[pop]
+                    mutate_indices[:,pop] = mutate_indices_rnd[:,pop] .< crossover_probability_new[pop]
                 end
                 # Set triplet of other populations for mutations
                 mutant_indices = get_mutant_indices(rng,params.population_size)
