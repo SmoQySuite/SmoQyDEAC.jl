@@ -12,7 +12,9 @@ The development of this code was supported by the U.S. Department of Energy, Off
 
 ## Notable Package Dependencies
 
-- [`JLD2.jl`](https://github.com/JuliaIO/JLD2.jl.git): Package used to write data to binary files in an HDF5 compatible format. 
+- [`LoopVectorization.jl`](https://github.com/JuliaSIMD/LoopVectorization.jl): Utilizes SIMD instructions (AVX,SSE) to vectorize loops
+- [`JLD2.jl`](https://github.com/JuliaIO/JLD2.jl): Package used to write data to binary files in an HDF5 compatible format. 
+
 
 ## Contact us
 

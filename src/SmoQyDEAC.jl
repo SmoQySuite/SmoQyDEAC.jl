@@ -5,7 +5,6 @@ using Statistics
 using FileIO
 using Printf
 using LinearAlgebra
-using CPUTime
 using JLD2
 using LoopVectorization
 

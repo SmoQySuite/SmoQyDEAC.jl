@@ -2,7 +2,7 @@
 
 julia_version = "1.9.3"
 manifest_format = "2.0"
-project_hash = "b1ea6e8a79f6549a15a96e0790d128e47d0eb8d5"
+project_hash = "e8e57d522a8d18b79480899c07a9f5e6077000e9"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
@@ -65,11 +65,6 @@ deps = ["CpuId", "IfElse", "PrecompileTools", "Static"]
 git-tree-sha1 = "89e0654ed8c7aebad6d5ad235d6242c2d737a928"
 uuid = "2a0fbf3d-bb9c-48f3-b0a9-814d99fd7ab9"
 version = "0.2.3"
-
-[[deps.CPUTime]]
-git-tree-sha1 = "2dcc50ea6a0a1ef6440d6eecd0fe3813e5671f45"
-uuid = "a9c8d775-2e2e-55fc-8582-045d282d599e"
-version = "1.0.0"
 
 [[deps.CloseOpenIntervals]]
 deps = ["Static", "StaticArrayInterface"]
