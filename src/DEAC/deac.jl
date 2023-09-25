@@ -576,7 +576,7 @@ function run_DEAC(Greens_tuple,
         println(@sprintf(" 0th moment difference: %01.3f%%",differential))
     end
     println(@sprintf(" Mean generations/run:  %01.3f",gen_per_run))
-    println(@sprintf(" Total Run time:        %01.3fs",Δt))
+    println(@sprintf(" Total Run time:        %01.3fs",t_per_bin * params.num_bins))
     println(@sprintf(" Run time per bin:      %01.3fs",t_per_bin))
     println(@sprintf(" Run time per genome:   %01.3fs\n",t_per_run*nthreads))
     
