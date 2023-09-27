@@ -352,10 +352,11 @@ function run_DEAC(Greens_tuple,
             
                 
                 population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
-                population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+                
+                model = zeros(Float64,(size(Kp,1),size(population_old,2)))
             
                 # Get model Fitness
-                model = *(Kp,population_old)
+                gemmavx!(model,Kp,population_old)
 
                 fitness_old = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
                 
@@ -391,7 +392,8 @@ function run_DEAC(Greens_tuple,
                     update_populations!(params,population_new,population_old,mutate_indices,differential_weights_new,mutant_indices)
                     
                     # calculate new fitness
-                    model = *(Kp,population_new)
+                    gemmavx!(model,Kp,population_new)
+
                     fitness_new = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
 
                     # update populations if fitness improved
@@ -445,9 +447,11 @@ function run_DEAC(Greens_tuple,
             # normalize population_old here
             
             population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+            model = zeros(Float64,(size(Kp,1),size(population_old,2)))
             
             # Get model Fitness
-            model = *(Kp,population_old)
+            gemmavx!(model,Kp,population_old)
+
 
             fitness_old = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
             
@@ -494,7 +498,8 @@ function run_DEAC(Greens_tuple,
                 update_populations!(params,population_new,population_old,mutate_indices,differential_weights_new,mutant_indices)
                 
                 # get new fitness
-                model = *(Kp,population_new)
+                gemmavx!(model,Kp,population_new)
+
                 fitness_new = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
 
                 # if improved do updates

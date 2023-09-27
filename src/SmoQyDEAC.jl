@@ -19,4 +19,8 @@ include("DEAC/boostrap.jl")
 export DEAC_Std
 export DEAC_Binned
 
+function __init__()
+    BLAS.set_num_threads(1)
+end
+
 end # module SmoQyDEAC
