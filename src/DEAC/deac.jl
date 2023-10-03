@@ -309,8 +309,9 @@ function run_DEAC(Greens_tuple,
         W_cap = W_ratio_max * minimum(W)
         clamp!(W,0.0,W_cap)
         
+        Kp = similar(K)
         # rotate K and corr_avg
-        Kp = U_c*K
+        gemmavx!(Kp,U_c,K)
         
         corr_avg_p = zeros(Float64,U_c1)
         for i in 1:U_c1
@@ -485,10 +486,10 @@ function run_DEAC(Greens_tuple,
                 end
 
                 # Randomly set some ω points to 'mutate'
-                mutate_indices_rnd = Random.rand(rng,Float64, (params.population_size,size(params.out_ωs,1))) 
-                mutate_indices = Array{Bool}(undef,(params.population_size,size(params.out_ωs,1)))
+                mutate_indices_rnd = Random.rand(rng,Float64, (size(params.out_ωs,1),params.population_size)) 
+                mutate_indices = Array{Bool}(undef,(size(params.out_ωs,1),params.population_size))
                 for pop in 1:params.population_size
-                    mutate_indices[pop,:] = mutate_indices_rnd[pop,:] .< crossover_probability_new[pop]
+                    mutate_indices[:,pop] = mutate_indices_rnd[:,pop] .< crossover_probability_new[pop]
                 end
             
                 # Set triplet of other populations for mutations
