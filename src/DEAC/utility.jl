@@ -1,9 +1,9 @@
 
 # χ² fit 
-function Χ²(observed::AbstractVector,calculated::AbstractMatrix,W::AbstractVector)
-    Χ = zeros(Float64,(size(calculated,2),))
+function Χ²(observed::AbstractVector{T},calculated::AbstractMatrix{T},W::AbstractVector{T}) where {T<:Real}
+    Χ = zeros(T,(size(calculated,2),))
     for pop in 1:size(calculated,2)
-        Χ[pop] = sum( ((observed .- calculated[:,pop]).^2) .* W )
+        @inbounds Χ[pop] = sum( ((observed .- calculated[:,pop]).^2) .* W )
     end
     return Χ
 end # χ²
@@ -27,21 +27,39 @@ function get_mutant_indices(rng,pop_size)
     return indices
 end # get_mutant_indices
 
-
+# Population update routine
+#
+# Below is the unoptimized verson which is easier to read
+#
+# for pop in 1:params.population_size
+#     for ω in 1:size(params.out_ωs,1)
+#         if mutate_indices[pop,ω]
+#             population_new[ω,pop] = abs(population_old[ω,mutant_indices[1,pop]] + differential_weights_new[pop]*
+#                                         (population_old[ω,mutant_indices[2,pop]]-population_old[ω,mutant_indices[3,pop]]))
+#         else
+#             population_new[ω,pop] = population_old[ω,pop]
+#         end
+#     end
+# end
 function update_populations!(params,population_new,population_old,mutate_indices,differential_weights_new,mutant_indices)
     @turbo for pop in 1:params.population_size, ω in 1:size(params.out_ωs,1)
-        population_new[ω,pop] = population_old[ω,pop]*(1.0-convert(Float64,mutate_indices[ω,pop])) + abs(population_old[ω,mutant_indices[1,pop]] + differential_weights_new[pop]*
-                                        (population_old[ω,mutant_indices[2,pop]]-population_old[ω,mutant_indices[3,pop]]))*convert(Float64,mutate_indices[ω,pop])
+        do_upd = convert(eltype(population_new),mutate_indices[ω,pop])
+        population_new[ω,pop] = population_old[ω,pop]*(1.0-do_upd) + # If false keep old gene
+                                #if true do update
+                                do_upd * abs(population_old[ω,mutant_indices[1,pop]] + differential_weights_new[pop]*
+                                (population_old[ω,mutant_indices[2,pop]]-population_old[ω,mutant_indices[3,pop]]))
+                                
     end # pop
 end
 
-
-function gemmavx!(C, A, B)
+# Loop vectorized Matrix Multiply
+function gemmavx!(C::Matrix{T}, A::Matrix{T}, B::Matrix{T}) where {T}
     @turbo for m ∈ axes(A,1), n ∈ axes(B,2)
-        Cmn = zero(eltype(C))
+        Cmn = zero(T)
         for k ∈ axes(A,2)
             Cmn += A[m,k] * B[k,n]
         end
         C[m,n] = Cmn
     end
 end
+
