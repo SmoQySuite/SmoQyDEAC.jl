@@ -263,7 +263,9 @@ function run_DEAC(Greens_tuple,
     # prevent race conditions when threads finish
     thread_lock = ReentrantLock()
 
-
+    # Test to see if SIMD instructions via LoopVectorization are working
+    use_SIMD = useSIMD(size(params.out_ωs,1),size(params.input_grid,1),params.population_size)
+    
     # Load from checkpoint if applicable
     if autoresume_from_checkpoint
         chk_exists, chk_dict = find_checkpoint(params)
@@ -310,8 +312,9 @@ function run_DEAC(Greens_tuple,
         clamp!(W,0.0,W_cap)
         
         Kp = similar(K)
+        
         # rotate K and corr_avg
-        gemmavx!(Kp,U_c,K)
+        GEMM!(Kp,U_c,K,use_SIMD)
         
         corr_avg_p = zeros(Float64,U_c1)
         for i in 1:U_c1
@@ -343,25 +346,16 @@ function run_DEAC(Greens_tuple,
 
         Δt = @elapsed begin
             Threads.@threads for thd in 1:nfinder
-
+                
+                # Setup RNG
                 seed = params.base_seed + thd
                 rng = Random.Xoshiro(seed)
-                population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
-                for pop in 1:params.population_size
-                    population_old[:,pop] = population_old[:,pop] ./ sum(population_old[:,pop])
-                end
-            
-                
-                population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
-                
-                model = zeros(Float64,(size(Kp,1),size(population_old,2)))
-            
-                # Get model Fitness
-                gemmavx!(model,Kp,population_old)
 
-                fitness_old = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
-                
-                # Set initial parameters for algo
+                # Allocate arrays, set random initial state
+                population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
+                population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+                model = zeros(Float64,(size(Kp,1),size(population_old,2)))
+
                 crossover_probability_new = zeros(Float64,params.population_size)
                 crossover_probability_old = zeros(Float64,params.population_size)
                 crossover_probability_old .= params.crossover_probability
@@ -370,42 +364,36 @@ function run_DEAC(Greens_tuple,
                 differential_weights_old = zeros(Float64,params.population_size)
                 differential_weights_old .= params.differential_weight
 
+                mutate_indices = Array{Float64}(undef,(size(params.out_ωs,1),params.population_size))
+
+                fitness_old = initial_fit!(population_old,model,corr_avg_p,Kp,W,params,use_SIMD)
+                
+                # IFF tracker variables
                 lastDelta = typemax(Float64)
                 lastFitness = minimum(fitness_old)
                 last2Fitness = typemax(Float64)
                 Delta = typemax(Float64)
+
+                # main loop
                 for gen in 1:params.number_of_generations
-                    for pop in 1:params.population_size
-                        crossover_probability_new[pop] = (Random.rand(rng,Float64)<params.self_adapting_crossover_probability) ? rand(rng,Float64) : crossover_probability_old[pop]
-                        differential_weights_new[pop] = (Random.rand(rng,Float64)<params.self_adapting_differential_weight_probability) ? 2.0*rand(rng,Float64) : differential_weights_old[pop]
-                    end
+                    
+                    update_weights!(crossover_probability_new,differential_weights_new,crossover_probability_old,differential_weights_old,rng,params)
 
                     # Randomly set some ω points to 'mutate'
-                    mutate_indices_rnd = Random.rand(rng,Float64, (size(params.out_ωs,1),params.population_size)) 
-                    mutate_indices = Array{Bool}(undef,(size(params.out_ωs,1),params.population_size))
-                    for pop in 1:params.population_size
-                        mutate_indices[:,pop] = mutate_indices_rnd[:,pop] .< crossover_probability_new[pop]
-                    end
+                    rand_mutate_array!(mutate_indices,crossover_probability_new,rng,params)
+
                     # Set triplet of other populations for mutations
                     mutant_indices = get_mutant_indices(rng,params.population_size)
                     
                     # if mutate_indices, do mutation, else keep same
-                    update_populations!(params,population_new,population_old,mutate_indices,differential_weights_new,mutant_indices)
+                    propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params)
                     
                     # calculate new fitness
-                    gemmavx!(model,Kp,population_new)
-
+                    GEMM!(model,Kp,population_new,use_SIMD)
                     fitness_new = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
 
                     # update populations if fitness improved
-                    for pop in 1:params.population_size
-                        if fitness_new[pop] <= fitness_old[pop]
-                            fitness_old[pop] = fitness_new[pop]
-                            crossover_probability_old[pop] = crossover_probability_new[pop]
-                            differential_weights_old[pop] = differential_weights_new[pop]
-                            population_old[:,pop] = population_new[:,pop]
-                        end
-                    end # pop
+                    update_populations!(fitness_old,crossover_probability_old,differential_weights_old,population_old,fitness_new,crossover_probability_new,differential_weights_new,population_new)
 
                     # check for low improvement for two consecutive slices, break if so
                     if (gen % fit_check_frequency) == 0
@@ -421,41 +409,23 @@ function run_DEAC(Greens_tuple,
                     end # if fit_check_frequency
                 end # generations
             end #threads
-        end    
+        end  # Δt   
         # Calculate ideal Fitness, print 
         true_fitness = minimum(fitness) * fit_mod
         
         println(@sprintf("\nFitness found in %01.5fs",Δt))
         println(@sprintf("Using Ideal Fitness:  %01.5f\n",true_fitness))
-    end
-
+    end # IFF
 
     finished_runs = (start_bin -1) * params.runs_per_bin
     Δt = @elapsed begin
-    # loop over bins*runs_per_bin
+        # loop over bins*runs_per_bin
         Threads.@threads for thd in start_thread:total_runs
 
             # Each run utilizes its own RNG with a unique seed
             # println("seed_vec ",1+thd-start_thread)
             seed = seed_vec[1+thd-start_thread]
             rng = Random.Xoshiro(seed)
-            
-            # Randomly set initial population and normalize it
-            population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
-            for pop in 1:params.population_size
-                population_old[:,pop] = population_old[:,pop] ./ sum(population_old[:,pop])
-            end
-            # normalize population_old here
-            
-            population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
-            model = zeros(Float64,(size(Kp,1),size(population_old,2)))
-            
-            # Get model Fitness
-            gemmavx!(model,Kp,population_old)
-
-
-            fitness_old = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
-            
             # Set initial parameters for algo
             crossover_probability_new = zeros(Float64,params.population_size)
             crossover_probability_old = zeros(Float64,params.population_size)
@@ -465,6 +435,14 @@ function run_DEAC(Greens_tuple,
             differential_weights_old = zeros(Float64,params.population_size)
             differential_weights_old .= params.differential_weight
 
+            # Randomly set initial populations, initialize arrays
+            population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
+            population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+            model = zeros(Float64,(size(Kp,1),size(population_old,2)))
+            mutate_indices = Array{Float64}(undef,(size(params.out_ωs,1),params.population_size))
+
+            fitness_old = initial_fit!(population_old,model,corr_avg_p,Kp,W,params,use_SIMD)
+          
             # track number of generations to get to fitness
             numgen = 0
 
@@ -473,45 +451,28 @@ function run_DEAC(Greens_tuple,
             for gen in 1:params.number_of_generations
             
                 # If fitness achieved, exit loop
-                minimum_fitness = minimum(fitness_old)
-                
-                if (minimum_fitness <= true_fitness) 
-                    break
-                end
-            
+                if (minimum(fitness_old) <= true_fitness) break; end
+                    
                 # Modify DEAC parameters stochastically
-                for pop in 1:params.population_size
-                    crossover_probability_new[pop] = (Random.rand(rng,Float64)<params.self_adapting_crossover_probability) ? rand(rng,Float64) : crossover_probability_old[pop]
-                    differential_weights_new[pop] = (Random.rand(rng,Float64)<params.self_adapting_differential_weight_probability) ? 2.0*rand(rng,Float64) : differential_weights_old[pop]
-                end
+                update_weights!(crossover_probability_new,differential_weights_new,crossover_probability_old,differential_weights_old,rng,params)
+
 
                 # Randomly set some ω points to 'mutate'
-                mutate_indices_rnd = Random.rand(rng,Float64, (size(params.out_ωs,1),params.population_size)) 
-                mutate_indices = Array{Bool}(undef,(size(params.out_ωs,1),params.population_size))
-                for pop in 1:params.population_size
-                    mutate_indices[:,pop] = mutate_indices_rnd[:,pop] .< crossover_probability_new[pop]
-                end
-            
+                rand_mutate_array!(mutate_indices,crossover_probability_new,rng,params)
+
                 # Set triplet of other populations for mutations
                 mutant_indices = get_mutant_indices(rng,params.population_size)
                 
                 # if mutate_indices, do mutation, else keep same
-                update_populations!(params,population_new,population_old,mutate_indices,differential_weights_new,mutant_indices)
+                propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params)
                 
                 # get new fitness
-                gemmavx!(model,Kp,population_new)
-
+                GEMM!(model,Kp,population_new,use_SIMD)
                 fitness_new = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
 
                 # if improved do updates
-                for pop in 1:params.population_size
-                    if fitness_new[pop] <= fitness_old[pop]
-                        fitness_old[pop] = fitness_new[pop]
-                        crossover_probability_old[pop] = crossover_probability_new[pop]
-                        differential_weights_old[pop] = differential_weights_new[pop]
-                        population_old[:,pop] = population_new[:,pop]
-                    end
-                end
+                update_populations!(fitness_old,crossover_probability_old,differential_weights_old,population_old,fitness_new,crossover_probability_new,differential_weights_new,population_new)
+
                 
                 numgen = numgen + 1
             end # generations
@@ -536,24 +497,10 @@ function run_DEAC(Greens_tuple,
                     println(@sprintf("  Bin %3u | Run %4u | Fitness %8.6f | Generations %u",curbin,thisrun,fit,numgen))
                 end
 
-                # Calculate bin data if enough to finish a bin, checkpoint
+                # Calculate bin data if enough to finish a bin, then checkpoint
                 if finished_runs % params.runs_per_bin == 0
-                    
-                    bin_data[:,curbin] = run_data[:,curbin] / params.runs_per_bin
-                    calculated_zeroth_moment[1,curbin] = sum(bin_data[:,curbin]) .* Δω
-                        
-                    # Bosonic time kernels steal a factor of ω from the spectral function.
-                    # Multiply it back in if needed
-                    if  occursin("bosonic",params.kernel_type)
-                        bin_data[:,curbin] = bin_data[:,curbin] .* params.out_ωs
-                    end
-                    
-                    if curbin != params.num_bins
-                        save_checkpoint(bin_data,generations,curbin,params,Greens_tuple,calculated_zeroth_moment,true_fitness,seed_vec)
-                    end
-                    
-                    println("Finished bin ",curbin," of ",params.num_bins)
-                    
+
+                    bin_results!(bin_data,calculated_zeroth_moment,run_data,curbin,Δω,Greens_tuple,true_fitness,seed_vec,generations,params)
 
                 end # bin completing
             end # lock(thread_lock)

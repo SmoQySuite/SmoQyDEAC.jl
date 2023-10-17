@@ -7,6 +7,7 @@ using Printf
 using LinearAlgebra
 using JLD2
 using LoopVectorization
+using BenchmarkTools
 
 include("DEAC/types.jl")
 include("DEAC/deac.jl")
@@ -15,6 +16,7 @@ include("DEAC/kernels.jl")
 include("DEAC/utility.jl")
 include("DEAC/checkpoint.jl")
 include("DEAC/boostrap.jl")
+include("DEAC/updates.jl")
 
 export DEAC_Std
 export DEAC_Binned

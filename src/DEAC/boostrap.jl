@@ -1,5 +1,5 @@
 
-# Create more bins from current number of bins. 
+# Create bootstrapped bins from current number of bins. 
 function bootstrap_samples(corr_bin_in,N_boots,seed)
     NBins_in = size(corr_bin_in,1)
     nτ = size(corr_bin_in,2)

@@ -27,33 +27,8 @@ function get_mutant_indices(rng,pop_size)
     return indices
 end # get_mutant_indices
 
-# Population update routine
-#
-# Below is the unoptimized verson which is easier to read
-#
-# for pop in 1:params.population_size
-#     for ω in 1:size(params.out_ωs,1)
-#         if mutate_indices[pop,ω]
-#             population_new[ω,pop] = abs(population_old[ω,mutant_indices[1,pop]] + differential_weights_new[pop]*
-#                                         (population_old[ω,mutant_indices[2,pop]]-population_old[ω,mutant_indices[3,pop]]))
-#         else
-#             population_new[ω,pop] = population_old[ω,pop]
-#         end
-#     end
-# end
-function update_populations!(params,population_new,population_old,mutate_indices,differential_weights_new,mutant_indices)
-    @turbo for pop in 1:params.population_size, ω in 1:size(params.out_ωs,1)
-        do_upd = convert(eltype(population_new),mutate_indices[ω,pop])
-        population_new[ω,pop] = population_old[ω,pop]*(1.0-do_upd) + # If false keep old gene
-                                #if true do update
-                                do_upd * abs(population_old[ω,mutant_indices[1,pop]] + differential_weights_new[pop]*
-                                (population_old[ω,mutant_indices[2,pop]]-population_old[ω,mutant_indices[3,pop]]))
-                                
-    end # pop
-end
-
 # Loop vectorized Matrix Multiply
-function gemmavx!(C::Matrix{T}, A::Matrix{T}, B::Matrix{T}) where {T}
+function gemmSIMD!(C::Matrix{T}, A::Matrix{T}, B::Matrix{T}) where {T}
     @turbo for m ∈ axes(A,1), n ∈ axes(B,2)
         Cmn = zero(T)
         for k ∈ axes(A,2)
@@ -63,3 +38,51 @@ function gemmavx!(C::Matrix{T}, A::Matrix{T}, B::Matrix{T}) where {T}
     end
 end
 
+# Determine if to use gemmavx! or LinearAlgebra mul!
+function useSIMD(K,M,N)
+
+    # Matrices for GEMM
+    C = Matrix{Float64}(undef, M, N)
+    A = Random.rand(Float64,(M, K))
+    B = Random.rand(Float64,(K, N))
+
+    # Benchmark
+    t_linAlg = @belapsed mul!($C,$A,$B)
+    t_avx = @belapsed gemmSIMD!($C,$A,$B)
+    use_SIMD = t_avx < t_linAlg
+    if use_SIMD
+        println("SIMD GEMM faster than BLAS, using internal gemmSIMD!()")
+    else
+        println("SIMD GEMM slower than BLAS, using BLAS mul!()")
+    end
+    
+    return use_SIMD
+end
+
+# GEMM wrapper to select appropriate method
+function GEMM!(C,A,B,use_SIMD)
+    if use_SIMD
+        gemmSIMD!(C,A,B)
+    else
+        mul!(C,A,B)
+    end
+end
+
+# Calculate binned data and save to a checkpoint
+function bin_results!(bin_data,calculated_zeroth_moment,run_data,curbin,Δω,Greens_tuple,true_fitness,seed_vec,generations,params)
+    bin_data[:,curbin] = run_data[:,curbin] / params.runs_per_bin
+    calculated_zeroth_moment[1,curbin] = sum(bin_data[:,curbin]) .* Δω
+        
+    # Bosonic time kernels steal a factor of ω from the spectral function.
+    # Multiply it back in if needed
+    if  occursin("bosonic",params.kernel_type)
+        bin_data[:,curbin] = bin_data[:,curbin] .* params.out_ωs
+    end
+    
+    if curbin != params.num_bins
+        save_checkpoint(bin_data,generations,curbin,params,Greens_tuple,calculated_zeroth_moment,true_fitness,seed_vec)
+    end
+    
+    println("Finished bin ",curbin," of ",params.num_bins)
+    
+end
