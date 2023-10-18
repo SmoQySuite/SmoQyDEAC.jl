@@ -86,3 +86,46 @@ function bin_results!(bin_data,calculated_zeroth_moment,run_data,curbin,Δω,Gre
     println("Finished bin ",curbin," of ",params.num_bins)
     
 end
+
+# Calculate matrices used to go from ω to τ space and χ² fit
+function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
+    if Greens_tuple[2] == nothing
+        # Covariance Methods
+        
+        # SVD on correlation bins
+        corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
+        svd_corr = svd(Greens_tuple[1] .- corr_avg)
+        sigma_corr = svd_corr.S
+
+        # Unitary transformation matrix
+        U_c = svd_corr.Vt
+        
+        # Inverse fit W array for χ^2
+        # (2.0 * U_c1) factor generally gives ideal fit ~0.1-1.0
+        U_c1 = size(U_c,1)
+        W = (2.0 * U_c1) ./ (sigma_corr .* sigma_corr) 
+        
+        # Deal with nearly singular matrix
+        W_cap = W_ratio_max * minimum(W)
+        clamp!(W,0.0,W_cap)
+        
+        Kp = similar(K)
+        
+        # rotate K and corr_avg
+        GEMM!(Kp,U_c,K,use_SIMD)
+        
+        corr_avg_p = zeros(Float64,U_c1)
+        for i in 1:U_c1
+            corr_avg_p[i] = dot(view(U_c,i,:),corr_avg)
+        end
+    else
+        # Diagonal error method
+        W = 1.0 ./ (Greens_tuple[2] .* Greens_tuple[2])
+        W_cap = W_ratio_max * minimum(W)
+        clamp!(W,0.0,W_cap)
+        Kp = K
+        corr_avg_p = Greens_tuple[1]
+    end
+    return W, Kp, corr_avg_p
+
+end
