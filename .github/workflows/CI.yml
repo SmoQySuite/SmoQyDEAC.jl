@@ -24,7 +24,6 @@ jobs:
           - ubuntu-latest
         arch:
           - x64
-          - x86
         include:
           - os: macOS-latest
             arch: x64
