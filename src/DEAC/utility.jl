@@ -8,6 +8,16 @@ function Χ²(observed::AbstractVector{T},calculated::AbstractMatrix{T},W::Abstr
     return Χ
 end # χ²
 
+function Χ²(observed::AbstractVector{U},calculated::AbstractMatrix{U},W::AbstractVector{T}) where {T<:Real, U<:Complex}
+    Χ = zeros(T,(size(calculated,2),))
+    for pop in 1:size(calculated,2)
+        @inbounds Χ[pop] = sum( norm.((observed .- calculated[:,pop]).^2) .* W )
+    end
+    return Χ
+end # χ²
+
+
+
 # return mutant indices
 # links our genomes together for mutation
 function get_mutant_indices(rng,pop_size)
@@ -61,7 +71,7 @@ end
 
 # GEMM wrapper to select appropriate method
 function GEMM!(C,A,B,use_SIMD)
-    if use_SIMD
+    if use_SIMD && eltype(A) <: Real
         gemmSIMD!(C,A,B)
     else
         mul!(C,A,B)
@@ -106,7 +116,7 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
         W = (2.0 * U_c1) ./ (sigma_corr .* sigma_corr) 
         
         # Deal with nearly singular matrix
-        W_cap = W_ratio_max * minimum(W)
+        W_cap = W_ratio_max * minimum(norm(W))
         clamp!(W,0.0,W_cap)
         
         Kp = similar(K)
@@ -120,8 +130,8 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
         end
     else
         # Diagonal error method
-        W = 1.0 ./ (Greens_tuple[2] .* Greens_tuple[2])
-        W_cap = W_ratio_max * minimum(W)
+        W = norm.(1.0 ./ (Greens_tuple[2] .* Greens_tuple[2]))
+        W_cap = W_ratio_max * minimum(norm(W))
         clamp!(W,0.0,W_cap)
         Kp = K
         corr_avg_p = Greens_tuple[1]
@@ -129,3 +139,9 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
     return W, Kp, corr_avg_p
 
 end
+
+
+# function clamp!(A::AbstractVector{T<:Complex},low::Real,hi::Real)
+#     for k in axes(A,1)
+#         if 
+

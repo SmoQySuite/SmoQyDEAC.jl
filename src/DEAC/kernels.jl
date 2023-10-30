@@ -6,7 +6,11 @@
 function generate_K(params::DEACParameters)
     nω = size(params.out_ωs,1)
     ngrid = size(params.input_grid,1)
-    K = zeros(Float64,(ngrid,nω))
+    if occursin("frequency",params.kernel_type)
+        K = zeros(ComplexF64,(ngrid,nω))
+    else
+        K = zeros(Float64,(ngrid,nω))
+    end
 
     Δω = (params.out_ωs[end]-params.out_ωs[1])/(size(params.out_ωs,1)-1)
 

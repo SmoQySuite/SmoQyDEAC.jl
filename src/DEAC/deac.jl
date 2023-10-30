@@ -264,7 +264,11 @@ function run_DEAC(Greens_tuple,
     thread_lock = ReentrantLock()
 
     # Test to see if SIMD instructions via LoopVectorization are working
-    use_SIMD = useSIMD(size(params.out_ωs,1),size(params.input_grid,1),params.population_size)
+    if eltype(Greens_tuple[1]) <: Real
+        use_SIMD = useSIMD(size(params.out_ωs,1),size(params.input_grid,1),params.population_size)
+    else
+        use_SIMD = false
+    end
     
     # Load from checkpoint if applicable
     if autoresume_from_checkpoint
@@ -318,7 +322,7 @@ function run_DEAC(Greens_tuple,
                 # Allocate arrays, set random initial state
                 population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
                 population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
-                model = zeros(Float64,(size(Kp,1),size(population_old,2)))
+                model = zeros(eltype(Greens_tuple[1]),(size(Kp,1),size(population_old,2)))
 
                 crossover_probability_new = zeros(Float64,params.population_size)
                 crossover_probability_old = zeros(Float64,params.population_size)
@@ -402,7 +406,7 @@ function run_DEAC(Greens_tuple,
             # Randomly set initial populations, initialize arrays
             population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
             population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
-            model = zeros(Float64,(size(Kp,1),size(population_old,2)))
+            model = zeros(eltype(Greens_tuple[1]),(size(Kp,1),size(population_old,2)))
             mutate_indices = Array{Float64}(undef,(size(params.out_ωs,1),params.population_size))
 
             fitness_old = initial_fit!(population_old,model,corr_avg_p,Kp,W,params,use_SIMD)
