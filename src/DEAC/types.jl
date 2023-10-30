@@ -2,6 +2,9 @@
 allowable_kernels = ["time_bosonic",
                      "time_fermionic",
                      "time_bosonic_symmetric",
+                     "frequency_fermionic",
+                     "frequency_bosonic",
+                     "frequency_bosonic_symmetric"
                     ]
 
 
