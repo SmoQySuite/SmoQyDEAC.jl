@@ -173,7 +173,7 @@ SmoQyDEAC will save a dictionary to the file name passed via the `output_file` a
 # Checkpointing
 SmoQyDEAC will place a file named `DEAC_checkpoint.jld2` in the directory passed in `checkpoint_directory`. After completing every bin this file will be saved.
 After the last bin is finished the file will be deleted. When `autoresume_from_checkpoint=true` SmoQyDEAC will attempt to resume from the checkpoint. 
-If the arguments passed do not match those in the checkpoint the code will exit.
+If the arguments passed do not match those in the checkpoint the code will exit. 
 """
 function DEAC_Binned(correlation_function::AbstractMatrix,
                   β::Float64,

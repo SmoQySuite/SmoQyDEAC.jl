@@ -34,6 +34,9 @@ For now there are three supported kernels
 - `time_fermionic`$=\frac{e^{-\tau\omega}}{1+e^{-\beta\omega}}$
 - `time_bosonic`$=\frac{e^{-\tau\omega}}{1-e^{-\beta\omega}}$
 - `time_bosonic_symmetric`$=\frac{e^{-\tau\omega}+e^{-(\beta-\tau)\omega}}{1-e^{-\beta\omega}}$
+- `frequency_fermionic`$=\frac{1.0}{i\omega_n-\omega}$
+- `frequency_bosonic`$=\frac{\omega}{i\omega_n-\omega}$
+- `frequency_bosonic_symmetric`$=\frac{-2.0 \omega^2}{\omega_n^2+\omega^2}$
 
 # Multithreading
 SmoQyDEAC utilizes Julia's `Threads.@threads` multithreading capability. To take advantage of this run your code using 
