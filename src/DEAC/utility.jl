@@ -132,8 +132,9 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
         end
  
     else
+        ngrid = size(Greens_tuple[1],1)
         # Diagonal error method
-        W = norm.(1.0 ./ (Greens_tuple[2] .* Greens_tuple[2]))
+        W = norm.(ngrid ./ (Greens_tuple[2] .* Greens_tuple[2]))
         W_cap = W_ratio_max * minimum(norm(W))
         clamp!(W,0.0,W_cap)
         Kp = K
