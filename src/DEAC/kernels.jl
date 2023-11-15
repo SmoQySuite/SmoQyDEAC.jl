@@ -38,7 +38,7 @@ function generate_K(params::DEACParameters)
     elseif params.kernel_type == "frequency_fermionic"
         for (iω, ω) in enumerate(params.out_ωs)
             for (iωn, ωn) in enumerate(params.input_grid)
-                K[iωn,iω] = Δω / (1im * ωn - ω )#(exp(params.out_ωs[ω] * params.input_grid[τ]) + exp(-params.out_ωs[ω] * (params.β - params.input_grid[τ])))
+                K[iωn,iω] =  Δω / (1im * ωn - ω )#(exp(params.out_ωs[ω] * params.input_grid[τ]) + exp(-params.out_ωs[ω] * (params.β - params.input_grid[τ])))
             end
         end
     elseif params.kernel_type == "frequency_bosonic"
@@ -47,7 +47,7 @@ function generate_K(params::DEACParameters)
                 if ωn == 0.0 && ω ≈ 0.0
                     K[iωn,iω] = -1.0 * Δω
                 else
-                    K[iωn,iω] = Δω * ω / (1im * ωn - ω )#(exp(params.out_ωs[ω] * params.input_grid[τ]) + exp(-params.out_ωs[ω] * (params.β - params.input_grid[τ])))
+                    K[iωn,iω] =  Δω * ω / (1im * ωn - ω )#(exp(params.out_ωs[ω] * params.input_grid[τ]) + exp(-params.out_ωs[ω] * (params.β - params.input_grid[τ])))
                 end
             end
         end

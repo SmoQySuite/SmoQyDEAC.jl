@@ -27,7 +27,7 @@ jobs:
         include:
           - os: macOS-latest
             arch: x64
-            version: 1
+            version: 1.9
     steps:
       - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@latest

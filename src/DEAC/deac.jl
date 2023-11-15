@@ -202,18 +202,26 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
                   verbose::Bool=false,
                 )
     #
+    params = DEACParameters(β,input_grid,out_ωs,kernel_type,output_file,checkpoint_directory,
+                            num_bins,runs_per_bin,population_size,base_seed,
+                            crossover_probability,self_adapting_crossover_probability,
+                            differential_weight,self_adapting_differential_weight_probability,
+                            self_adapting_differential_weight,stop_minimum_fitness,number_of_generations)
+
+    if eltype(correlation_function) <: Complex
+        println("Covariance method not yet available for Matsubara frequencies, using standard deviation instead")
+        corr_avg = mean(correlation_function,dims=1)[1,:]
+        corr_std = std(correlation_function,dims=1)[1,:]
+        return run_DEAC((corr_avg,corr_std),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose)
+    end
+
     # Bootstrap bins to ensure sufficient bin size
     if bootstrap_bins ≤ 0 || (size(correlation_function,1) < 5 * size(correlation_function,2))
         bootstrap_bins = max(bootstrap_bins,5*size(correlation_function,2))
         correlation_function = bootstrap_samples(correlation_function,bootstrap_bins,base_seed )
     end
 
-
-    params = DEACParameters(β,input_grid,out_ωs,kernel_type,output_file,checkpoint_directory,
-                            num_bins,runs_per_bin,population_size,base_seed,
-                            crossover_probability,self_adapting_crossover_probability,
-                            differential_weight,self_adapting_differential_weight_probability,
-                            self_adapting_differential_weight,stop_minimum_fitness,number_of_generations)
+    
     #
     return run_DEAC((correlation_function,nothing),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose)
 end # DEAC_Binned()

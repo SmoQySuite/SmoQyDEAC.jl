@@ -59,9 +59,10 @@ function useSIMD(K,M,N)
     # Benchmark
     t_linAlg = @belapsed mul!($C,$A,$B)
     t_avx = @belapsed gemmSIMD!($C,$A,$B)
+    BenchmarkTools.DEFAULT_PARAMETERS.seconds=1.0
     use_SIMD = t_avx < t_linAlg
     if use_SIMD
-        println("SIMD GEMM faster than BLAS, using internal gemmSIMD!()")
+        println("SIMD GEMM faster than BLAS, using SmoQyDEAC's gemmSIMD!()")
     else
         println("SIMD GEMM slower than BLAS, using BLAS mul!()")
     end
@@ -106,28 +107,30 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
         corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
         svd_corr = svd(Greens_tuple[1] .- corr_avg)
         sigma_corr = svd_corr.S
-
-        # Unitary transformation matrix
+ 
+         # Unitary transformation matrix
         U_c = svd_corr.Vt
-        
+         
         # Inverse fit W array for χ^2
         # (2.0 * U_c1) factor generally gives ideal fit ~0.1-1.0
         U_c1 = size(U_c,1)
-        W = (2.0 * U_c1) ./ (sigma_corr .* sigma_corr) 
+        nbin = size(Greens_tuple[1],1)
+        W = 1 ./ (sigma_corr .* sigma_corr) 
         
         # Deal with nearly singular matrix
-        W_cap = W_ratio_max * minimum(norm(W))
+        W_cap = W_ratio_max * minimum(W) 
         clamp!(W,0.0,W_cap)
         
         Kp = similar(K)
-        
+         
         # rotate K and corr_avg
         GEMM!(Kp,U_c,K,use_SIMD)
-        
-        corr_avg_p = zeros(Float64,U_c1)
+         
+        corr_avg_p = zeros(eltype(Greens_tuple[1]),U_c1)
         for i in 1:U_c1
             corr_avg_p[i] = dot(view(U_c,i,:),corr_avg)
         end
+ 
     else
         # Diagonal error method
         W = norm.(1.0 ./ (Greens_tuple[2] .* Greens_tuple[2]))
@@ -139,9 +142,3 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
     return W, Kp, corr_avg_p
 
 end
-
-
-# function clamp!(A::AbstractVector{T<:Complex},low::Real,hi::Real)
-#     for k in axes(A,1)
-#         if 
-
