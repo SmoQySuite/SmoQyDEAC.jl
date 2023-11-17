@@ -1,5 +1,5 @@
 
-# χ² fit 
+# χ² fit for real correlation functions
 function Χ²(observed::AbstractVector{T},calculated::AbstractMatrix{T},W::AbstractVector{T}) where {T<:Real}
     Χ = zeros(T,(size(calculated,2),))
     for pop in 1:size(calculated,2)
@@ -8,10 +8,11 @@ function Χ²(observed::AbstractVector{T},calculated::AbstractMatrix{T},W::Abstr
     return Χ
 end # χ²
 
+# χ² fit for complex correlation functions
 function Χ²(observed::AbstractVector{U},calculated::AbstractMatrix{U},W::AbstractVector{T}) where {T<:Real, U<:Complex}
     Χ = zeros(T,(size(calculated,2),))
     for pop in 1:size(calculated,2)
-        @inbounds Χ[pop] = sum( norm.((observed .- calculated[:,pop]).^2) .* W )
+        @inbounds Χ[pop] = sum( (normsq.(observed .- calculated[:,pop])) .* W )
     end
     return Χ
 end # χ²
@@ -38,7 +39,7 @@ function get_mutant_indices(rng,pop_size)
 end # get_mutant_indices
 
 # Loop vectorized Matrix Multiply
-function gemmSIMD!(C::Matrix{T}, A::Matrix{T}, B::Matrix{T}) where {T}
+function gemmSIMD!(C::AbstractMatrix{T}, A::AbstractMatrix{T}, B::AbstractMatrix{T}) where {T}
     @turbo for m ∈ axes(A,1), n ∈ axes(B,2)
         Cmn = zero(T)
         for k ∈ axes(A,2)
@@ -102,44 +103,45 @@ end
 function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
     if Greens_tuple[2] == nothing
         # Covariance Methods
-        
-        # SVD on correlation bins
+              
         corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
-        svd_corr = svd(Greens_tuple[1] .- corr_avg)
-        sigma_corr = svd_corr.S
- 
-         # Unitary transformation matrix
-        U_c = svd_corr.Vt
-         
-        # Inverse fit W array for χ^2
-        # (2.0 * U_c1) factor generally gives ideal fit ~0.1-1.0
-        U_c1 = size(U_c,1)
-        nbin = size(Greens_tuple[1],1)
-        W = 1 ./ (sigma_corr .* sigma_corr) 
         
-        # Deal with nearly singular matrix
+        Nbin = size(Greens_tuple[1],1)
+        Nsteps = size(Greens_tuple[1],2)
+
+        # Find eigenbasis for covariance matrix 
+        
+        F = eigen(cov(Greens_tuple[1],dims=1,corrected=false))
+        U = F.vectors
+        corr_avg_p = similar(corr_avg)
+
+        # Rotate correlation functions
+        GEMM!(corr_avg_p,corr_avg,U,use_SIMD)
+        corr_avg_p = corr_avg_p[1,:]
+
+        # Rotate Kernel functions
+        Kp = similar(K)
+        GEMM!(Kp,transpose(U),K,use_SIMD)
+
+        # Calculate σ² in new basis
+        W = 1.0 ./ (F.values .^2 .* Nbin^2 .* Nsteps^2)
         W_cap = W_ratio_max * minimum(W) 
         clamp!(W,0.0,W_cap)
         
-        Kp = similar(K)
-         
-        # rotate K and corr_avg
-        GEMM!(Kp,U_c,K,use_SIMD)
-         
-        corr_avg_p = zeros(eltype(Greens_tuple[1]),U_c1)
-        for i in 1:U_c1
-            corr_avg_p[i] = dot(view(U_c,i,:),corr_avg)
-        end
- 
+
     else
-        ngrid = size(Greens_tuple[1],1)
+        
         # Diagonal error method
-        W = norm.(ngrid ./ (Greens_tuple[2] .* Greens_tuple[2]))
-        W_cap = W_ratio_max * minimum(norm(W))
+        W = 1.0 ./ (Greens_tuple[2] .* conj.(Greens_tuple[2]))
+        W_cap = W_ratio_max * minimum(W)
         clamp!(W,0.0,W_cap)
         Kp = K
         corr_avg_p = Greens_tuple[1]
     end
     return W, Kp, corr_avg_p
 
+end
+
+function normsq(val)
+    return @. real(val)^2 + imag(val)^2
 end

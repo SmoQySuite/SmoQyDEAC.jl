@@ -1,6 +1,6 @@
 # SmoQyDEAC
 
-This packages utilizes the Differential Evolution for Analytic Continuation (DEAC) method. This package takes imaginary time correlation functions from condensed matter Monte Carlo simulations and provides the associated spectral function on the real axis. This is a reimplementation of the DEAC algorithm developed by Nathan S. Nichols, Paul Sokol, and Adrian Del Maestro [arXiv:2201.04155](https://arxiv.org/abs/2201.04155).
+This packages utilizes the Differential Evolution for Analytic Continuation (DEAC) method. This package takes imaginary time and Matsubara frequency correlation functions from condensed matter Monte Carlo simulations and provides the associated spectral function on the real axis. This is a reimplementation of the DEAC algorithm developed by Nathan S. Nichols, Paul Sokol, and Adrian Del Maestro [arXiv:2201.04155](https://arxiv.org/abs/2201.04155).
 
 ## Funding
 

@@ -2,7 +2,7 @@
 
 SmoQyDEAC utilizes the Differential Evolution for Analytic Continuation algorithm developed by Nathan S. Nichols, Paul Sokol, and Adrian Del Maestro [arXiv:2201.04155](https://arxiv.org/abs/2201.04155).
 
-This package takes imaginary time correlation functions from condensed matter Monte Carlo simulations and provides the associated spectral function on the real axis. 
+This package takes imaginary time or Matsubara frequency correlation functions from condensed matter Monte Carlo simulations and provides the associated spectral function on the real axis. 
 
 # Installation
 
@@ -30,13 +30,13 @@ DEAC_Std
 ```
 
 ## Kernels
-For now there are three supported kernels
+The following are the supported kernels
 - `time_fermionic`$=\frac{e^{-\tau\omega}}{1+e^{-\beta\omega}}$
 - `time_bosonic`$=\frac{e^{-\tau\omega}}{1-e^{-\beta\omega}}$
 - `time_bosonic_symmetric`$=\frac{e^{-\tau\omega}+e^{-(\beta-\tau)\omega}}{1-e^{-\beta\omega}}$
 - `frequency_fermionic`$=\frac{1.0}{i\omega_n-\omega}$
-- `frequency_bosonic`$=\frac{\omega}{i\omega_n-\omega}$
-- `frequency_bosonic_symmetric`$=\frac{-2.0 \omega^2}{\omega_n^2+\omega^2}$
+- `frequency_bosonic`$=\frac{1.0}{i\omega_n-\omega}$
+- `frequency_bosonic_symmetric`$=\frac{2.0 \omega}{\omega_n^2+\omega^2}$
 
 # Multithreading
 SmoQyDEAC utilizes Julia's `Threads.@threads` multithreading capability. To take advantage of this run your code using 

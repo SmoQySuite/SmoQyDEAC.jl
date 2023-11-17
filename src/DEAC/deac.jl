@@ -208,12 +208,6 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
                             differential_weight,self_adapting_differential_weight_probability,
                             self_adapting_differential_weight,stop_minimum_fitness,number_of_generations)
 
-    if eltype(correlation_function) <: Complex
-        println("Covariance method not yet available for Matsubara frequencies, using standard deviation instead")
-        corr_avg = mean(correlation_function,dims=1)[1,:]
-        corr_std = std(correlation_function,dims=1)[1,:]
-        return run_DEAC((corr_avg,corr_std),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose)
-    end
 
     # Bootstrap bins to ensure sufficient bin size
     if bootstrap_bins ≤ 0 || (size(correlation_function,1) < 5 * size(correlation_function,2))
@@ -256,8 +250,6 @@ function run_DEAC(Greens_tuple,
     run_data = zeros(Float64,(size(params.out_ωs,1),params.num_bins))
     calculated_zeroth_moment = zeros(Float64,(1,params.num_bins))
     
-    
-    correlation_function = Greens_tuple[1]
     start_bin = 1
     true_fitness = params.stop_minimum_fitness
     total_runs = params.runs_per_bin*params.num_bins
@@ -304,8 +296,6 @@ function run_DEAC(Greens_tuple,
 
     # Matrices for calculating fit
     W, Kp, corr_avg_p = calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
-    
-
     
     
     ### Find Ideal Fitness
