@@ -23,11 +23,11 @@ end
 makedocs(;
     modules=[SmoQyDEAC],
     authors="James Neuhaus <jneuhau1@utk.edu>",
-    repo="https://github.com/sandimas/SmoQyDEAC.jl",
+    repo="https://github.com/SmoQySuite/SmoQyDEAC.jl",
     sitename="SmoQyDEAC.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://sandimas.github.io/SmoQyDEAC.jl/",
+        canonical="https://SmoQySuite.github.io/SmoQyDEAC.jl/",
         edit_link="main",
         assets=String[],
     ),
@@ -40,7 +40,7 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/sandimas/SmoQyDEAC.jl",
+    repo="github.com/SmoQySuite/SmoQyDEAC.jl",
     devbranch="main",
 )
 
