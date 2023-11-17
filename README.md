@@ -8,7 +8,7 @@ The development of this code was supported by the U.S. Department of Energy, Off
 
 ## Documentation
 
-- [`DEV`](https://sandimas.github.io/SmoQyDEAC.jl/dev/): Documentation associated with most recent commit to the main branch.
+- [`DEV`](https://SmoQySuite.github.io/SmoQyDEAC.jl/dev/): Documentation associated with most recent commit to the main branch.
 
 ## Notable Package Dependencies
 
