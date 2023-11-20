@@ -23,18 +23,26 @@
 # On to the example:
 
 #md ## First we import all required packages
+# include("../../../src/SmoQyDEAC.jl")
 using SmoQyDEAC
+
 using FileIO
+using Statistics
 
 # We now load the data provided in our source file.
-loadfile = joinpath(pkgdir(SmoQyDEAC), "docs/src/examples/greens.jld2")
+# loadfile = joinpath(pkgdir(SmoQyDEAC), "docs/src/examples/greens.jld2")
+loadfile = joinpath("greens.jld2")
 input_dictionary = load(loadfile)
 
-G_std = input_dictionary["G_std"];
-G_error = input_dictionary["G_err"];
-G_bin =  input_dictionary["G_bin"];
+Gτ_bin =  input_dictionary["Gτ"];
+Gτ_std = mean(Gτ_bin,dims=1)[1,:];
+Gτ_err = std(Gτ_bin,dims=1)[1,:];
+Gω_std =  input_dictionary["Gω_std"];
+Gω_err = input_dictionary["Gω_err"];
+
 τs = input_dictionary["τs"]; # must be evenly spaced.
-β = input_dictionary["β"];
+β = τs[end];
+ωₙ = input_dictionary["ωn"];
 
 # Make an output folder for checkpoint file and output file
 output_directory = "fermion_greens_output/";
@@ -45,9 +53,9 @@ end
 
 # Define necessary parameters for the DEAC run
 # Typically you will want at least 1,000 for number_of_bins * runs_per_bin
-# For speed's sake we only do 2*1 in this example. 
+# For speed's sake we only do 2*10 in this example. 
 number_of_bins = 2;
-runs_per_bin = 1 ;
+runs_per_bin = 10 ;
 output_file = joinpath(output_directory, "fermion_out.jld2");
 checkpoint_directory = output_directory;
 nω = 401;
@@ -64,30 +72,35 @@ keep_bin_data = true;
 #md ## If true, each bin will have it's data written to the output dictionary
 #md ## Set to false to save disk space
 
-# Run DEAC Algorithm for binned and unbinned
-output_dictionary = DEAC_Binned(G_bin,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
-                         checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
-output_dictionary_std = DEAC_Std(G_std,G_error,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
-                         checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
+# Run DEAC Algorithm for binned and unbinned data for τ and ωₙ spaces
+output_dictionary_τ = DEAC_Binned(Gτ_bin,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
+                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
+output_dictionary_τ_std = DEAC_Std(Gτ_std,Gτ_err,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,"2.jld2",
+                                   checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
+output_dictionary_ωₙ_std = DEAC_Std(Gω_std,Gω_err,β,ωₙ,ωs,"frequency_fermionic",number_of_bins,runs_per_bin,"4.jld2",
+                                    checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
+
+
+
 
 # Accessing output
 #md ## Spectral function, 1D array size (nω)
-A = output_dictionary["A"];
+A = output_dictionary_τ["A"];
 #md ## Spectral function error, 1D array size (nω)
-A_σ = output_dictionary["σ"];
+A_σ = output_dictionary_τ["σ"];
 #md ## ω grid, 1D array size (nω)
-ωs_out = output_dictionary["ωs"];
+ωs_out = output_dictionary_τ["ωs"];
 #md ## zeroth moment: For fermions it is G(0) + G(β) which should = 1.0. Float64s
-zeroth_calc = output_dictionary["zeroth_moment"];
-zeroth_σ = output_dictionary["zeroth_moment_σ"];
+zeroth_calc = output_dictionary_τ["zeroth_moment"];
+zeroth_σ = output_dictionary_τ["zeroth_moment_σ"];
 #md ## Number of average generations to converge, Float64
-avg_generations = output_dictionary["avg_generations"];
+avg_generations = output_dictionary_τ["avg_generations"];
 
 # Binned information - not available if `keep_bin_data=false`
 #md ## Bin data, 2D array size (nω,nbins)
-bin_data = output_dictionary["bin_data"];
+bin_data = output_dictionary_τ["bin_data"];
 #md ## zeroth moment, 1D array (nbins)
-bin_zeroth = output_dictionary["bin_zeroth_moment"];
+bin_zeroth = output_dictionary_τ["bin_zeroth_moment"];
 
 
 # The dictionary will automatically be saved

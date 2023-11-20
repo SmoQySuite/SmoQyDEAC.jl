@@ -49,3 +49,6 @@ SmoQyDEAC utilizes Julia's `Threads.@threads` multithreading capability. To take
 - The DEAC algorithm can have edge effects where it places spectral weight on the first or last ω point. This occurs when there is spectral weight just outside of your range of ωs. The solution is simply expanding the range of your output energies.
 - For bosonic correlations SmoQyDEAC returns the spectral function, e.g. $B(\omega)$ not $\frac{B(\omega)}{\omega}$ as some MaxEnt codes do.
 - Different simulation codes may report correlation functions slightly differently. E.g. for [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) `phonon_greens` $=\langle X(\tau)X(0)\rangle$ not the actual phonon green's function of $-2\Omega_0\langle X(\tau)X(0)\rangle$. While the negative sign will cancel out by our choice of Kernel, you may need to postprocess the spectral function you recover. In this case $B\rightarrow \dfrac{B}{2\Omega_0}$
+
+# Funding
+This work was supported by the U.S. Department of Energy, Office of Science, Office of Basic Energy Sciences, under Award Number DE-SC0022311. N.S.N. was supported by the Argonne Leadership Computing Facility, which is a U.S. Department of Energy Office of Science User Facility operated under contract DE-AC02-06CH11357. 
