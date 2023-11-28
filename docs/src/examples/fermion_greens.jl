@@ -23,9 +23,7 @@
 # On to the example:
 
 #md ## First we import all required packages
-# include("../../../src/SmoQyDEAC.jl")
 using SmoQyDEAC
-
 using FileIO
 using Statistics
 
@@ -37,12 +35,13 @@ input_dictionary = load(loadfile)
 Gτ_bin =  input_dictionary["Gτ"];
 Gτ_std = mean(Gτ_bin,dims=1)[1,:];
 Gτ_err = std(Gτ_bin,dims=1)[1,:];
-Gω_std =  input_dictionary["Gω_std"];
-Gω_err = input_dictionary["Gω_err"];
+Gω =  input_dictionary["Gω"];
+Gω_std = mean(Gω,dims=1)[1,:];
+Gω_err = std(Gω,dims=1)[1,:];
 
-τs = input_dictionary["τs"]; # must be evenly spaced.
+τs = collect(input_dictionary["τs"]); # must be evenly spaced.
 β = τs[end];
-ωₙ = input_dictionary["ωn"];
+ωₙ = collect(input_dictionary["ωns"]);
 
 # Make an output folder for checkpoint file and output file
 output_directory = "fermion_greens_output/";
@@ -67,17 +66,19 @@ nω = 401;
 # Set optional parameters
 base_seed = 1000000;
 #md ## Note, the seed will incement for each run. 
-#md ## Starting a new run at 1000002 will have output unique from this run
+#md ## Starting a new run at 1000020 will have output unique from this run
 keep_bin_data = true;
 #md ## If true, each bin will have it's data written to the output dictionary
 #md ## Set to false to save disk space
 
 # Run DEAC Algorithm for binned and unbinned data for τ and ωₙ spaces
-output_dictionary_τ = DEAC_Binned(Gτ_bin,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
+# output_dictionary_τ = DEAC_Binned(Gτ_bin,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
+#                                   checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
+# output_dictionary_τ_std = DEAC_Std(Gτ_std,Gτ_err,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
+#                                    checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
+output_dictionary_ωₙ = DEAC_Binned(Gτ_bin,β,ωₙ,ωs,"frequency_fermionic",number_of_bins,runs_per_bin,output_file,
                                   checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
-output_dictionary_τ_std = DEAC_Std(Gτ_std,Gτ_err,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,"2.jld2",
-                                   checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
-output_dictionary_ωₙ_std = DEAC_Std(Gω_std,Gω_err,β,ωₙ,ωs,"frequency_fermionic",number_of_bins,runs_per_bin,"4.jld2",
+output_dictionary_ωₙ_std = DEAC_Std(Gω_std,Gω_err,β,ωₙ,ωs,"frequency_fermionic",number_of_bins,runs_per_bin,output_file,
                                     checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
 
 
@@ -106,7 +107,7 @@ bin_zeroth = output_dictionary_τ["bin_zeroth_moment"];
 # The dictionary will automatically be saved
 #md ## Example of loading the data from the jld2
 test_dictionary = FileIO.load(output_file)
-# This is identical to output_dictionary
+# This is identical to output_dictionary_ωₙ_std
 
 
 

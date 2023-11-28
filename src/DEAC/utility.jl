@@ -73,7 +73,7 @@ end
 
 # GEMM wrapper to select appropriate method
 function GEMM!(C,A,B,use_SIMD)
-    if use_SIMD && eltype(A) <: Real
+    if use_SIMD && eltype(C) <: Real
         gemmSIMD!(C,A,B)
     else
         mul!(C,A,B)
@@ -124,7 +124,7 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
         GEMM!(Kp,transpose(U),K,use_SIMD)
 
         # Calculate σ² in new basis
-        W = 1.0 ./ (F.values .^2 .* Nbin^2 .* Nsteps^2)
+        W = 1.0 ./ (normsq(F.values)  .* Nbin^2 .* Nsteps^2)
         W_cap = W_ratio_max * minimum(W) 
         clamp!(W,0.0,W_cap)
         
@@ -132,7 +132,7 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
     else
         
         # Diagonal error method
-        W = 1.0 ./ (Greens_tuple[2] .* conj.(Greens_tuple[2]))
+        W = 1.0 ./ real.(Greens_tuple[2] .* conj.(Greens_tuple[2]))
         W_cap = W_ratio_max * minimum(W)
         clamp!(W,0.0,W_cap)
         Kp = K
