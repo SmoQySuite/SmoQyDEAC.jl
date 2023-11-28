@@ -143,5 +143,5 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
 end
 
 function normsq(val)
-    return @. real(val)^2 + imag(val)^2
+    return @. val * conj(val)
 end
