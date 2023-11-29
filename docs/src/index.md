@@ -34,9 +34,9 @@ The following are the supported kernels
 - `time_fermionic`$=\frac{e^{-\tau\omega}}{1+e^{-\beta\omega}}$
 - `time_bosonic`$=\frac{e^{-\tau\omega}}{1-e^{-\beta\omega}}$
 - `time_bosonic_symmetric`$=\frac{e^{-\tau\omega}+e^{-(\beta-\tau)\omega}}{1-e^{-\beta\omega}}$
-- `frequency_fermionic`$=\frac{1.0}{i\omega_n-\omega}$
-- `frequency_bosonic`$=\frac{1.0}{i\omega_n-\omega}$
-- `frequency_bosonic_symmetric`$=\frac{2.0 \omega}{\omega_n^2+\omega^2}$
+- `frequency_fermionic`$=\frac{1}{i\omega_n-\omega}$
+- `frequency_bosonic`$=\frac{1}{i\omega_n-\omega}$
+- `frequency_bosonic_symmetric`$=\frac{2 \omega}{\omega_n^2+\omega^2}$
 
 # Multithreading
 SmoQyDEAC utilizes Julia's `Threads.@threads` multithreading capability. To take advantage of this run your code using 
@@ -48,7 +48,7 @@ SmoQyDEAC utilizes Julia's `Threads.@threads` multithreading capability. To take
 - You will likely never need to adjust any of the Optional Algorithm Arguments from the default. Many are merely initial values and will be updated stochastically early and often in the code.
 - The DEAC algorithm can have edge effects where it places spectral weight on the first or last ω point. This occurs when there is spectral weight just outside of your range of ωs. The solution is simply expanding the range of your output energies.
 - For bosonic correlations SmoQyDEAC returns the spectral function, e.g. $B(\omega)$ not $\frac{B(\omega)}{\omega}$ as some MaxEnt codes do.
-- Different simulation codes may report correlation functions slightly differently. E.g. for [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) `phonon_greens` $=\langle X(\tau)X(0)\rangle$ not the actual phonon green's function of $-2\Omega_0\langle X(\tau)X(0)\rangle$. While the negative sign will cancel out by our choice of Kernel, you may need to postprocess the spectral function you recover. In this case $B\rightarrow \dfrac{B}{2\Omega_0}$
+- Different simulation codes may report correlation functions slightly differently. E.g. for [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) `phonon_greens` $=\langle X(\tau)X(0)\rangle$ not the actual phonon green's function of $-2\Omega_0\langle X(\tau)X(0)\rangle$. While the negative sign will cancel out by our choice of Kernel, you may need to postprocess the spectral function you recover. In this case $B\rightarrow \dfrac{B}{2\Omega_0}$. 
 
 # Funding
 This work was supported by the U.S. Department of Energy, Office of Science, Office of Basic Energy Sciences, under Award Number DE-SC0022311. N.S.N. was supported by the Argonne Leadership Computing Facility, which is a U.S. Department of Energy Office of Science User Facility operated under contract DE-AC02-06CH11357. 

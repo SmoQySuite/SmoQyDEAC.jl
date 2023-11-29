@@ -8,7 +8,7 @@
 #   --threads=auto will run a thread for each core available, or 2x for hyperthreading cores
 #
 # In this example we will take the up-spin electron Green's function output from a Determinant Quantum Monte Carlo run
-# generated via [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) using the Holstein Model. 
+# generated via [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) using the Holstein Model. For information on how to load directly from SmoQyDQMC see example 2.
 # 
 # We note the convention that the correlation function reported as the Green's Function has ħ=1 and there is no leading negative sign
 # ```math
@@ -28,7 +28,7 @@ using FileIO
 using Statistics
 
 # We now load the data provided in our source file.
-loadfile = joinpath("greens.jld2")
+loadfile = "greens.jld2"
 input_dictionary = load(loadfile)
 
 Gτ_bin =  input_dictionary["Gτ"];
@@ -44,16 +44,13 @@ Gω_err = std(Gω_bin,dims=1)[1,:];
 
 # Make an output folder for checkpoint file and output file
 output_directory = "fermion_greens_output/";
-try
-    mkdir(output_directory);
-catch
-end
+mkpath(output_directory);
 
 # Define necessary parameters for the DEAC run
 # Typically you will want at least 1,000 for number_of_bins * runs_per_bin
-# For speed's sake we only do 2*10 in this example. 
+# For speed's sake we only do 2*5 in this example. 
 number_of_bins = 2;
-runs_per_bin = 10 ;
+runs_per_bin = 5 ;
 output_file = joinpath(output_directory, "fermion_out.jld2");
 checkpoint_directory = output_directory;
 nω = 401;

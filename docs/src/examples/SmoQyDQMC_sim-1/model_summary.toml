@@ -1,0 +1,91 @@
+beta = 20.000000
+
+dtau = 0.100000
+
+L_tau = 200
+
+[geometry]
+
+dimensions = 1
+
+[geometry.unit_cell]
+
+orbitals = 1
+
+[geometry.unit_cell.lattice_vectors]
+
+a_1 = [1.0]
+
+[geometry.unit_cell.reciprocal_vectors]
+
+b_1 = [6.283185]
+
+[[geometry.unit_cell.basis_vector]]
+
+ORBITAL_ID = 1
+r          = [0.0]
+
+[geometry.lattice]
+
+L        = [32]
+periodic = [true]
+
+[[geometry.bond]]
+
+BOND_ID      = 1
+orbitals     = [1, 1]
+displacement = [0]
+
+[[geometry.bond]]
+
+BOND_ID      = 2
+orbitals     = [1, 1]
+displacement = [1]
+
+[tight_binding_model]
+
+chemical_potential = 0.00000000
+
+[tight_binding_model.onsite_energy]
+
+e_mean = [0.0]
+e_std  = [0.0]
+
+[[tight_binding_model.hopping]]
+
+HOPPING_ID   = 1
+BOND_ID      = 2
+orbitals     = [1, 1]
+displacement = [1]
+t_mean       = 1.00000000
+t_std        = 0.00000000
+
+[ElectronPhononModel]
+
+[[ElectronPhononModel.PhononMode]]
+
+PHONON_ID    = 1
+ORBITAL_ID   = 1
+mass         = 1.000000
+omega_mean   = 1.000000
+omega_std    = 0.000000
+omega_4_mean = 0.000000
+omega_4_std  = 0.000000
+
+[[ElectronPhononModel.HolsteinCoupling]]
+
+HOLSTEIN_ID     = 1
+PHONON_ID       = 1
+BOND_ID         = 1
+phonon_orbital  = 1
+density_orbital = 1
+displacement    = [0]
+alpha_mean      = 1.414214
+alpha_std       = 0.000000
+alpha2_mean     = 0.000000
+alpha2_std      = 0.000000
+alpha3_mean     = 0.000000
+alpha3_std      = 0.000000
+alpha4_mean     = 0.000000
+alpha4_std      = 0.000000
+

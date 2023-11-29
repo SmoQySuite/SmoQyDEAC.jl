@@ -3,3 +3,7 @@
 *.jl.mem
 /docs/Manifest.toml
 /docs/build/
+/docs/src/examples/fermion_greens_output/
+/docs/src/examples/fermion_greens.md
+/docs/src/examples/SmoQyDQMC_DEAC_Out/
+

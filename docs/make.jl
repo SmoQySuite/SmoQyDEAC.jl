@@ -3,11 +3,11 @@ using SmoQyDEAC
 using Documenter
 using Literate
 
-example_names = ["fermion_greens"]
-example_literate_sources = [joinpath(@__DIR__,"src/examples/"*name*".jl") for name in example_names]
+example_names = ["fermion_greens","SmoQyDQMC"]
+example_literate_sources = [joinpath(@__DIR__,"src/examples/$name.jl") for name in example_names]
 example_script_destinations = [joinpath(@__DIR__,"../scripts") for name in example_names]
 example_documentation_destination = joinpath(@__DIR__,"src/examples")
-example_documentation_paths = [joinpath(@__DIR__,"src/examples/$name.md") for name in example_names]
+example_documentation_paths = [("examples/$name.md") for name in example_names]
 
 
 
@@ -33,7 +33,7 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
-        "Examples" => "examples/fermion_greens.md",
+        "Examples" => example_documentation_paths,
         "Derivations" => "derivations.md",
     ],
     draft = false

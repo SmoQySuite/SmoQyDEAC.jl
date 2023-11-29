@@ -131,7 +131,7 @@ end # DEAC_Std
          self_adapting_differential_weight::Float64=0.9,
          )
     
-Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ fitting from the error passed in by `correlation_function_error`.
+Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ fitting using the eigenvalues of the covariance matrix
 # Arguments
 - `correlation_function::AbstractVector`: Input data in τ space 
 - `correlation_function_error::AbstractVector`: Error associated with input data
