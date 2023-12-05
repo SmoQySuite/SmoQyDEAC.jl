@@ -28,8 +28,8 @@ using FileIO
 using Statistics
 
 # We now load the data provided in our source file.
-loadfile = "greens.jld2"
-input_dictionary = load(loadfile)
+loadfile = "greens.jld2";
+input_dictionary = load(loadfile);
 
 Gτ_bin =  input_dictionary["Gτ"];
 Gτ_std = mean(Gτ_bin,dims=1)[1,:];
