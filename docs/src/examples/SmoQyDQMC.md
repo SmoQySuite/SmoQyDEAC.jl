@@ -59,7 +59,7 @@ dims,real,image,sgnr,sgni,β = load_from_SmoQyDQMC(simulationfolder=input_direct
                                                 correlation="greens",
                                                 space="momentum",
                                                 type="time_displaced",bin=true);
-# dims is a dictionary which tells you what each dimension is
+# dims is a dictionary which tells you what each dimension corresponds to.
 println(dims)
 ````
 
@@ -91,7 +91,7 @@ For speed in this example I run 1:1 instead of 1:Nkx
 ````@example SmoQyDQMC
 for kx in 1:1 # 1:Nkx
     output_file = joinpath(output_directory, string(kx) * ".jld2");
-# put in [bins,τ] shape
+    # put in [bins,τ] shape
     Gτ_temp = Matrix{Float64}(Gτ[:,kx,:]');
     deac_dict = DEAC_Binned(Gτ_temp,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,checkpoint_directory,stop_minimum_fitness=0.01,find_ideal_fitness=false,number_of_generations=20000)
 end
