@@ -23,6 +23,6 @@ export DEAC_Binned
 
 function __init__()
     BLAS.set_num_threads(1)
-end
+end # __init__()
 
 end # module SmoQyDEAC

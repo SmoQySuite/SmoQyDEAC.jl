@@ -18,12 +18,14 @@
          autoresume_from_checkpoint=false,
          verbose::Bool=false,
          
-         stop_minimum_fitness::Float64=1.0,
-         crossover_probability::Float64=0.9,
-         self_adapting_crossover_probability::Float64=0.1,
-         differential_weight::Float64=0.9,
-         self_adapting_differential_weight_probability::Float64=0.1,
-         self_adapting_differential_weight::Float64=0.9)
+         stop_minimum_fitness::Float64 = 1.0,
+         crossover_probability::Float64 = 0.9,
+         self_adapting_crossover_probability::Float64 = 0.1,
+         differential_weight::Float64 = 0.9,
+         self_adapting_differential_weight_probability::Float64 = 0.1,
+         self_adapting_differential_weight::Float64 = 0.9,
+         user_mutation! = nothing 
+         )
     
 Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ fitting from the error passed in by `correlation_function_error`.
 # Arguments
@@ -39,21 +41,22 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `checkpoint_directory::String`: Directory to store checkpoint data. 
 
 # Optional Arguments
-- `find_ideal_fitness::Bool=true`: Use ideal fitness finder
-- `population_size::Int64=8`: DEAC population size. Must be ≥ 6
-- `base_seed::Int64=8675309`: Seed
-- `number_of_generations::Int64=100000`: Maximum number of mutation loops
-- `keep_bin_data::Bool=true`: Save binned data or not
-- `autoresume_from_checkpoint::Bool=false`: Resume from checkpoint if possible
-- `verbose::Bool=false`: Print stats per run
-- `stop_minimum_fitness::Float64=1.0`: Value below which fit is considered good, only applies if `find_ideal_fitness=false`
+- `find_ideal_fitness::Bool = true`: Use ideal fitness finder
+- `population_size::Int64 = 8`: DEAC population size. Must be ≥ 6
+- `base_seed::Int64 = 8675309`: Seed
+- `number_of_generations::Int64 = 100000`: Maximum number of mutation loops
+- `keep_bin_data::Bool = true`: Save binned data or not
+- `autoresume_from_checkpoint::Bool = false`: Resume from checkpoint if possible
+- `verbose::Bool = false`: Print stats per run
+- `stop_minimum_fitness::Float64 = 1.0`: Value below which fit is considered good, only applies if `find_ideal_fitness=false`
 
 # Optional algorithm arguments
-- `crossover_probability::Float64=0.9`: Starting likelihood of crossover
-- `self_adapting_crossover_probability::Float64=0.1`: Chance of crossover probability changing
-- `differential_weight::Float64=0.9`: Weight for second and third mutable indices
-- `self_adapting_differential_weight_probability::Float64=0.1`: Likelihood of SAD changing
-- `self_adapting_differential_weight::Float64=0.9`: SAD
+- `crossover_probability::Float64 = 0.9`: Starting likelihood of crossover
+- `self_adapting_crossover_probability::Float64 = 0.1`: Chance of crossover probability changing
+- `differential_weight::Float64 = 0.9`: Weight for second and third mutable indices
+- `self_adapting_differential_weight_probability::Float64 = 0.1`: Likelihood of SAD changing
+- `self_adapting_differential_weight::Float64 = 0.9`: SAD
+- `user_mutation! = nothing`: User passed function to add additional mutation to each iteration. See below for more information
 
 Each run will use its own seed. E.g. if you run 10 bins with 100 runs per bin, you will use seeds `base_seed:base_seed+999`. 
 You may increment your base seed by 1000, use another output file name, and generate more statistics later.
@@ -91,6 +94,7 @@ function DEAC_Std(correlation_function::AbstractVector,
                   W_ratio_max = 1.0e6,
                   find_ideal_fitness::Bool=true,
                   verbose::Bool=false,
+                  user_mutation! =nothing
                 )
     #
     println("\n*** It is highly recommended to use binned data and the covariant matrix method instead (DEAC_Binned) if possible ***\n")
@@ -100,7 +104,7 @@ function DEAC_Std(correlation_function::AbstractVector,
                             differential_weight,self_adapting_differential_weight_probability,
                             self_adapting_differential_weight,stop_minimum_fitness,number_of_generations)
     #
-    return run_DEAC((correlation_function,correlation_function_error),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose)
+    return run_DEAC((correlation_function,correlation_function_error),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose,user_mutation!)
 end # DEAC_Std
 
 
@@ -115,20 +119,21 @@ end # DEAC_Std
          output_file::String,
          checkpoint_directory::String;
 
-         find_ideal_fitness::Bool=true
-         population_size::Int64=8,
-         base_seed::Integer=8675309,
-         number_of_generations::Int64=1000000,
-         keep_bin_data=true,
-         autoresume_from_checkpoint=false,
-         verbose::Bool=false,
-         stop_minimum_fitness::Float64=1.0,
+         find_ideal_fitness::Bool = true
+         population_size::Int64 = 8,
+         base_seed::Integer = 8675309,
+         number_of_generations::Int64 = 1000000,
+         keep_bin_data = true,
+         autoresume_from_checkpoint = false,
+         verbose::Bool = false,
+         stop_minimum_fitness::Float64 = 1.0,
          
-         crossover_probability::Float64=0.9,
-         self_adapting_crossover_probability::Float64=0.1,
-         differential_weight::Float64=0.9,
-         self_adapting_differential_weight_probability::Float64=0.1,
-         self_adapting_differential_weight::Float64=0.9,
+         crossover_probability::Float64 = 0.9,
+         self_adapting_crossover_probability::Float64 = 0.1,
+         differential_weight::Float64 = 0.9,
+         self_adapting_differential_weight_probability::Float64 = 0.1,
+         self_adapting_differential_weight::Float64 = 0.9,
+         user_mutation! = nothing
          )
     
 Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ fitting using the eigenvalues of the covariance matrix
@@ -145,23 +150,24 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `checkpoint_directory::String`: Directory to store checkpoint data. 
 
 # Optional Arguments
-- `find_ideal_fitness::Bool=true`: Use ideal fitness finder
-- `population_size::Int64=8`: DEAC population size. Must be ≥ 6
-- `base_seed::Int64=8675309`: Seed
-- `number_of_generations::Int64=100000`: Maximum number of mutation loops
-- `keep_bin_data::Bool=true`: Save binned data or not
-- `autoresume_from_checkpoint::Bool=false`: Resume from checkpoint if possible
-- `verbose::Bool=false`: Print stats per run
-- `stop_minimum_fitness::Float64=1.0`: Value below which fit is considered good, only applies if `find_ideal_fitness=false`
+- `find_ideal_fitness::Bool = true`: Use ideal fitness finder
+- `population_size::Int64 = 8`: DEAC population size. Must be ≥ 6
+- `base_seed::Int64 = 8675309`: Seed
+- `number_of_generations::Int64 = 100000`: Maximum number of mutation loops
+- `keep_bin_data::Bool = true`: Save binned data or not
+- `autoresume_from_checkpoint::Bool = false`: Resume from checkpoint if possible
+- `verbose::Bool = false`: Print stats per run
+- `stop_minimum_fitness::Float64 = 1.0`: Value below which fit is considered good, only applies if `find_ideal_fitness=false`
 
 # Optional algorithm arguments
-- `crossover_probability::Float64=0.9`: Starting likelihood of crossover
-- `self_adapting_crossover_probability::Float64=0.1`: Chance of crossover probability changing
-- `differential_weight::Float64=0.9`: Weight for second and third mutable indices
-- `self_adapting_differential_weight_probability::Float64=0.1`: Likelihood of SAD changing
-- `self_adapting_differential_weight::Float64=0.9`: SAD
-- `W_ratio_max::Float64=1.0e6`: Χ² ~ 1.0/σ², this parameter prevents [near] singularities for very small σ 
-- `bootstrap_bins::Int=0`: The algorithm requires more bins than τ steps. We use bootstrapping to get 5 * nτ bins by default. User may set this higher 
+- `crossover_probability::Float64 = 0.9`: Starting likelihood of crossover
+- `self_adapting_crossover_probability::Float64 = 0.1`: Chance of crossover probability changing
+- `differential_weight::Float64 = 0.9`: Weight for second and third mutable indices
+- `self_adapting_differential_weight_probability::Float64 = 0.1`: Likelihood of SAD changing
+- `self_adapting_differential_weight::Float64 = 0.9`: SAD
+- `W_ratio_max::Float64 = 1.0e6`: Χ² ~ 1.0/σ², this parameter prevents [near] singularities for very small σ 
+- `bootstrap_bins::Int = 0`: The algorithm requires more bins than τ steps. We use bootstrapping to get 5 * nτ bins by default. User may set this higher 
+- `user_mutation! = nothing`: User passed function to add additional mutation to each iteration. See below for more information
                   
 
 Each run will use its own seed. E.g. if you run 10 bins with 100 runs per bin, you will use seeds `base_seed:base_seed+999`. 
@@ -200,6 +206,7 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
                   bootstrap_bins::Int = 0,
                   find_ideal_fitness::Bool = true,
                   verbose::Bool=false,
+                  user_mutation! =nothing
                 )
     #
     params = DEACParameters(β,input_grid,out_ωs,kernel_type,output_file,checkpoint_directory,
@@ -217,7 +224,7 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
 
     
     #
-    return run_DEAC((correlation_function,nothing),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose)
+    return run_DEAC((correlation_function,nothing),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose,user_mutation! )
 end # DEAC_Binned()
 
 # Run the DEAC algorithm
@@ -227,7 +234,8 @@ function run_DEAC(Greens_tuple,
                   keep_bin_data::Bool,
                   W_ratio_max::Float64,
                   find_ideal_fitness::Bool,
-                  verbose::Bool)
+                  verbose::Bool,
+                  user_mutation! )
     
     # Assert parameters are within allowable/realistic ranges
     @assert params.population_size >= 6 # DEAC can be run with as few as 4, but it gives garbage results
@@ -320,6 +328,7 @@ function run_DEAC(Greens_tuple,
                 # Allocate arrays, set random initial state
                 population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
                 population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+                
                 model = zeros(eltype(Greens_tuple[1]),(size(Kp,1),size(population_old,2)))
 
                 crossover_probability_new = zeros(Float64,params.population_size)
@@ -439,6 +448,19 @@ function run_DEAC(Greens_tuple,
                 # if improved do updates
                 update_populations!(fitness_old,crossover_probability_old,differential_weights_old,population_old,fitness_new,crossover_probability_new,differential_weights_new,population_new)
 
+                # do user mutation if applicable
+                if (user_mutation! != nothing)
+                    user_mutation!(population_new,population_old,rng)
+                    GEMM!(model,Kp,population_new,use_SIMD)
+                    fitness_new = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
+                    
+                    for pop in axes(fitness_old,1)
+                        if fitness_new[pop] <= fitness_old[pop]
+                            fitness_old[pop] = fitness_new[pop]
+                            population_old[:,pop] = population_new[:,pop]
+                        end
+                    end
+                end
                 
                 numgen = numgen + 1
             end # generations

@@ -3,7 +3,7 @@ using SmoQyDEAC
 using Documenter
 using Literate
 
-example_names = ["fermion_greens","SmoQyDQMC"]
+example_names = ["fermion_greens","SmoQyDQMC","user_mutation"]
 example_literate_sources = [joinpath(@__DIR__,"src/examples/$name.jl") for name in example_names]
 example_script_destinations = [joinpath(@__DIR__,"../scripts") for name in example_names]
 example_documentation_destination = joinpath(@__DIR__,"src/examples")

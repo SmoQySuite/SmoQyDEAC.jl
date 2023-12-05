@@ -29,6 +29,10 @@ DEAC_Binned
 DEAC_Std
 ```
 
+To add additional mutations to the base DEAC algorithm you utilize the ```user_mutation!``` functionality. ```user_mutation!``` is a user defined function which takes three (3) parameters, ```(population_new, population_old, rng)```. The result in ```population_new``` is treated as a new trial population, and if the fitness improves for a population, the trial population is stored.
+
+```population_new``` and ```population_old``` are of the shape ```[1:nω, 1:population_size]```. Note, there is no guarantee that ```population_new``` is a copy of ```population_old```, so the user should update the entire array. See [`Example 3: User Mutation`](@ref).
+
 ## Kernels
 The following are the supported kernels
 - `time_fermionic`$=\frac{e^{-\tau\omega}}{1+e^{-\beta\omega}}$
