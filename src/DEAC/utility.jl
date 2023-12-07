@@ -81,10 +81,10 @@ function GEMM!(C,A,B,use_SIMD)
 end
 
 # Calculate binned data and save to a checkpoint
-function bin_results!(bin_data,calculated_zeroth_moment,run_data,curbin,Δω,Greens_tuple,true_fitness,seed_vec,generations,params)
-    bin_data[:,curbin] = run_data[:,curbin] / params.runs_per_bin
-    calculated_zeroth_moment[1,curbin] = sum(bin_data[:,curbin]) .* Δω
-        
+function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,curbin,Δω,Greens_tuple,true_fitness,seed_vec,generations,params)
+    bin_data[:,curbin] = run_data[:,curbin] ./  sum(weight_data[curbin])
+    calculated_zeroth_moment[1,curbin] = sum(bin_data[:,curbin]) .* Δω 
+
     # Bosonic time kernels steal a factor of ω from the spectral function.
     # Multiply it back in if needed
     if  occursin("bosonic",params.kernel_type)

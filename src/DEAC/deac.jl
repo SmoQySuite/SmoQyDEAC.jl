@@ -256,6 +256,7 @@ function run_DEAC(Greens_tuple,
     bin_data = zeros(Float64,(size(params.out_ωs,1),params.num_bins))
     generations = zeros(UInt64,params.num_bins)
     run_data = zeros(Float64,(size(params.out_ωs,1),params.num_bins))
+    weight_data = zeros(Float64,params.num_bins)
     calculated_zeroth_moment = zeros(Float64,(1,params.num_bins))
     
     start_bin = 1
@@ -410,6 +411,7 @@ function run_DEAC(Greens_tuple,
             differential_weights_old = zeros(Float64,params.population_size)
             differential_weights_old .= params.differential_weight
 
+
             # Randomly set initial populations, initialize arrays
             population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
             population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
@@ -474,7 +476,8 @@ function run_DEAC(Greens_tuple,
                 
                 finished_runs += 1
                 
-                run_data[:,curbin] += population_old[:,fit_idx]
+                run_data[:,curbin] += population_old[:,fit_idx] ./ fit
+                weight_data[curbin] += 1.0 / fit
                 generations[curbin] += numgen
 
                 # setting seed to 0 allows culling of used seeds in the checkpoint
@@ -488,7 +491,7 @@ function run_DEAC(Greens_tuple,
                 # Calculate bin data if enough to finish a bin, then checkpoint
                 if finished_runs % params.runs_per_bin == 0
 
-                    bin_results!(bin_data,calculated_zeroth_moment,run_data,curbin,Δω,Greens_tuple,true_fitness,seed_vec,generations,params)
+                    bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,curbin,Δω,Greens_tuple,true_fitness,seed_vec,generations,params)
 
                 end # bin completing
             end # lock(thread_lock)
