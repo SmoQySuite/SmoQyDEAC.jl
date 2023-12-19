@@ -1,7 +1,7 @@
 name = "SmoQyDEAC"
 uuid = "9c442b74-637f-4296-b43a-959aa316565a"
 authors = ["James Neuhaus <james.neuhaus@gmail.com>"]
-version = "0.1.0"
+version = "0.1.0-DEV"
 
 [deps]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"

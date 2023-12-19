@@ -27,7 +27,7 @@ makedocs(;
     sitename="SmoQyDEAC.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://SmoQySuite.github.io/SmoQyDEAC.jl/stable",
+        canonical="https://SmoQySuite.github.io/SmoQyDEAC.jl/dev",
         edit_link="main",
         assets=String[],
     ),
