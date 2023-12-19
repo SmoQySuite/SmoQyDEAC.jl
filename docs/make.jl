@@ -41,6 +41,9 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/SmoQySuite/SmoQyDEAC.jl",
-    devbranch="main",
+    # devbranch="main",
+    target = "build",
+    branch = "gh-pages",
+    versions = ["stable" => "v^", "v#.#"]
 )
 

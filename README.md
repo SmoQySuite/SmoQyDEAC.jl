@@ -1,7 +1,7 @@
 # SmoQyDEAC
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://SmoQySuite.github.io/SmoQyDEAC.jl/dev/)
+<!-- [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://SmoQySuite.github.io/SmoQyDEAC.jl/dev/) -->
 [![Build Status](https://github.com/SmoQySuite/SmoQyDQMC.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/SmoQySuite/SmoQyDQMC.jl/actions/workflows/CI.yml?query=branch%3Amain)
 ![](https://img.shields.io/badge/Lifecycle-Maturing-007EC6g)
 
@@ -14,7 +14,7 @@ This work was supported by the U.S. Department of Energy, Office of Science, Off
 ## Documentation
 
 - [`STABLE`](https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/): Documentation associated with most recent commit to the main branch.
-- [`DEV`](https://SmoQySuite.github.io/SmoQyDEAC.jl/dev/): Documentation associated with most recent commit to the main branch.
+<!-- - [`DEV`](https://SmoQySuite.github.io/SmoQyDEAC.jl/dev/): Documentation associated with most recent commit to the main branch. -->
 
 ## Notable Package Dependencies
 
