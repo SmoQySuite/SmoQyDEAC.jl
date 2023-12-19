@@ -43,7 +43,7 @@ mkpath(output_directory);
 #
 # Some dimensions are 1 deep. They are kept to ensure generality.
 #
-# See SQMCloader.jl for more
+# See the [`SmoQyDQMCloader.jl`](https://github.com/SmoQySuite/SmoQyDEAC.jl/blob/main/scripts/SmoQyDQMCloader.jl) file for more information
 input_directory = "SmoQyDQMC_sim-1/"
 
 dims,real,image,sgnr,sgni,β = load_from_SmoQyDQMC(simulationfolder=input_directory,
