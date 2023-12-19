@@ -56,3 +56,4 @@ SmoQyDEAC utilizes Julia's `Threads.@threads` multithreading capability. To take
 
 # Funding
 This work was supported by the U.S. Department of Energy, Office of Science, Office of Basic Energy Sciences, under Award Number DE-SC0022311. N.S.N. was supported by the Argonne Leadership Computing Facility, which is a U.S. Department of Energy Office of Science User Facility operated under contract DE-AC02-06CH11357. 
+
