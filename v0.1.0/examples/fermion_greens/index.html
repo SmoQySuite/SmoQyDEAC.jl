@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Example 1: Fermion Greens function · SmoQyDEAC.jl</title><meta name="title" content="Example 1: Fermion Greens function · SmoQyDEAC.jl"/><meta property="og:title" content="Example 1: Fermion Greens function · SmoQyDEAC.jl"/><meta property="twitter:title" content="Example 1: Fermion Greens function · SmoQyDEAC.jl"/><meta name="description" content="Documentation for SmoQyDEAC.jl."/><meta property="og:description" content="Documentation for SmoQyDEAC.jl."/><meta property="twitter:description" content="Documentation for SmoQyDEAC.jl."/><meta property="og:url" content="https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/examples/fermion_greens/"/><meta property="twitter:url" content="https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/examples/fermion_greens/"/><link rel="canonical" href="https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/examples/fermion_greens/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SmoQyDEAC.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href>Example 1: Fermion Greens function</a></li><li><a class="tocitem" href="../SmoQyDQMC/">Example 2: Load from SmoQyDQMC and run SmoQyDEAC</a></li><li><a class="tocitem" href="../user_mutation/">Example 3: User Mutation</a></li></ul></li><li><a class="tocitem" href="../../derivations/">Derivations</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Example 1: Fermion Greens function</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Example 1: Fermion Greens function</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/SmoQySuite/SmoQyDEAC.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Example-1:-Fermion-Greens-function"><a class="docs-heading-anchor" href="#Example-1:-Fermion-Greens-function">Example 1: Fermion Greens function</a><a id="Example-1:-Fermion-Greens-function-1"></a><a class="docs-heading-anchor-permalink" href="#Example-1:-Fermion-Greens-function" title="Permalink"></a></h1><p>Usage:</p><p><code>$ julia --threads=auto fermion_greens.jl</code></p><p>SmoQyDEAC uses multithreading for parallelizing runs. Multithreading it recommended.   –threads=auto will run a thread for each core available, or 2x for hyperthreading cores</p><p>In this example we will take the up-spin electron Green&#39;s function output from a Determinant Quantum Monte Carlo run generated via <a href="https://github.com/SmoQySuite/SmoQyDQMC.jl"><code>SmoQyDQMC</code></a> using the Holstein Model. For information on how to load directly from SmoQyDQMC see example 2.</p><p>We note the convention that the correlation function reported as the Green&#39;s Function has ħ=1 and there is no leading negative sign</p><p class="math-container">\[G(k,τ)=⟨T_{τ}c_k(τ)c_k^†(0)⟩\]</p><p>Our relation uses the time fermionic kernel such that</p><p class="math-container">\[G(k,τ)=\int_{-∞}^∞ dω K(ω,τ)A(ω)=\int_{-∞}^∞ dω \frac{e^{-τω}}{1+e^{-ωβ}}A(ω)\]</p><p>Since <span>$A(ω)=-ℑG(ω)/π$</span> both negative signs that would normally be in the expression and factors of π cancel.</p><p>On to the example:</p><pre><code class="language-julia hljs"># First we import all required packages
+using SmoQyDEAC
+using FileIO
+using Statistics</code></pre><p>We now load the data provided in our source file.</p><pre><code class="language-julia hljs">loadfile = &quot;greens.jld2&quot;;
+input_dictionary = load(loadfile);
+
+Gτ_bin =  input_dictionary[&quot;Gτ&quot;];
+Gτ_std = mean(Gτ_bin,dims=1)[1,:];
+Gτ_err = std(Gτ_bin,dims=1)[1,:];
+Gω_bin =  input_dictionary[&quot;Gω&quot;];
+Gω_std = mean(Gω_bin,dims=1)[1,:];
+Gω_err = std(Gω_bin,dims=1)[1,:];
+
+τs = collect(input_dictionary[&quot;τs&quot;]); # must be evenly spaced.
+β = τs[end];
+ωₙ = collect(input_dictionary[&quot;ωns&quot;]);</code></pre><p>Make an output folder for checkpoint file and output file</p><pre><code class="language-julia hljs">output_directory = &quot;fermion_greens_output/&quot;;
+mkpath(output_directory);</code></pre><p>Define necessary parameters for the DEAC run Typically you will want at least 1,000 for number<em>of</em>bins * runs<em>per</em>bin For speed&#39;s sake we only do 2*5 in this example.</p><pre><code class="language-julia hljs">number_of_bins = 2;
+runs_per_bin = 5 ;
+output_file = joinpath(output_directory, &quot;fermion_out.jld2&quot;);
+checkpoint_directory = output_directory;
+nω = 401;
+ωmin = -10.;
+ωmax = 10.;
+ωs = collect(LinRange(ωmin,ωmax,nω));</code></pre><p>Set optional parameters</p><pre><code class="language-julia hljs">base_seed = 1000000;
+# Note, the seed will incement for each run.
+# Starting a new run at 1000020 will have output unique from this run
+keep_bin_data = true;
+# If true, each bin will have it&#39;s data written to the output dictionary
+# Set to false to save disk space</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p>Run DEAC Algorithm for binned and unbinned data for τ and ωₙ spaces</p><pre><code class="language-julia hljs">output_dictionary_τ = DEAC_Binned(Gτ_bin,β,τs,ωs,&quot;time_fermionic&quot;,number_of_bins,runs_per_bin,output_file,
+                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
+output_dictionary_τ_std = DEAC_Std(Gτ_std,Gτ_err,β,τs,ωs,&quot;time_fermionic&quot;,number_of_bins,runs_per_bin,output_file,
+                                   checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
+output_dictionary_ωₙ = DEAC_Binned(Gω_bin,β,ωₙ,ωs,&quot;frequency_fermionic&quot;,number_of_bins,runs_per_bin,output_file,
+                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,stop_minimum_fitness=10.0,
+                                  find_ideal_fitness=false,number_of_generations=20000)
+output_dictionary_ωₙ_std = DEAC_Std(Gω_std,Gω_err,β,ωₙ,ωs,&quot;frequency_fermionic&quot;,number_of_bins,runs_per_bin,output_file,
+                                    checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,stop_minimum_fitness=0.1,
+                                    find_ideal_fitness=false,number_of_generations=20000)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 10 entries:
+  &quot;zeroth_moment&quot;     =&gt; 1.00375
+  &quot;A&quot;                 =&gt; [0.00231466, 0.00953162, 0.0112098, 0.00804648, 0.0055…
+  &quot;zeroth_moment_σ&quot;   =&gt; 0.000306518
+  &quot;bin_data&quot;          =&gt; [0.00381769 0.000811638; 0.000312399 0.0187508; … ; 0.…
+  &quot;avg_generations&quot;   =&gt; 18470.2
+  &quot;σ&quot;                 =&gt; [0.00150302, 0.00921922, 0.0100204, 0.00721647, 0.0054…
+  &quot;fitness_target&quot;    =&gt; 0.1
+  &quot;ωs&quot;                =&gt; [-10.0, -9.95, -9.9, -9.85, -9.8, -9.75, -9.7, -9.65, …
+  &quot;runtime&quot;           =&gt; 25.8392
+  &quot;bin_zeroth_moment&quot; =&gt; [1.00345 1.00406]</code></pre><p>Accessing output</p><pre><code class="language-julia hljs"># Spectral function, 1D array size (nω)
+A = output_dictionary_τ[&quot;A&quot;];
+# Spectral function error, 1D array size (nω)
+A_σ = output_dictionary_τ[&quot;σ&quot;];
+# ω grid, 1D array size (nω)
+ωs_out = output_dictionary_τ[&quot;ωs&quot;];
+# zeroth moment: For fermions it is G(0) + G(β) which should = 1.0. Float64s
+zeroth_calc = output_dictionary_τ[&quot;zeroth_moment&quot;];
+zeroth_σ = output_dictionary_τ[&quot;zeroth_moment_σ&quot;];
+# Number of average generations to converge, Float64
+avg_generations = output_dictionary_τ[&quot;avg_generations&quot;];</code></pre><p>Binned information - not available if <code>keep_bin_data=false</code></p><pre><code class="language-julia hljs"># Bin data, 2D array size (nω,nbins)
+bin_data = output_dictionary_τ[&quot;bin_data&quot;];
+# zeroth moment, 1D array (nbins)
+bin_zeroth = output_dictionary_τ[&quot;bin_zeroth_moment&quot;];</code></pre><p>The dictionary will automatically be saved</p><pre><code class="language-julia hljs"># Example of loading the data from the jld2
+test_dictionary = FileIO.load(output_file)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 10 entries:
+  &quot;zeroth_moment&quot;     =&gt; 1.00375
+  &quot;A&quot;                 =&gt; [0.00231466, 0.00953162, 0.0112098, 0.00804648, 0.0055…
+  &quot;zeroth_moment_σ&quot;   =&gt; 0.000306518
+  &quot;bin_data&quot;          =&gt; [0.00381769 0.000811638; 0.000312399 0.0187508; … ; 0.…
+  &quot;avg_generations&quot;   =&gt; 18470.2
+  &quot;σ&quot;                 =&gt; [0.00150302, 0.00921922, 0.0100204, 0.00721647, 0.0054…
+  &quot;fitness_target&quot;    =&gt; 0.1
+  &quot;ωs&quot;                =&gt; [-10.0, -9.95, -9.9, -9.85, -9.8, -9.75, -9.7, -9.65, …
+  &quot;runtime&quot;           =&gt; 25.8392
+  &quot;bin_zeroth_moment&quot; =&gt; [1.00345 1.00406]</code></pre><p>This is identical to output<em>dictionary</em>ωₙ_std</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../SmoQyDQMC/">Example 2: Load from SmoQyDQMC and run SmoQyDEAC »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Tuesday 19 December 2023 16:01">Tuesday 19 December 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
