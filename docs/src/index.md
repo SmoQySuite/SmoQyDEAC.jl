@@ -1,6 +1,6 @@
 # About the Package
 
-SmoQyDEAC utilizes the Differential Evolution for Analytic Continuation algorithm developed by Nathan S. Nichols, Paul Sokol, and Adrian Del Maestro [arXiv:2201.04155](https://arxiv.org/abs/2201.04155).
+[`SmoQyDEAC.jl`](https://github.com/SmoQySuite/SmoQyDEAC.jl.git) utilizes the Differential Evolution for Analytic Continuation algorithm developed by Nathan S. Nichols, Paul Sokol, and Adrian Del Maestro [arXiv:2201.04155](https://arxiv.org/abs/2201.04155).
 
 This package takes imaginary time or Matsubara frequency correlation functions from condensed matter Monte Carlo simulations and provides the associated spectral function on the real axis. 
 
