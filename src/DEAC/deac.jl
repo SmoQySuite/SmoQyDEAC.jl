@@ -327,9 +327,11 @@ function run_DEAC(Greens_tuple,
                 rng = Random.Xoshiro(seed)
 
                 # Allocate arrays, set random initial state
-                population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
-                population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+                # population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
+                # population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
                 
+                population_old, population_new = initialize_population(rng,params)
+
                 model = zeros(eltype(Greens_tuple[1]),(size(Kp,1),size(population_old,2)))
 
                 crossover_probability_new = zeros(Float64,params.population_size)
@@ -413,8 +415,10 @@ function run_DEAC(Greens_tuple,
 
 
             # Randomly set initial populations, initialize arrays
-            population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
-            population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+            # population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
+            # population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+            population_old, population_new = initialize_population(rng,params)
+
             model = zeros(eltype(Greens_tuple[1]),(size(Kp,1),size(population_old,2)))
             mutate_indices = Array{Float64}(undef,(size(params.out_ωs,1),params.population_size))
 

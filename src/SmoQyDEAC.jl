@@ -17,6 +17,7 @@ include("DEAC/utility.jl")
 include("DEAC/checkpoint.jl")
 include("DEAC/boostrap.jl")
 include("DEAC/updates.jl")
+include("DEAC/distribution.jl")
 
 export DEAC_Std
 export DEAC_Binned
