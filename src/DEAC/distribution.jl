@@ -1,3 +1,4 @@
+# Randomly initialize a population set
 function initialize_population(rng,params; user_init_dist=nothing)
     if user_init_dist != nothing
 
@@ -9,14 +10,13 @@ function initialize_population(rng,params; user_init_dist=nothing)
     return population_old, population_new
 end
 
-
+# If user does not provide 
 function default_dist(rng,params)
     population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
     if occursin("bosonic",params.kernel_type)
         ωs_mod = copy(params.out_ωs)
         ωs_mod[ωs_mod .≈ 0.0] .= typemax(eltype(params.out_ωs))
         pop_mod = abs.(1.0 ./ ωs_mod)
-        # println("mod ",pop_mod[1])
         for pop ∈ 1:params.population_size
             population_old[:,pop] = population_old[:,pop] .* pop_mod
         end

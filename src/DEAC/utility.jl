@@ -100,7 +100,7 @@ function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,cur
 end
 
 # Calculate matrices used to go from ω to τ space and χ² fit
-function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
+function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,params)
     if Greens_tuple[2] == nothing
         # Covariance Methods
               
@@ -111,7 +111,7 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
 
         # Find eigenbasis for covariance matrix 
         
-        F = eigen(cov(Greens_tuple[1],dims=1,corrected=false))
+        F = eigen(cov(Greens_tuple[1],dims=1,corrected=true))
         U = F.vectors
         corr_avg_p = similar(corr_avg)
 
@@ -124,17 +124,22 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
         GEMM!(Kp,transpose(U),K,use_SIMD)
 
         # Calculate σ² in new basis
-        W = 1.0 ./ (normsq(F.values)  .* Nbin^2 .* Nsteps^2)
-        W_cap = W_ratio_max * minimum(W) 
-        clamp!(W,0.0,W_cap)
+        W = 1.0 ./ (normsq(F.values)  .* Nbin^3 .* Nsteps^2 .* (params.input_grid[2] - params.input_grid[1]) )
+        # W_cap = W_ratio_max * minimum(W) 
+        if 1 == Threads.threadid()
+            println("Bin/step ",Nbin," ",Nsteps)   
+        #     exit() 
+        end
+        # clamp!(W,0.0,W_cap)
         
 
     else
-        
+        Nsteps = size(Greens_tuple[1],1)
+
         # Diagonal error method
-        W = 1.0 ./ real.(Greens_tuple[2] .* conj.(Greens_tuple[2]))
-        W_cap = W_ratio_max * minimum(W)
-        clamp!(W,0.0,W_cap)
+        W =  1.0 ./ real.(normsq(Greens_tuple[2]) .* (params.input_grid[2] - params.input_grid[1]) )
+        # W_cap = W_ratio_max * minimum(W)
+        # clamp!(W,0.0,W_cap)
         Kp = K
         corr_avg_p = Greens_tuple[1]
     end
