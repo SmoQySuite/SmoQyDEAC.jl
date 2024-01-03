@@ -15,9 +15,10 @@ function default_dist(rng,params)
     if occursin("bosonic",params.kernel_type)
         ωs_mod = copy(params.out_ωs)
         ωs_mod[ωs_mod .≈ 0.0] .= typemax(eltype(params.out_ωs))
-        pop_mod = 1.0 ./ ωs_mod
+        pop_mod = abs.(1.0 ./ ωs_mod)
+        # println("mod ",pop_mod[1])
         for pop ∈ 1:params.population_size
-            population_old[:,pop] .* pop_mod
+            population_old[:,pop] = population_old[:,pop] .* pop_mod
         end
     end
 
