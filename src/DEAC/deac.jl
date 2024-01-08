@@ -304,7 +304,7 @@ function run_DEAC(Greens_tuple,
     start_thread = (start_bin-1) * params.runs_per_bin +1
 
     # Matrices for calculating fit
-    W, Kp, corr_avg_p = calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD)
+    W, Kp, corr_avg_p = calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,params)
     
     
     ### Find Ideal Fitness
@@ -366,7 +366,7 @@ function run_DEAC(Greens_tuple,
                     
                     # calculate new fitness
                     GEMM!(model,Kp,population_new,use_SIMD)
-                    fitness_new = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
+                    fitness_new = Χ²(corr_avg_p,model,W) #./ size(params.input_grid,1)
 
                     # update populations if fitness improved
                     update_populations!(fitness_old,crossover_probability_old,differential_weights_old,population_old,fitness_new,crossover_probability_new,differential_weights_new,population_new)
@@ -445,7 +445,7 @@ function run_DEAC(Greens_tuple,
                 
                 # get new fitness
                 GEMM!(model,Kp,population_new,use_SIMD)
-                fitness_new = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
+                fitness_new = Χ²(corr_avg_p,model,W) #./ size(params.input_grid,1)
 
                 # if improved do updates
                 update_populations!(fitness_old,crossover_probability_old,differential_weights_old,population_old,fitness_new,crossover_probability_new,differential_weights_new,population_new)
@@ -454,7 +454,7 @@ function run_DEAC(Greens_tuple,
                 if (user_mutation! != nothing)
                     user_mutation!(population_new,population_old,rng)
                     GEMM!(model,Kp,population_new,use_SIMD)
-                    fitness_new = Χ²(corr_avg_p,model,W) ./ size(params.input_grid,1)
+                    fitness_new = Χ²(corr_avg_p,model,W) #./ size(params.input_grid,1)
                     
                     for pop in axes(fitness_old,1)
                         if fitness_new[pop] <= fitness_old[pop]

@@ -5,7 +5,7 @@ function initial_fit!(pop,model,avg_p,Kp,W,params,use_SIMD)
     
     GEMM!(model,Kp,pop,use_SIMD)
     
-    fitness = Χ²(avg_p,model,W) ./ size(params.input_grid,1)
+    fitness = Χ²(avg_p,model,W) # ./ size(params.input_grid,1)
 
     return fitness
 
