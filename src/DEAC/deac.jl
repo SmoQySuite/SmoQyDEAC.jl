@@ -138,8 +138,7 @@ end # DEAC_Std
     
 Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ fitting using the eigenvalues of the covariance matrix
 # Arguments
-- `correlation_function::AbstractVector`: Input data in τ space 
-- `correlation_function_error::AbstractVector`: Error associated with input data
+- `correlation_function::AbstractMatrix`: Input data in τ/ωₙ space, shape [Bins,τ/ωₙ] 
 - `β::Float64`: Inverse temperature
 - `input_grid::Vector{Float64}`: Evenly spaced values in τ from 0 to β, including end points
 - `out_ωs::Vector{Float64}`: Energies for AC output
@@ -166,7 +165,6 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `self_adapting_differential_weight_probability::Float64 = 0.1`: Likelihood of SAD changing
 - `self_adapting_differential_weight::Float64 = 0.9`: SAD
 - `W_ratio_max::Float64 = 1.0e6`: Χ² ~ 1.0/σ², this parameter prevents [near] singularities for very small σ 
-- `bootstrap_bins::Int = 0`: The algorithm requires more bins than τ steps. We use bootstrapping to get 5 * nτ bins by default. User may set this higher 
 - `user_mutation! = nothing`: User passed function to add additional mutation to each iteration. See below for more information
                   
 
@@ -191,7 +189,7 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
                   output_file::String,
                   checkpoint_directory::String;
 
-                  population_size::Int64=8,
+                  population_size::Int64=20,
                   base_seed::Integer=8675309,
                   crossover_probability::Float64=0.9,
                   self_adapting_crossover_probability::Float64=0.1,
@@ -209,6 +207,8 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
                   user_mutation! =nothing
                 )
     #
+    #- `bootstrap_bins::Int = 0`: The algorithm requires more bins than τ steps. We use bootstrapping to get 5 * nτ bins by default. User may set this higher 
+
     params = DEACParameters(β,input_grid,out_ωs,kernel_type,output_file,checkpoint_directory,
                             num_bins,runs_per_bin,population_size,base_seed,
                             crossover_probability,self_adapting_crossover_probability,
@@ -217,14 +217,16 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
 
 
     # Bootstrap bins to ensure sufficient bin size
-    if bootstrap_bins ≤ 0 || (size(correlation_function,1) < 5 * size(correlation_function,2))
+    if bootstrap_bins > 0 || (size(correlation_function,1) < 5 * size(correlation_function,2)) 
+        do_bootstrap = true
         bootstrap_bins = max(bootstrap_bins,5*size(correlation_function,2))
+        println("Bootstrapping to ", bootstrap_bins, " samples\n")
         correlation_function = bootstrap_samples(correlation_function,bootstrap_bins,base_seed )
     end
 
     
     #
-    return run_DEAC((correlation_function,nothing),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose,user_mutation! )
+    return run_DEAC((correlation_function,nothing),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose,user_mutation!;bootstrap=do_bootstrap )
 end # DEAC_Binned()
 
 # Run the DEAC algorithm
@@ -235,8 +237,9 @@ function run_DEAC(Greens_tuple,
                   W_ratio_max::Float64,
                   find_ideal_fitness::Bool,
                   verbose::Bool,
-                  user_mutation! )
-    
+                  user_mutation!;
+                  bootstrap=false )
+
     # Assert parameters are within allowable/realistic ranges
     @assert params.population_size >= 6 # DEAC can be run with as few as 4, but it gives garbage results
     @assert params.β > 0.0
@@ -304,7 +307,7 @@ function run_DEAC(Greens_tuple,
     start_thread = (start_bin-1) * params.runs_per_bin +1
 
     # Matrices for calculating fit
-    W, Kp, corr_avg_p = calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,params)
+    W, Kp, corr_avg_p = calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,bootstrap)
     
     
     ### Find Ideal Fitness

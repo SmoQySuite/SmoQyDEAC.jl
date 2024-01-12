@@ -58,9 +58,9 @@ function useSIMD(K,M,N)
     B = Random.rand(Float64,(K, N))
 
     # Benchmark
+    BenchmarkTools.DEFAULT_PARAMETERS.seconds=1.0
     t_linAlg = @belapsed mul!($C,$A,$B)
     t_avx = @belapsed gemmSIMD!($C,$A,$B)
-    BenchmarkTools.DEFAULT_PARAMETERS.seconds=1.0
     use_SIMD = t_avx < t_linAlg
     if use_SIMD
         println("SIMD GEMM faster than BLAS, using SmoQyDEAC's gemmSIMD!()")
@@ -100,42 +100,48 @@ function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,cur
 end
 
 # Calculate matrices used to go from ω to τ space and χ² fit
-function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,params)
-    Δτ = params.input_grid[2] - params.input_grid[1]
+function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,bootstrap)
+    
     if Greens_tuple[2] == nothing
         # Covariance Methods
               
         corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
         
-        Nbin = size(Greens_tuple[1],1)
-        Nsteps = size(Greens_tuple[1],2)
-
-        # Find eigenbasis for covariance matrix 
         
-        F = eigen(cov(Greens_tuple[1],dims=1,corrected=false))
-        U = F.vectors
-        corr_avg_p = similar(corr_avg)
+        
+        Nsteps = size(Greens_tuple[1],2)
+        Nbins =  (bootstrap) ? 1.0 : size(Greens_tuple[1],1)
+        
+        # Find eigenbasis for covariance matrix 
+        cov_matrix = Statistics.cov(Greens_tuple[1],dims=1,corrected=true)
+        F = eigen(cov_matrix)
+        # println(size(cov_matrix))
+        # # println(minimum(F.values),"\t",maximum(F.values))
+        # println(F.values)
+        # exit()
+        mask = (F.values .> maximum(F.values) / W_ratio_max)    
 
+        U = F.vectors[:,mask]
+        corr_avg_p = Array{eltype(corr_avg)}(undef,size(corr_avg[:,mask]))
+        
+        
         # Rotate correlation functions
         GEMM!(corr_avg_p,corr_avg,U,use_SIMD)
         corr_avg_p = corr_avg_p[1,:]
-
-        # Rotate Kernel functions
-        Kp = similar(K)
-        GEMM!(Kp,transpose(U),K,use_SIMD)
-
-        # Calculate σ² in new basis
-        W = 1.0 ./ (sqrt.(normsq(F.values))  )
-        # W_cap = W_ratio_max * minimum(W) 
-        # clamp!(W,0.0,W_cap)
         
+        Nsteps = size(corr_avg_p)
+        Kp = similar(K[mask,:])
+        GEMM!(Kp,transpose(U),K,use_SIMD)
+        W = 0.5 * Nbins ./ abs.(F.values[mask] .* Nsteps)
+        # W_max = minimum(W) * W_ratio_max 
+        # clamp!(W,0,W_max)
 
     else
         
+        Nsteps = size(Greens_tuple[1],1)
+        
         # Diagonal error method
-        W = 1.0 ./ real.(Greens_tuple[2] .* conj.(Greens_tuple[2]))# .* Δτ)
-        # W_cap = W_ratio_max * minimum(W)
-        # clamp!(W,0.0,W_cap)
+        W = 0.5 ./ real.(Greens_tuple[2] .* conj.(Greens_tuple[2]) .* Nsteps)
         Kp = K
         corr_avg_p = Greens_tuple[1]
     end
@@ -143,6 +149,6 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,params)
 
 end
 
-function normsq(val)
-    return @. val * conj(val)
-end
+# function normsq(val)
+#     return @. val * conj(val)
+# end
