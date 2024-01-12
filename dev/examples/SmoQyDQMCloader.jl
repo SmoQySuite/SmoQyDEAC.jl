@@ -152,7 +152,7 @@ function load_from_SmoQyDQMC(;simulationfolder::String,
         n_orbital = max(maximum(index_frame[:,ID1]),maximum(index_frame[:,ID2]))
         n_τ = (_type == "time-displaced") ?  maximum(index_frame[:,"Tau"])+1 : 1   
         n_bin = maximum(data_frame[:,"BIN"])
-        n_PID = maximum(data_frame[:,"BIN"]) + 1
+        n_PID = maximum(data_frame[:,"PID"]) + 1
         dimension_key = Dict{String,Int}(
             ID1 => 1,
             ID2 => 2,
