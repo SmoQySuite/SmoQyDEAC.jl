@@ -149,6 +149,6 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,bootstrap)
 
 end
 
-# function normsq(val)
-#     return @. val * conj(val)
-# end
+function normsq(val)
+    return @. val * conj(val)
+end

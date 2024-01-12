@@ -220,7 +220,7 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
     if bootstrap_bins > 0 || (size(correlation_function,1) < 5 * size(correlation_function,2)) 
         do_bootstrap = true
         bootstrap_bins = max(bootstrap_bins,5*size(correlation_function,2))
-        println("Bootstrapping to ", bootstrap_bins, " samples\n")
+        println("Bootstrapping to ", bootstrap_bins, " samples")
         correlation_function = bootstrap_samples(correlation_function,bootstrap_bins,base_seed )
     end
 
