@@ -217,6 +217,7 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
 
 
     # Bootstrap bins to ensure sufficient bin size
+    do_bootstrap = false
     if bootstrap_bins > 0 || (size(correlation_function,1) < 5 * size(correlation_function,2)) 
         do_bootstrap = true
         bootstrap_bins = max(bootstrap_bins,5*size(correlation_function,2))
