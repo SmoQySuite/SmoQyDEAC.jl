@@ -107,20 +107,22 @@ function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params)
               
         corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
         mask = get_covariance_mask(params)
-    
+
         
         # Find eigenbasis for covariance matrix 
         cov_matrix = Statistics.cov(Greens_tuple[1],dims=1,corrected=true)
         F = eigen(cov_matrix)
+        max_eig = maximum(F.values)
+
+        # catch near-zero eigenvalues not found using get_covariance_mask
+        mask = mask .&& (F.values .> max_eig * 1e-8)
         
         U = F.vectors[:,mask]
         corr_avg_p = Array{eltype(corr_avg)}(undef,size(corr_avg[:,mask]))
         
-        
         # Rotate correlation functions
         GEMM!(corr_avg_p,corr_avg,U,use_SIMD)
         corr_avg_p = corr_avg_p[1,:]
-        
         
         Kp = similar(K[mask,:])
         GEMM!(Kp,transpose(U),K,use_SIMD)

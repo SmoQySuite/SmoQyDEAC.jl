@@ -29,11 +29,11 @@
     
 Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ fitting from the error passed in by `correlation_function_error`.
 # Arguments
-- `correlation_function::AbstractVector`: Input data in τ space 
+- `correlation_function::AbstractVector`: Input data in τ/ωₙ space 
 - `correlation_function_error::AbstractVector`: Error associated with input data
 - `β::Float64`: Inverse temperature
-- `input_grid::Vector{Float64}`: Evenly spaced values in τ from 0 to β, including end points
-- `out_ωs::Vector{Float64}`: Energies for AC output
+- `input_grid::Vector{Float64}`: Evenly spaced values in τ from 0 to β, including end points or ωₙ
+- `out_ωs::Vector{Float64}`: Evenly spaced energies for AC output
 - `kernel_type::String`: See below for allowable kernels
 - `num_bins::Int64`: Bins to generate
 - `runs_per_bin::Int64`: Number of runs per bin for statistics
@@ -148,7 +148,7 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `correlation_function::AbstractMatrix`: Input data in τ/ωₙ space, shape [Bins,τ/ωₙ] 
 - `β::Float64`: Inverse temperature
 - `input_grid::Vector{Float64}`: Evenly spaced values in τ from 0 to β, including end points
-- `out_ωs::Vector{Float64}`: Energies for AC output
+- `out_ωs::Vector{Float64}`: Evenly spaced energies for AC output
 - `kernel_type::String`: See below for allowable kernels
 - `num_bins::Int64`: Bins to generate
 - `runs_per_bin::Int64`: Number of runs per bin for statistics
@@ -171,7 +171,6 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `differential_weight::Float64 = 0.9`: Weight for second and third mutable indices
 - `self_adapting_differential_weight_probability::Float64 = 0.1`: Likelihood of SAD changing
 - `self_adapting_differential_weight::Float64 = 0.9`: SAD
-- `W_ratio_max::Float64 = 1.0e6`: Χ² ~ 1.0/σ², this parameter prevents [near] singularities for very small σ 
 - `user_mutation! = nothing`: User passed function to add additional mutation to each iteration. See below for more information
                   
 

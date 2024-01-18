@@ -46,9 +46,21 @@ function user_mut_vec!(pop_new,pop_old,rng)
     return nothing
 end
 
-output_dictionary_τ = DEAC_Binned(Gτ_bin,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
-                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,
-                                  user_mutation! =user_mut_vec!,stop_minimum_fitness=20.0,
-                                  find_ideal_fitness=false)
+output_dictionary_τ = DEAC_Binned(
+    Gτ_bin,
+    β,
+    τs,
+    ωs,
+    "time_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    user_mutation! = user_mut_vec!,
+    stop_minimum_fitness = 1.0,
+    find_ideal_fitness = false
+)
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl

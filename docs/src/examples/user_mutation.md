@@ -99,10 +99,22 @@ end
 Now we run DEAC with the additional mutation
 
 ````@example user_mutation
-output_dictionary_τ = DEAC_Binned(Gτ_bin,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
-                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,
-                                  user_mutation! =user_mut_vec!,stop_minimum_fitness=20.0,
-                                  find_ideal_fitness=false)
+output_dictionary_τ = DEAC_Binned(
+    Gτ_bin,
+    β,
+    τs,
+    ωs,
+    "time_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    user_mutation! = user_mut_vec!,
+    stop_minimum_fitness = 1.0,
+    find_ideal_fitness = false
+)
 ````
 
 ---

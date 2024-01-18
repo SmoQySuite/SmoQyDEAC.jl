@@ -31,16 +31,66 @@ nω = 401;
 base_seed = 1000000;
 keep_bin_data = true;
 
-output_dictionary_τ = DEAC_Binned(Gτ_bin,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
-                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
-output_dictionary_τ_std = DEAC_Std(Gτ_std,Gτ_err,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
-                                   checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
-output_dictionary_ωₙ = DEAC_Binned(Gω_bin,β,ωₙ,ωs,"frequency_fermionic",number_of_bins,runs_per_bin,output_file,
-                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,stop_minimum_fitness=10.0,
-                                  find_ideal_fitness=false,number_of_generations=20000)
-output_dictionary_ωₙ_std = DEAC_Std(Gω_std,Gω_err,β,ωₙ,ωs,"frequency_fermionic",number_of_bins,runs_per_bin,output_file,
-                                    checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,stop_minimum_fitness=0.1,
-                                    find_ideal_fitness=false,number_of_generations=20000)
+output_dictionary_τ = DEAC_Binned(
+    Gτ_bin,
+    β,
+    τs,
+    ωs,
+    "time_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data
+)
+output_dictionary_τ_std = DEAC_Std(
+    Gτ_std,
+    Gτ_err,
+    β,
+    τs,
+    ωs,
+    "time_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data
+)
+output_dictionary_ωₙ = DEAC_Binned(
+    Gω_bin,
+    β,
+    ωₙ,
+    ωs,
+    "frequency_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    stop_minimum_fitness=1.0,
+    find_ideal_fitness=false,
+    number_of_generations=20000
+)
+output_dictionary_ωₙ_std = DEAC_Std(
+    Gω_std,
+    Gω_err,
+    β,
+    ωₙ,
+    ωs,
+    "frequency_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    stop_minimum_fitness=1.0,
+    find_ideal_fitness=false,
+    number_of_generations=20000
+)
 
 A = output_dictionary_τ["A"];
 A_σ = output_dictionary_τ["σ"];

@@ -29,7 +29,20 @@ nω = 401;
 for kx in 1:1 # 1:Nkx
     output_file = joinpath(output_directory, string(kx) * ".jld2");
     Gτ_temp = Matrix{Float64}(Gτ[:,kx,:]');
-    deac_dict = DEAC_Binned(Gτ_temp,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,checkpoint_directory,stop_minimum_fitness=0.01,find_ideal_fitness=false,number_of_generations=20000)
+    deac_dict = DEAC_Binned(
+        Gτ_temp,
+        β,
+        τs,
+        ωs,
+        "time_fermionic",
+        number_of_bins,
+        runs_per_bin,
+        output_file,
+        checkpoint_directory;
+        stop_minimum_fitness = 1.0,
+        find_ideal_fitness = false,
+        number_of_generations = 20000
+    )
 end
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
