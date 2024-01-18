@@ -63,7 +63,7 @@ nω = 401;
 base_seed = 1000000;
 #md ## Note, the seed will incement for each run. 
 #md ## Starting a new run at 1000020 will have output unique from this run
-keep_bin_data = false;
+keep_bin_data = true;
 #md ## If true, each bin will have it's data written to the output dictionary
 #md ## Set to false to save disk space
 
