@@ -91,7 +91,6 @@ function DEAC_Std(correlation_function::AbstractVector,
                   number_of_generations::Int64=1000000,
                   autoresume_from_checkpoint=false,
                   keep_bin_data=true,
-                  W_ratio_max = 1.0e6,
                   find_ideal_fitness::Bool=true,
                   verbose::Bool=false,
                   user_mutation! =nothing
@@ -104,7 +103,14 @@ function DEAC_Std(correlation_function::AbstractVector,
                             differential_weight,self_adapting_differential_weight_probability,
                             self_adapting_differential_weight,stop_minimum_fitness,number_of_generations)
     #
-    return run_DEAC((correlation_function,correlation_function_error),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose,user_mutation!)
+    return run_DEAC(
+        (correlation_function,correlation_function_error),
+        params,
+        autoresume_from_checkpoint,
+        keep_bin_data,
+        find_ideal_fitness,
+        verbose,user_mutation!
+    )
 end # DEAC_Std
 
 
@@ -119,6 +125,7 @@ end # DEAC_Std
          output_file::String,
          checkpoint_directory::String;
 
+         W_ratio_max = 1.0e6,
          find_ideal_fitness::Bool = true
          population_size::Int64 = 8,
          base_seed::Integer = 8675309,
@@ -200,7 +207,6 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
                   number_of_generations::Int64=1000000,
                   autoresume_from_checkpoint::Bool=false,
                   keep_bin_data::Bool=true,
-                  W_ratio_max::Float64 = 1.0e6,
                   bootstrap_bins::Int = 0,
                   find_ideal_fitness::Bool = true,
                   verbose::Bool=false,
@@ -227,7 +233,15 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
 
     
     #
-    return run_DEAC((correlation_function,nothing),params,autoresume_from_checkpoint,keep_bin_data,W_ratio_max,find_ideal_fitness,verbose,user_mutation!;bootstrap=do_bootstrap )
+    return run_DEAC(
+        (correlation_function,nothing),
+        params,autoresume_from_checkpoint,
+        keep_bin_data,
+        find_ideal_fitness,
+        verbose,
+        user_mutation!
+        ;bootstrap=do_bootstrap 
+    )
 end # DEAC_Binned()
 
 # Run the DEAC algorithm
@@ -235,7 +249,6 @@ function run_DEAC(Greens_tuple,
                   params::DEACParameters,
                   autoresume_from_checkpoint::Bool,
                   keep_bin_data::Bool,
-                  W_ratio_max::Float64,
                   find_ideal_fitness::Bool,
                   verbose::Bool,
                   user_mutation!;
@@ -308,7 +321,7 @@ function run_DEAC(Greens_tuple,
     start_thread = (start_bin-1) * params.runs_per_bin +1
 
     # Matrices for calculating fit
-    W, Kp, corr_avg_p = calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,bootstrap)
+    W, Kp, corr_avg_p = calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params)
     
     
     ### Find Ideal Fitness

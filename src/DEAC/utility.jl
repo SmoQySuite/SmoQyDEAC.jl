@@ -100,27 +100,19 @@ function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,cur
 end
 
 # Calculate matrices used to go from ω to τ space and χ² fit
-function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,bootstrap)
+function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params)
     
     if Greens_tuple[2] == nothing
         # Covariance Methods
               
         corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
-        
-        
-        
-        Nsteps = size(Greens_tuple[1],2)
-        Nbins =  (bootstrap) ? 1.0 : size(Greens_tuple[1],1)
+        mask = get_covariance_mask(params)
+    
         
         # Find eigenbasis for covariance matrix 
         cov_matrix = Statistics.cov(Greens_tuple[1],dims=1,corrected=true)
         F = eigen(cov_matrix)
-        # println(size(cov_matrix))
-        # # println(minimum(F.values),"\t",maximum(F.values))
-        # println(F.values)
-        # exit()
-        mask = (F.values .> maximum(F.values) / W_ratio_max)    
-
+        
         U = F.vectors[:,mask]
         corr_avg_p = Array{eltype(corr_avg)}(undef,size(corr_avg[:,mask]))
         
@@ -129,18 +121,19 @@ function calculate_fit_matrices(Greens_tuple,K,W_ratio_max,use_SIMD,bootstrap)
         GEMM!(corr_avg_p,corr_avg,U,use_SIMD)
         corr_avg_p = corr_avg_p[1,:]
         
-        Nsteps = size(corr_avg_p)
+        
         Kp = similar(K[mask,:])
         GEMM!(Kp,transpose(U),K,use_SIMD)
+        
+        Nsteps = size(corr_avg_p)
+        Nbins =  (bootstrap) ? 1.0 : size(Greens_tuple[1],1)
+        
         W = 0.5 * Nbins ./ abs.(F.values[mask] .* Nsteps)
-        # W_max = minimum(W) * W_ratio_max 
-        # clamp!(W,0,W_max)
+        
 
     else
-        
-        Nsteps = size(Greens_tuple[1],1)
-        
         # Diagonal error method
+        Nsteps = size(Greens_tuple[1],1)
         W = 0.5 ./ real.(Greens_tuple[2] .* conj.(Greens_tuple[2]) .* Nsteps)
         Kp = K
         corr_avg_p = Greens_tuple[1]
@@ -151,4 +144,28 @@ end
 
 function normsq(val)
     return @. val * conj(val)
+end
+
+# eliminate ≈0.0 eigenvalues from diagonalized covariance matrix which arise due to symmetries
+function get_covariance_mask(params)
+    grid = params.input_grid
+    mask = Array{Bool}(undef,size(grid,1))
+    mask .= true
+
+    # Fermions G(τ)+G(0) = 1.0
+    if params.kernel_type == "time_fermionic"
+        if findfirst(==(params.β),params.input_grid) != nothing
+            mask = .!(params.input_grid .≈ 0.0)
+        end
+    # Bosons G(τ) = G(β-τ)
+    elseif params.kernel_type == "time_bosonic_symmetric"
+        β2 = params.β / 2.0
+        for (τi,τ) in enumerate(params.input_grid)
+            if τ < β2
+                mask[τi] = !(findfirst(≈(τ),params.input_grid) != nothing)
+            end
+        end
+    end
+    return mask
+
 end
