@@ -68,16 +68,74 @@ keep_bin_data = true;
 #md ## Set to false to save disk space
 
 # Run DEAC Algorithm for binned and unbinned data for τ and ωₙ spaces
-output_dictionary_τ = DEAC_Binned(Gτ_bin,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
-                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
-output_dictionary_τ_std = DEAC_Std(Gτ_std,Gτ_err,β,τs,ωs,"time_fermionic",number_of_bins,runs_per_bin,output_file,
-                                   checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
-output_dictionary_ωₙ = DEAC_Binned(Gω_bin,β,ωₙ,ωs,"frequency_fermionic",number_of_bins,runs_per_bin,output_file,
-                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,stop_minimum_fitness=10.0,
-                                  find_ideal_fitness=false,number_of_generations=20000)
-output_dictionary_ωₙ_std = DEAC_Std(Gω_std,Gω_err,β,ωₙ,ωs,"frequency_fermionic",number_of_bins,runs_per_bin,output_file,
-                                    checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,stop_minimum_fitness=0.1,
-                                    find_ideal_fitness=false,number_of_generations=20000)
+#md ## Note, number_of_generations should typically be > 100,000 or even 1,000,000.
+#md ## It is set lower to reduce run time in this example.
+output_dictionary_τ = DEAC_Binned(
+    Gτ_bin,
+    β,
+    τs,
+    ωs,
+    "time_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    verbose = true
+)
+output_dictionary_τ_std = DEAC_Std(
+    Gτ_std,
+    Gτ_err,
+    β,
+    τs,
+    ωs,
+    "time_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    find_ideal_fitness=false,
+    keep_bin_data = keep_bin_data,
+    number_of_generations = 10000,
+    verbose = true
+)
+output_dictionary_ωₙ = DEAC_Binned(
+    Gω_bin,
+    β,
+    ωₙ,
+    ωs,
+    "frequency_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    stop_minimum_fitness=1.0,
+    find_ideal_fitness=false,
+    number_of_generations = 20000,
+    verbose = true
+)
+output_dictionary_ωₙ_std = DEAC_Std(
+    Gω_std,
+    Gω_err,
+    β,
+    ωₙ,
+    ωs,
+    "frequency_fermionic",
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    stop_minimum_fitness = 1.0,
+    find_ideal_fitness = false,
+    number_of_generations = 20000,
+    verbose = true
+)
 
 # Accessing output
 #md ## Spectral function, 1D array size (nω)

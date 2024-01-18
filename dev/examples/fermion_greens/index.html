@@ -27,26 +27,84 @@ nω = 401;
 # Starting a new run at 1000020 will have output unique from this run
 keep_bin_data = true;
 # If true, each bin will have it&#39;s data written to the output dictionary
-# Set to false to save disk space</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p>Run DEAC Algorithm for binned and unbinned data for τ and ωₙ spaces</p><pre><code class="language-julia hljs">output_dictionary_τ = DEAC_Binned(Gτ_bin,β,τs,ωs,&quot;time_fermionic&quot;,number_of_bins,runs_per_bin,output_file,
-                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
-output_dictionary_τ_std = DEAC_Std(Gτ_std,Gτ_err,β,τs,ωs,&quot;time_fermionic&quot;,number_of_bins,runs_per_bin,output_file,
-                                   checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data)
-output_dictionary_ωₙ = DEAC_Binned(Gω_bin,β,ωₙ,ωs,&quot;frequency_fermionic&quot;,number_of_bins,runs_per_bin,output_file,
-                                  checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,stop_minimum_fitness=10.0,
-                                  find_ideal_fitness=false,number_of_generations=20000)
-output_dictionary_ωₙ_std = DEAC_Std(Gω_std,Gω_err,β,ωₙ,ωs,&quot;frequency_fermionic&quot;,number_of_bins,runs_per_bin,output_file,
-                                    checkpoint_directory,base_seed=base_seed,keep_bin_data=keep_bin_data,stop_minimum_fitness=0.1,
-                                    find_ideal_fitness=false,number_of_generations=20000)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 10 entries:
-  &quot;zeroth_moment&quot;     =&gt; 1.00606
-  &quot;A&quot;                 =&gt; [0.00317018, 0.0074564, 0.0103135, 0.0137716, 0.003919…
-  &quot;zeroth_moment_σ&quot;   =&gt; 0.000274074
-  &quot;bin_data&quot;          =&gt; [0.00453027 0.00181009; 0.000254328 0.0146585; … ; 0.0…
-  &quot;avg_generations&quot;   =&gt; 15986.9
-  &quot;σ&quot;                 =&gt; [0.00136009, 0.00720207, 0.00839453, 0.0114879, 0.0037…
-  &quot;fitness_target&quot;    =&gt; 0.1
+# Set to false to save disk space</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p>Run DEAC Algorithm for binned and unbinned data for τ and ωₙ spaces</p><pre><code class="language-julia hljs"># Note, number_of_generations should typically be &gt; 100,000 or even 1,000,000.
+# It is set lower to reduce run time in this example.
+output_dictionary_τ = DEAC_Binned(
+    Gτ_bin,
+    β,
+    τs,
+    ωs,
+    &quot;time_fermionic&quot;,
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    verbose = true
+)
+output_dictionary_τ_std = DEAC_Std(
+    Gτ_std,
+    Gτ_err,
+    β,
+    τs,
+    ωs,
+    &quot;time_fermionic&quot;,
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    find_ideal_fitness=false,
+    keep_bin_data = keep_bin_data,
+    number_of_generations = 10000,
+    verbose = true
+)
+output_dictionary_ωₙ = DEAC_Binned(
+    Gω_bin,
+    β,
+    ωₙ,
+    ωs,
+    &quot;frequency_fermionic&quot;,
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    stop_minimum_fitness=1.0,
+    find_ideal_fitness=false,
+    number_of_generations = 20000,
+    verbose = true
+)
+output_dictionary_ωₙ_std = DEAC_Std(
+    Gω_std,
+    Gω_err,
+    β,
+    ωₙ,
+    ωs,
+    &quot;frequency_fermionic&quot;,
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_directory;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    stop_minimum_fitness = 1.0,
+    find_ideal_fitness = false,
+    number_of_generations = 20000,
+    verbose = true
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 10 entries:
+  &quot;zeroth_moment&quot;     =&gt; 1.01928
+  &quot;A&quot;                 =&gt; [0.0069882, 0.00764746, 0.0133562, 0.0212405, 0.011860…
+  &quot;zeroth_moment_σ&quot;   =&gt; 0.000303862
+  &quot;bin_data&quot;          =&gt; [0.00540661 0.00856978; 0.00338073 0.0119142; … ; 0.00…
+  &quot;avg_generations&quot;   =&gt; 5767.6
+  &quot;σ&quot;                 =&gt; [0.00158159, 0.00426673, 0.00980889, 0.00396, 0.004702…
+  &quot;fitness_target&quot;    =&gt; 1.0
   &quot;ωs&quot;                =&gt; [-10.0, -9.95, -9.9, -9.85, -9.8, -9.75, -9.7, -9.65, …
-  &quot;runtime&quot;           =&gt; 22.5087
-  &quot;bin_zeroth_moment&quot; =&gt; [1.00578 1.00633]</code></pre><p>Accessing output</p><pre><code class="language-julia hljs"># Spectral function, 1D array size (nω)
+  &quot;runtime&quot;           =&gt; 8.10218
+  &quot;bin_zeroth_moment&quot; =&gt; [1.01898 1.01958]</code></pre><p>Accessing output</p><pre><code class="language-julia hljs"># Spectral function, 1D array size (nω)
 A = output_dictionary_τ[&quot;A&quot;];
 # Spectral function error, 1D array size (nω)
 A_σ = output_dictionary_τ[&quot;σ&quot;];
@@ -61,13 +119,13 @@ bin_data = output_dictionary_τ[&quot;bin_data&quot;];
 # zeroth moment, 1D array (nbins)
 bin_zeroth = output_dictionary_τ[&quot;bin_zeroth_moment&quot;];</code></pre><p>The dictionary will automatically be saved</p><pre><code class="language-julia hljs"># Example of loading the data from the jld2
 test_dictionary = FileIO.load(output_file)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 10 entries:
-  &quot;zeroth_moment&quot;     =&gt; 1.00606
-  &quot;A&quot;                 =&gt; [0.00317018, 0.0074564, 0.0103135, 0.0137716, 0.003919…
-  &quot;zeroth_moment_σ&quot;   =&gt; 0.000274074
-  &quot;bin_data&quot;          =&gt; [0.00453027 0.00181009; 0.000254328 0.0146585; … ; 0.0…
-  &quot;avg_generations&quot;   =&gt; 15986.9
-  &quot;σ&quot;                 =&gt; [0.00136009, 0.00720207, 0.00839453, 0.0114879, 0.0037…
-  &quot;fitness_target&quot;    =&gt; 0.1
+  &quot;zeroth_moment&quot;     =&gt; 1.01928
+  &quot;A&quot;                 =&gt; [0.0069882, 0.00764746, 0.0133562, 0.0212405, 0.011860…
+  &quot;zeroth_moment_σ&quot;   =&gt; 0.000303862
+  &quot;bin_data&quot;          =&gt; [0.00540661 0.00856978; 0.00338073 0.0119142; … ; 0.00…
+  &quot;avg_generations&quot;   =&gt; 5767.6
+  &quot;σ&quot;                 =&gt; [0.00158159, 0.00426673, 0.00980889, 0.00396, 0.004702…
+  &quot;fitness_target&quot;    =&gt; 1.0
   &quot;ωs&quot;                =&gt; [-10.0, -9.95, -9.9, -9.85, -9.8, -9.75, -9.7, -9.65, …
-  &quot;runtime&quot;           =&gt; 22.5087
-  &quot;bin_zeroth_moment&quot; =&gt; [1.00578 1.00633]</code></pre><p>This is identical to output<em>dictionary</em>ωₙ_std</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../SmoQyDQMC/">Example 2: Load from SmoQyDQMC and run SmoQyDEAC »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Thursday 18 January 2024 16:42">Thursday 18 January 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  &quot;runtime&quot;           =&gt; 8.10218
+  &quot;bin_zeroth_moment&quot; =&gt; [1.01898 1.01958]</code></pre><p>This is identical to output<em>dictionary</em>ωₙ_std</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../SmoQyDQMC/">Example 2: Load from SmoQyDQMC and run SmoQyDEAC »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Thursday 18 January 2024 18:06">Thursday 18 January 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
