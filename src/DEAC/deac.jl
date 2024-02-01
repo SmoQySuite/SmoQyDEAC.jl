@@ -41,7 +41,7 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `checkpoint_directory::String`: Directory to store checkpoint data. 
 
 # Optional Arguments
-- `find_ideal_fitness::Bool = true`: Use ideal fitness finder
+- `find_ideal_fitness::Bool = false`: Use ideal fitness finder
 - `population_size::Int64 = 8`: DEAC population size. Must be ≥ 6
 - `base_seed::Int64 = 8675309`: Seed
 - `number_of_generations::Int64 = 100000`: Maximum number of mutation loops
@@ -91,7 +91,7 @@ function DEAC_Std(correlation_function::AbstractVector,
                   number_of_generations::Int64=1000000,
                   autoresume_from_checkpoint=false,
                   keep_bin_data=true,
-                  find_ideal_fitness::Bool=true,
+                  find_ideal_fitness::Bool=false,
                   verbose::Bool=false,
                   user_mutation! =nothing
                 )
@@ -126,7 +126,7 @@ end # DEAC_Std
          checkpoint_directory::String;
 
          W_ratio_max = 1.0e6,
-         find_ideal_fitness::Bool = true
+         find_ideal_fitness::Bool = false,
          population_size::Int64 = 8,
          base_seed::Integer = 8675309,
          number_of_generations::Int64 = 1000000,
@@ -172,7 +172,7 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `self_adapting_differential_weight_probability::Float64 = 0.1`: Likelihood of SAD changing
 - `self_adapting_differential_weight::Float64 = 0.9`: SAD
 - `user_mutation! = nothing`: User passed function to add additional mutation to each iteration. See below for more information
-                  
+- `eigenvalue_ratio_min::Float64 = 1e-8`: Cutoff to mask out eigenvectors ≈ 0.0 eigenvalues that arise due to symmetries in input data                  
 
 Each run will use its own seed. E.g. if you run 10 bins with 100 runs per bin, you will use seeds `base_seed:base_seed+999`. 
 You may increment your base seed by 1000, use another output file name, and generate more statistics later.
@@ -204,12 +204,13 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
                   self_adapting_differential_weight::Float64=0.9,
                   stop_minimum_fitness::Float64=1.0,
                   number_of_generations::Int64=1000000,
-                  autoresume_from_checkpoint::Bool=false,
-                  keep_bin_data::Bool=true,
+                  autoresume_from_checkpoint::Bool = false,
+                  keep_bin_data::Bool = true,
                   bootstrap_bins::Int = 0,
-                  find_ideal_fitness::Bool = true,
+                  find_ideal_fitness::Bool = false,
                   verbose::Bool=false,
-                  user_mutation! =nothing
+                  user_mutation! =nothing,
+                  eigenvalue_ratio_min::Float64 = 1e-8,
                 )
     #
     #- `bootstrap_bins::Int = 0`: The algorithm requires more bins than τ steps. We use bootstrapping to get 5 * nτ bins by default. User may set this higher 
@@ -239,7 +240,10 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
         find_ideal_fitness,
         verbose,
         user_mutation!
-        ;bootstrap=do_bootstrap 
+        ;bootstrap=do_bootstrap,
+        eigenvalue_ratio_min=eigenvalue_ratio_min
+
+
     )
 end # DEAC_Binned()
 
@@ -251,7 +255,9 @@ function run_DEAC(Greens_tuple,
                   find_ideal_fitness::Bool,
                   verbose::Bool,
                   user_mutation!;
-                  bootstrap=false )
+                  bootstrap=false,
+                  eigenvalue_ratio_min=nothing
+    )
 
     # Assert parameters are within allowable/realistic ranges
     @assert params.population_size >= 6 # DEAC can be run with as few as 4, but it gives garbage results
@@ -320,7 +326,7 @@ function run_DEAC(Greens_tuple,
     start_thread = (start_bin-1) * params.runs_per_bin +1
 
     # Matrices for calculating fit
-    W, Kp, corr_avg_p = calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params)
+    W, Kp, corr_avg_p, full_eigen = calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenvalue_ratio_min)
     
     
     ### Find Ideal Fitness
@@ -552,7 +558,8 @@ function run_DEAC(Greens_tuple,
             "bin_data" => bin_data,
             "bin_zeroth_moment" => calculated_zeroth_moment,
             "fitness_target" =>  true_fitness,
-            "runtime" => Δt
+            "runtime" => Δt,
+            "full_eigenvalues" => full_eigen
         )
     else
         bin_dict = Dict{String,Any}(
@@ -563,7 +570,8 @@ function run_DEAC(Greens_tuple,
             "avg_generations" => gen_per_run,
             "ωs" => params.out_ωs,
             "fitness_target" =>  true_fitness,
-            "runtime" => Δt
+            "runtime" => Δt,
+            "full_eigenvalues" => full_eigen
         )
     end
     FileIO.save(params.output_file,bin_dict)

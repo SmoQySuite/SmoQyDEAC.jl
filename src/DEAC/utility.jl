@@ -100,7 +100,7 @@ function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,cur
 end
 
 # Calculate matrices used to go from ω to τ space and χ² fit
-function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params)
+function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenvalue_ratio_min)
     
     if Greens_tuple[2] == nothing
         # Covariance Methods
@@ -115,7 +115,7 @@ function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params)
         max_eig = maximum(F.values)
 
         # catch near-zero eigenvalues not found using get_covariance_mask
-        mask = mask .&& (F.values .> max_eig * 1e-8)
+        mask = mask .&& (F.values .> max_eig * eigenvalue_ratio_min)
         
         U = F.vectors[:,mask]
         corr_avg_p = Array{eltype(corr_avg)}(undef,size(corr_avg[:,mask]))
@@ -131,7 +131,7 @@ function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params)
         Nbins =  (bootstrap) ? 1.0 : size(Greens_tuple[1],1)
         
         W = 0.5 * Nbins ./ abs.(F.values[mask] .* Nsteps)
-        
+        full_eigen = F.values
 
     else
         # Diagonal error method
@@ -139,8 +139,9 @@ function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params)
         W = 0.5 ./ real.(Greens_tuple[2] .* conj.(Greens_tuple[2]) .* Nsteps)
         Kp = K
         corr_avg_p = Greens_tuple[1]
+        full_eigen = nothing
     end
-    return W, Kp, corr_avg_p
+    return W, Kp, corr_avg_p, full_eigen
 
 end
 

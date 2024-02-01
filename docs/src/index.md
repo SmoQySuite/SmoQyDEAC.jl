@@ -44,7 +44,7 @@ The following are the supported kernels
 
 # Multithreading
 SmoQyDEAC utilizes Julia's `Threads.@threads` multithreading capability. To take advantage of this run your code using 
-```$ julia --threads=auto yourscript.jl```
+```$ julia --threads=auto yourscript.jl```. 
 `auto` will automatically use any available cores or hyperthreads. You can set the value to a fixed number as you wish.
 
 ## Tips, tricks and caveats
