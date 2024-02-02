@@ -5,7 +5,7 @@
 #   `$ julia --threads=auto fermion_greens.jl`
 #
 #   SmoQyDEAC uses multithreading for parallelizing runs. Multithreading it recommended.
-#   --threads=auto will run a thread for each core available, or 2x for hyperthreading cores
+#   `--threads=auto` will run a thread for each core available, or 2x for hyperthreading cores
 #
 # In this example we will take the up-spin electron Green's function output from a Determinant Quantum Monte Carlo run
 # generated via [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) using the Holstein Model. For information on how to load directly from SmoQyDQMC see example 2.
@@ -47,7 +47,7 @@ output_directory = "fermion_greens_output/";
 mkpath(output_directory);
 
 # Define necessary parameters for the DEAC run
-# Typically you will want at least 1,000 for number_of_bins * runs_per_bin
+# Typically you will want at least 1,000 for `number_of_bins` * `runs_per_bin`
 # For speed's sake we only do 2*5 in this example. 
 number_of_bins = 2;
 runs_per_bin = 5 ;
@@ -160,7 +160,7 @@ bin_zeroth = output_dictionary_τ["bin_zeroth_moment"];
 # The dictionary will automatically be saved
 #md ## Example of loading the data from the jld2
 test_dictionary = FileIO.load(output_file)
-# This is identical to output_dictionary_ωₙ_std
+#md ## This is identical to output_dictionary_ωₙ_std
 
 
 

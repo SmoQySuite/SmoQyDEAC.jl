@@ -5,7 +5,7 @@
 #   `$ julia --threads=auto SmoQyDQMC.jl`
 #
 #   SmoQyDEAC uses multithreading for parallelizing runs. Multithreading it recommended.
-#   --threads=auto will run a thread for each core available, or 2x for hyperthreading cores
+#   `--threads=auto` will run a thread for each core available, or 2x for hyperthreading cores
 #
 # In this example we explicitly load output from [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl).
 # After running a simulation with [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) you will need to use the 
@@ -28,8 +28,8 @@ mkpath(output_directory);
 
 
 # Load data from fermion greens correlation functions
-# This puts 'real' in the format 
-# real["ORBITAL\_ID\_1","ORBITAL\_ID\_2","TAU","K\_1","K\_2","K\_3","BIN","PID"]
+# This puts `real` in the format 
+# `real["ORBITAL\_ID\_1","ORBITAL\_ID\_2","TAU","K\_1","K\_2","K\_3","BIN","PID"]``
 #
 # This example was from a 1D Holstein run with β = 20.0,
 #   ORBITAL\_ID\_1 ∈ {1},
@@ -93,3 +93,5 @@ for kx in 1:1 # 1:Nkx
         verbose = true
     )
 end
+
+# Note, these did not converge to a fitness of 1.0 within 20,000 generations. The number of generations is limited for speed when running this example.
