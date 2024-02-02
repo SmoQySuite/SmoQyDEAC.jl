@@ -140,7 +140,8 @@ end # DEAC_Std
          differential_weight::Float64 = 0.9,
          self_adapting_differential_weight_probability::Float64 = 0.1,
          self_adapting_differential_weight::Float64 = 0.9,
-         user_mutation! = nothing
+         user_mutation! = nothing,
+         eigenvalue_ratio_min::Float64 = 1e-8
          )
     
 Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ fitting using the eigenvalues of the covariance matrix
