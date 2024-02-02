@@ -27,7 +27,7 @@ makedocs(;
     sitename="SmoQyDEAC.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://SmoQySuite.github.io/SmoQyDEAC.jl/",
+        canonical="https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/",
         edit_link="main",
         assets=String[],
     ),
@@ -41,10 +41,10 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/SmoQySuite/SmoQyDEAC.jl",
-    # devbranch="main",
+    devbranch="main",
     target = "build",
     branch = "gh-pages",
-    devurl = "dev",
+    # devurl = "dev",
     versions = ["stable" => "v^", "v#.#","v#.#.#", "dev" => "dev" ]
 )
 

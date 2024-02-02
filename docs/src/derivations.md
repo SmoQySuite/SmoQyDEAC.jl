@@ -70,7 +70,7 @@ We will swap indices and then take $\omega\rightarrow -\omega$
 
 For both fermions and bosons we pick up a minus sign for two different reasons: bosons because of the inverted Bose factor $1-e^{-\beta\omega}\rightarrow e^{-\beta\omega}-1$ and the fermion case's sign flips from the operator order flip. 
 
-In the case of $A=B$ we get $\rho(\omega)=-\rho(\omega)$
+In the case of $A=B$ we get $\rho(\omega)=-\rho(-\omega)$
 
 ## Kernels for $\tau\rightarrow\omega$
 
@@ -103,7 +103,7 @@ This gives us the fermionic kernel of $\frac{e^{-\omega\tau}}{1+e^{-\beta\omega}
 K_{fermion}\left(\omega,\tau\right)= & \frac{e^{-\tau\omega}}{1+e^{-\beta\omega}}\\
 K_{fermion,antisym}\left(\omega,\tau\right)= & \frac{1}{2}\frac{e^{-\tau\omega}-e^{-\left(\beta-\tau\right)\omega}}{1+e^{-\beta\omega}}\\
 K_{boson,asym}\left(\omega,\tau\right)= & \frac{e^{-\tau\omega}}{1-e^{-\beta\omega}}\\
-K_{boson,sym}\left(\omega,\tau\right)= & \frac{e^{-\tau\omega}+e^{-\left(\beta-\tau\right)}}{1-e^{-\beta\omega}}
+K_{boson,sym}\left(\omega,\tau\right)= & \frac{1}{2}\frac{e^{-\tau\omega}+e^{-\left(\beta-\tau\right)}}{1-e^{-\beta\omega}}
 \end{align*}
 ```
 

@@ -16,7 +16,7 @@ This command clones the [`SmoQyDEAC.jl`](https://github.com/SmoQySuite/SmoQyDEAC
 
 # Running SmoQyDEAC
 
-SmoQyDEAC has a simple API interface with a single callable function `DEAC`.
+SmoQyDEAC has a simple API interface with a two callable functions `DEAC_Binned` and `DEAC_Std` for binned data and data with the standard error, respectively.
 
 ## API
 - [`DEAC_Binned`](@ref)
@@ -37,7 +37,7 @@ To add additional mutations to the base DEAC algorithm you utilize the ```user_m
 The following are the supported kernels
 - `time_fermionic`$=\frac{e^{-\tau\omega}}{1+e^{-\beta\omega}}$
 - `time_bosonic`$=\frac{e^{-\tau\omega}}{1-e^{-\beta\omega}}$
-- `time_bosonic_symmetric`$=\frac{e^{-\tau\omega}+e^{-(\beta-\tau)\omega}}{1-e^{-\beta\omega}}$
+- `time_bosonic_symmetric`$=\frac{1}{2}\frac{e^{-\tau\omega}+e^{-(\beta-\tau)\omega}}{1-e^{-\beta\omega}}$
 - `frequency_fermionic`$=\frac{1}{i\omega_n-\omega}$
 - `frequency_bosonic`$=\frac{1}{i\omega_n-\omega}$
 - `frequency_bosonic_symmetric`$=\frac{2 \omega}{\omega_n^2+\omega^2}$
