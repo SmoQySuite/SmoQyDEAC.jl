@@ -31,19 +31,19 @@ mkpath(output_directory);
 # This puts `real` in the format 
 # `real["ORBITAL\_ID\_1","ORBITAL\_ID\_2","TAU","K\_1","K\_2","K\_3","BIN","PID"]``
 #
-# This example was from a 1D Holstein run with β = 20.0,
-#   ORBITAL\_ID\_1 ∈ {1},
-#   ORBITAL\_ID\_2 ∈ {1},
-#   TAU          ∈ {0.0,Δτ,...,β-Δτ,β} for Nτ = 201,
-#   Kx           ∈ {1,...,32},
-#   Ky           ∈ {1},
-#   Kz           ∈ {1},
-#   Bin          ∈ {1,...,Nbin} for Nbin = 100,
-#   PID          ∈ {1},
-#
-# Some dimensions are 1 deep. They are kept to ensure generality.
-#
-# See the [`SmoQyDQMCloader.jl`](https://github.com/SmoQySuite/SmoQyDEAC.jl/blob/main/scripts/SmoQyDQMCloader.jl) file for more information
+#md ## This example was from a 1D Holstein run with β = 20.0,
+#md ##   ORBITAL\_ID\_1 ∈ {1},
+#md ##  ORBITAL\_ID\_2 ∈ {1},
+#md ##  TAU          ∈ {0.0,Δτ,...,β-Δτ,β} for Nτ = 201,
+#md ##  Kx           ∈ {1,...,32},
+#md ##  Ky           ∈ {1},
+#md ##  Kz           ∈ {1},
+#md ##  Bin          ∈ {1,...,Nbin} for Nbin = 100,
+#md ##  PID          ∈ {1},
+#md ##
+#md ## Some dimensions are 1 deep. They are kept to ensure generality.
+#md ##
+#md ## See the [`SmoQyDQMCloader.jl`](https://github.com/SmoQySuite/SmoQyDEAC.jl/blob/main/scripts/SmoQyDQMCloader.jl) file for more information
 input_directory = "SmoQyDQMC_sim-1/"
 
 dims,real,image,sgnr,sgni,β = load_from_SmoQyDQMC(simulationfolder=input_directory,
@@ -64,7 +64,7 @@ println(size(Gτ))
 Nkx = size(Gτ,2)
 number_of_bins = 2;
 runs_per_bin = 10 ;
-checkpoint_directory = output_directory;
+checkpoint_file = joinpath(output_directory,"DEAC_checkpoint.jld2");
 nω = 401;
 ωmin = -10.;
 ωmax = 10.;
@@ -86,7 +86,7 @@ for kx in 1:1 # 1:Nkx
         number_of_bins,
         runs_per_bin,
         output_file,
-        checkpoint_directory;
+        checkpoint_file;
         stop_minimum_fitness = 1.0,
         find_ideal_fitness = false,
         number_of_generations = 20000,
