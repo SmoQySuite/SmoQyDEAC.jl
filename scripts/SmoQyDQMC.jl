@@ -20,7 +20,7 @@ println(size(Gτ))
 Nkx = size(Gτ,2)
 number_of_bins = 2;
 runs_per_bin = 10 ;
-checkpoint_directory = output_directory;
+checkpoint_file = joinpath(output_directory,"DEAC_checkpoint.jld2");
 nω = 401;
 ωmin = -10.;
 ωmax = 10.;
@@ -38,10 +38,11 @@ for kx in 1:1 # 1:Nkx
         number_of_bins,
         runs_per_bin,
         output_file,
-        checkpoint_directory;
+        checkpoint_file;
         stop_minimum_fitness = 1.0,
         find_ideal_fitness = false,
-        number_of_generations = 20000
+        number_of_generations = 20000,
+        verbose = true
     )
 end
 

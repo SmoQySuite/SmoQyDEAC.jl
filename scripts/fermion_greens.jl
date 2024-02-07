@@ -22,7 +22,7 @@ mkpath(output_directory);
 number_of_bins = 2;
 runs_per_bin = 5 ;
 output_file = joinpath(output_directory, "fermion_out.jld2");
-checkpoint_directory = output_directory;
+checkpoint_file = joinpath(output_directory,"DEAC_checkpoint.jld2");
 nω = 401;
 ωmin = -10.;
 ωmax = 10.;
@@ -40,9 +40,10 @@ output_dictionary_τ = DEAC_Binned(
     number_of_bins,
     runs_per_bin,
     output_file,
-    checkpoint_directory;
+    checkpoint_file;
     base_seed = base_seed,
-    keep_bin_data = keep_bin_data
+    keep_bin_data = keep_bin_data,
+    verbose = true
 )
 output_dictionary_τ_std = DEAC_Std(
     Gτ_std,
@@ -54,9 +55,12 @@ output_dictionary_τ_std = DEAC_Std(
     number_of_bins,
     runs_per_bin,
     output_file,
-    checkpoint_directory;
+    checkpoint_file;
     base_seed = base_seed,
-    keep_bin_data = keep_bin_data
+    find_ideal_fitness=false,
+    keep_bin_data = keep_bin_data,
+    number_of_generations = 10000,
+    verbose = true
 )
 output_dictionary_ωₙ = DEAC_Binned(
     Gω_bin,
@@ -67,12 +71,13 @@ output_dictionary_ωₙ = DEAC_Binned(
     number_of_bins,
     runs_per_bin,
     output_file,
-    checkpoint_directory;
+    checkpoint_file;
     base_seed = base_seed,
     keep_bin_data = keep_bin_data,
     stop_minimum_fitness=1.0,
     find_ideal_fitness=false,
-    number_of_generations=20000
+    number_of_generations = 20000,
+    verbose = true
 )
 output_dictionary_ωₙ_std = DEAC_Std(
     Gω_std,
@@ -84,12 +89,13 @@ output_dictionary_ωₙ_std = DEAC_Std(
     number_of_bins,
     runs_per_bin,
     output_file,
-    checkpoint_directory;
+    checkpoint_file;
     base_seed = base_seed,
     keep_bin_data = keep_bin_data,
-    stop_minimum_fitness=1.0,
-    find_ideal_fitness=false,
-    number_of_generations=20000
+    stop_minimum_fitness = 1.0,
+    find_ideal_fitness = false,
+    number_of_generations = 20000,
+    verbose = true
 )
 
 A = output_dictionary_τ["A"];

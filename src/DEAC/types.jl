@@ -31,7 +31,7 @@ mutable struct DEACParameters <: Comparable
     out_ωs::Vector{Float64}
     kernel_type::String
     output_file::String
-    checkpoint_directory::String
+    checkpoint_file::String
     num_bins::Int64
     runs_per_bin::Int64
     population_size::Int64

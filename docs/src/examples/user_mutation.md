@@ -49,7 +49,7 @@ For speed's sake we only do 2*5 in this example.
 number_of_bins = 2;
 runs_per_bin = 5 ;
 output_file = joinpath(output_directory, "user_mutation_out.jld2");
-checkpoint_directory = output_directory;
+checkpoint_file = joinpath(output_directory,"DEAC_checkpoint.jld2");
 nω = 401;
 ωmin = -10.;
 ωmax = 10.;
@@ -97,6 +97,7 @@ end
 ````
 
 Now we run DEAC with the additional mutation
+Note, number_of_generations is set low for the example's run time
 
 ````@example user_mutation
 output_dictionary_τ = DEAC_Binned(
@@ -108,12 +109,14 @@ output_dictionary_τ = DEAC_Binned(
     number_of_bins,
     runs_per_bin,
     output_file,
-    checkpoint_directory;
+    checkpoint_file;
     base_seed = base_seed,
     keep_bin_data = keep_bin_data,
     user_mutation! = user_mut_vec!,
     stop_minimum_fitness = 1.0,
-    find_ideal_fitness = false
+    find_ideal_fitness = false,
+    number_of_generations = 10000,
+    verbose = true
 )
 ````
 

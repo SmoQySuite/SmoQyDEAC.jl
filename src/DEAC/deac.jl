@@ -8,7 +8,7 @@
          num_bins::Int64,
          runs_per_bin::Int64,
          output_file::String,
-         checkpoint_directory::String;
+         checkpoint_file::String;
 
          find_ideal_fitness::Bool=true
          population_size::Int64=8,
@@ -38,7 +38,7 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `num_bins::Int64`: Bins to generate
 - `runs_per_bin::Int64`: Number of runs per bin for statistics
 - `output_file::String`: File to store output dictionary. jld2 format recommended
-- `checkpoint_directory::String`: Directory to store checkpoint data. 
+- `checkpoint_file::String`: File to store checkpoint data. jld2 format recommended
 
 # Optional Arguments
 - `find_ideal_fitness::Bool = false`: Use ideal fitness finder
@@ -78,7 +78,7 @@ function DEAC_Std(correlation_function::AbstractVector,
                   num_bins::Int64,
                   runs_per_bin::Int64,
                   output_file::String,
-                  checkpoint_directory::String;
+                  checkpoint_file::String;
 
                   population_size::Int64=8,
                   base_seed::Integer=8675309,
@@ -97,7 +97,7 @@ function DEAC_Std(correlation_function::AbstractVector,
                 )
     #
     println("\n*** It is highly recommended to use binned data and the covariant matrix method instead (DEAC_Binned) if possible ***\n")
-    params = DEACParameters(β,input_grid,out_ωs,kernel_type,output_file,checkpoint_directory,
+    params = DEACParameters(β,input_grid,out_ωs,kernel_type,output_file,checkpoint_file,
                             num_bins,runs_per_bin,population_size,base_seed,
                             crossover_probability,self_adapting_crossover_probability,
                             differential_weight,self_adapting_differential_weight_probability,
@@ -123,7 +123,7 @@ end # DEAC_Std
          num_bins::Int64,
          runs_per_bin::Int64,
          output_file::String,
-         checkpoint_directory::String;
+         checkpoint_file::String;
 
          W_ratio_max = 1.0e6,
          find_ideal_fitness::Bool = false,
@@ -154,7 +154,7 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `num_bins::Int64`: Bins to generate
 - `runs_per_bin::Int64`: Number of runs per bin for statistics
 - `output_file::String`: File to store output dictionary. jld2 format recommended
-- `checkpoint_directory::String`: Directory to store checkpoint data. 
+- `checkpoint_file::String`: File to store checkpoint data. jld2 format recommended
 
 # Optional Arguments
 - `find_ideal_fitness::Bool = true`: Use ideal fitness finder
@@ -194,7 +194,7 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
                   num_bins::Int64,
                   runs_per_bin::Int64,
                   output_file::String,
-                  checkpoint_directory::String;
+                  checkpoint_file::String;
 
                   population_size::Int64=20,
                   base_seed::Integer=8675309,
@@ -216,7 +216,7 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
     #
     #- `bootstrap_bins::Int = 0`: The algorithm requires more bins than τ steps. We use bootstrapping to get 5 * nτ bins by default. User may set this higher 
 
-    params = DEACParameters(β,input_grid,out_ωs,kernel_type,output_file,checkpoint_directory,
+    params = DEACParameters(β,input_grid,out_ωs,kernel_type,output_file,checkpoint_file,
                             num_bins,runs_per_bin,population_size,base_seed,
                             crossover_probability,self_adapting_crossover_probability,
                             differential_weight,self_adapting_differential_weight_probability,
@@ -308,7 +308,7 @@ function run_DEAC(Greens_tuple,
 
         if chk_exists
             if compare_checkpoint(chk_dict,params,Greens_tuple)
-                println("Checkpoint found at ",joinpath(params.checkpoint_directory,"DEAC_checkpoint.jld2"))
+                println("Checkpoint found at ",params.checkpoint_file)
                 start_bin = chk_dict["bin_num"] + 1
                 println("Parameters match. Resuming at bin ",start_bin,"\n")
                 bin_data = chk_dict["bin_data"]
