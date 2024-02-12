@@ -8,11 +8,11 @@ This package takes imaginary time or Matsubara frequency correlation functions f
 
 **NOTE**: This package is in the experimental phase of development and is not yet published to the Julia [`General`](https://github.com/JuliaRegistries/General.git) registry.
 
-Open a Julia REPL environment and run the following command:
-```julia
-] dev https://github.com/SmoQySuite/SmoQyDEAC.jl.git
+Open a Julia REPL environment and run the following commands:
 ```
-This command clones the [`SmoQyDEAC.jl`](https://github.com/SmoQySuite/SmoQyDEAC.jl.git) repository to the hidden directory `.julia/dev` that exists in the same directory where Julia is installed.
+julia> ]
+pkg> add SmoQyDEAC
+```
 
 # Running SmoQyDEAC
 
