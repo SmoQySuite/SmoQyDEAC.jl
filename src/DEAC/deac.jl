@@ -65,7 +65,7 @@ You may increment your base seed by 1000, use another output file name, and gene
 SmoQyDEAC will save a dictionary to the file name passed via the `output_file` argument. The same dictionary will be returned by the function.
 
 # Checkpointing
-SmoQyDEAC will place a file named `DEAC_checkpoint.jld2` in the directory passed in `checkpoint_directory`. After completing every bin this file will be saved.
+SmoQyDEAC will periodically save a file named according to the parameter passed in`checkpoint_file`. JLD2 format is recommended, e.g. a file with the .jld2 extension. After completing every bin this file will be saved.
 After the last bin is finished the file will be deleted. When `autoresume_from_checkpoint=true` SmoQyDEAC will attempt to resume from the checkpoint. 
 If the arguments passed do not match those in the checkpoint the code will exit.
 """
@@ -173,7 +173,7 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `self_adapting_differential_weight_probability::Float64 = 0.1`: Likelihood of SAD changing
 - `self_adapting_differential_weight::Float64 = 0.9`: SAD
 - `user_mutation! = nothing`: User passed function to add additional mutation to each iteration. See below for more information
-- `eigenvalue_ratio_min::Float64 = 1e-8`: Cutoff to mask out eigenvectors ≈ 0.0 eigenvalues that arise due to symmetries in input data                  
+- `eigenvalue_ratio_min::Float64 = 1e-8`: Cutoff to mask out eigenvectors with eigenvalues ≈ 0.0 that arise due to symmetries in input data
 
 Each run will use its own seed. E.g. if you run 10 bins with 100 runs per bin, you will use seeds `base_seed:base_seed+999`. 
 You may increment your base seed by 1000, use another output file name, and generate more statistics later.
@@ -182,9 +182,9 @@ You may increment your base seed by 1000, use another output file name, and gene
 SmoQyDEAC will save a dictionary to the file name passed via the `output_file` argument. The same dictionary will be returned by the function.
 
 # Checkpointing
-SmoQyDEAC will place a file named `DEAC_checkpoint.jld2` in the directory passed in `checkpoint_directory`. After completing every bin this file will be saved.
+SmoQyDEAC will periodically save a file named according to the parameter passed in`checkpoint_file`. JLD2 format is recommended, e.g. a file with the .jld2 extension. After completing every bin this file will be saved.
 After the last bin is finished the file will be deleted. When `autoresume_from_checkpoint=true` SmoQyDEAC will attempt to resume from the checkpoint. 
-If the arguments passed do not match those in the checkpoint the code will exit. 
+If the arguments passed do not match those in the checkpoint the code will exit.
 """
 function DEAC_Binned(correlation_function::AbstractMatrix,
                   β::Float64,
