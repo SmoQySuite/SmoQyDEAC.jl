@@ -555,9 +555,9 @@ function run_DEAC(Greens_tuple,
                 finished_runs += 1
                 
                 for fit_idx ∈ 1:size(fitness,1)
-                    run_data[:,curbin,fit_idx] = tmp_run_data[:,fit_idx] ./ (tmp_fit_data[fit_idx])
-                    weight_data[curbin,fit_idx] = 1.0 / (tmp_fit_data[fit_idx])
-                    generations[curbin,fit_idx] = tmp_generations[fit_idx] 
+                    run_data[:,curbin,fit_idx] += tmp_run_data[:,fit_idx] ./ (tmp_fit_data[fit_idx])
+                    weight_data[curbin,fit_idx] += 1.0 / (tmp_fit_data[fit_idx])
+                    generations[curbin,fit_idx] += tmp_generations[fit_idx] 
                 end
                 
                 # setting seed to 0 allows culling of used seeds in the checkpoint

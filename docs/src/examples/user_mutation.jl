@@ -47,7 +47,7 @@ keep_bin_data = false;
 
 # Define an additional mutation function which takes two populations of [1:nω,1:n_population] size and a random number generator.
 # Per Julia convention, the first argument is the one which is updated. For those new to Julia, the "!" at the end of the function name means the function will mutate at least one of the arguments.
-# This mutation just puts a slight blur on odd indexed ω values. This is not something you'd want to do, but, this is a simple example
+# This mutation just puts a slight blur on odd indexed ω values. This is not something I imagine you'd want to do, but, this is a simple example
 function user_mut!(pop_new,pop_old,rng)
     npop = size(pop_old,2)
     nω = size(pop_old,1)
