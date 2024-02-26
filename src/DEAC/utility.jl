@@ -81,18 +81,21 @@ function GEMM!(C,A,B,use_SIMD)
 end
 
 # Calculate binned data and save to a checkpoint
-function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,curbin,Δω,Greens_tuple,true_fitness,seed_vec,generations,params)
-    bin_data[:,curbin] = run_data[:,curbin] ./  sum(weight_data[curbin])
-    calculated_zeroth_moment[1,curbin] = sum(bin_data[:,curbin]) .* Δω 
-
-    # Bosonic time kernels steal a factor of ω from the spectral function.
-    # Multiply it back in if needed
-    if  occursin("bosonic",params.kernel_type)
-        bin_data[:,curbin] = bin_data[:,curbin] .* params.out_ωs
-    end
+function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,curbin,Δω,Greens_tuple,fitness,seed_vec,generations,params)
+    for fit_idx ∈ 1:size(fitness,1)
+        bin_data[:,curbin,fit_idx] = run_data[:,curbin,fit_idx] ./  sum(weight_data[curbin,fit_idx])
+        calculated_zeroth_moment[1,curbin,fit_idx] = sum(bin_data[:,curbin,fit_idx]) .* Δω 
+    
+        # Bosonic time kernels steal a factor of ω from the spectral function.
+        # Multiply it back in if needed
+    
+        if  occursin("bosonic",params.kernel_type)
+            bin_data[:,curbin,fit_idx] = bin_data[:,curbin,fit_idx] .* params.out_ωs
+        end
+    end    
     
     if curbin != params.num_bins
-        save_checkpoint(bin_data,generations,curbin,params,Greens_tuple,calculated_zeroth_moment,true_fitness,seed_vec)
+        save_checkpoint(bin_data,generations,curbin,params,Greens_tuple,calculated_zeroth_moment,fitness,seed_vec)
     end
     
     println("Finished bin ",curbin," of ",params.num_bins)

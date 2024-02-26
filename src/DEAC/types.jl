@@ -41,7 +41,6 @@ mutable struct DEACParameters <: Comparable
     differential_weight::Float64
     self_adapting_differential_weight_probability::Float64
     self_adapting_differential_weight::Float64
-    stop_minimum_fitness::Float64
     number_of_generations::Int64
 end
 

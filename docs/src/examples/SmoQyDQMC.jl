@@ -87,8 +87,8 @@ for kx in 1:1 # 1:Nkx
         runs_per_bin,
         output_file,
         checkpoint_file;
-        stop_minimum_fitness = 1.0,
-        find_ideal_fitness = false,
+        stop_minimum_fitness = [1.5,1.0],
+        find_fitness_floor = false,
         number_of_generations = 20000,
         verbose = true
     )

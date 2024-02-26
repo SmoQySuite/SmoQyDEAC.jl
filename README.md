@@ -2,7 +2,7 @@
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/) 
 
-[![Build Status](https://github.com/SmoQySuite/SmoQyDQMC.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/SmoQySuite/SmoQyDQMC.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Build Status](https://github.com/SmoQySuite/SmoQyDEAC.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/SmoQySuite/SmoQyDEAC.jl/actions/workflows/CI.yml?query=branch%3Amain)
 ![](https://img.shields.io/badge/Lifecycle-Maturing-007EC6g)
 <!--[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://SmoQySuite.github.io/SmoQyDEAC.jl/dev/)-->
 This packages utilizes the Differential Evolution for Analytic Continuation (DEAC) method. This package takes imaginary time and Matsubara frequency correlation functions from condensed matter Monte Carlo simulations and provides the associated spectral function on the real axis. This is a reimplementation of the DEAC algorithm developed by Nathan S. Nichols, Paul Sokol, and Adrian Del Maestro [Phys. Rev. E 106, 025312 (2022)](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.106.025312).

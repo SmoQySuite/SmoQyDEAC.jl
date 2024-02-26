@@ -113,8 +113,8 @@ output_dictionary_ωₙ = DEAC_Binned(
     checkpoint_file;
     base_seed = base_seed,
     keep_bin_data = keep_bin_data,
-    stop_minimum_fitness=1.0,
-    find_ideal_fitness=false,
+    fitness=1.0,
+    find_fitness_floor=false,
     number_of_generations = 20000,
     verbose = true
 )
@@ -131,7 +131,7 @@ output_dictionary_ωₙ_std = DEAC_Std(
     checkpoint_file;
     base_seed = base_seed,
     keep_bin_data = keep_bin_data,
-    stop_minimum_fitness = 1.0,
+    fitness = 1.0,
     find_ideal_fitness = false,
     number_of_generations = 20000,
     verbose = true

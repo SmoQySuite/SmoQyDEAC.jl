@@ -30,7 +30,7 @@ function delete_checkpoint(params::DEACParameters)
 end # delete_checkpoint()
 
 # Save a checkpoint file
-function save_checkpoint(bin_data, generations, bin_num, params::DEACParameters,G_tuple,zeroth_momentum::AbstractArray,true_fitness,seed_vec)
+function save_checkpoint(bin_data, generations, bin_num, params::DEACParameters,G_tuple,zeroth_momentum::AbstractArray,fitness,seed_vec)
     file = params.checkpoint_file
     seeds = filter(x->x≠0,seed_vec)
     chk_data = Dict{String,Any}(
@@ -40,7 +40,7 @@ function save_checkpoint(bin_data, generations, bin_num, params::DEACParameters,
         "params" => params,
         "G_tuple" => G_tuple,
         "zeroth" => zeroth_momentum,
-        "true_fitness" => true_fitness,
+        "fitness" => fitness,
         "seeds" => seeds
     )
     FileIO.save(file,chk_data)
