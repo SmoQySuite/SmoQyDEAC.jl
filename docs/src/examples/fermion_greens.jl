@@ -96,7 +96,7 @@ output_dictionary_τ_std = DEAC_Std(
     output_file,
     checkpoint_file;
     base_seed = base_seed,
-    find_ideal_fitness=false,
+    find_fitness_floor=false,
     keep_bin_data = keep_bin_data,
     number_of_generations = 10000,
     verbose = true
@@ -132,7 +132,7 @@ output_dictionary_ωₙ_std = DEAC_Std(
     base_seed = base_seed,
     keep_bin_data = keep_bin_data,
     fitness = 1.0,
-    find_ideal_fitness = false,
+    find_fitness_floor = false,
     number_of_generations = 20000,
     verbose = true
 )
