@@ -90,7 +90,7 @@ function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,cur
         # Multiply it back in if needed
     
         if  occursin("bosonic",params.kernel_type)
-            bin_data[:,curbin,fit_idx] = bin_data[:,curbin,fit_idx] .* params.out_ωs
+            bin_data[:,curbin,fit_idx] = @. 0.5 * bin_data[:,curbin,fit_idx] * (1- exp(-params.β * params.out_ωs))
         end
     end    
     
@@ -104,7 +104,6 @@ end
 
 # Calculate matrices used to go from ω to τ space and χ² fit
 function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenvalue_ratio_min)
-    
     if Greens_tuple[2] == nothing
         # Covariance Methods
               
@@ -133,7 +132,7 @@ function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenva
         Nsteps = size(corr_avg_p)
         Nbins =  (bootstrap) ? 1.0 : size(Greens_tuple[1],1)
         
-        W = 0.5 * Nbins ./ abs.(F.values[mask] .* Nsteps)
+        W = 0.5 .* Nbins ./ abs.(F.values[mask] .* Nsteps)
         full_eigen = F.values
 
     else

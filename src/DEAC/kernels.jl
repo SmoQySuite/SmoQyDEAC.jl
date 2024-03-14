@@ -11,22 +11,23 @@ function generate_K(params::DEACParameters)
     else
         K = zeros(Float64,(ngrid,nω))
     end
+    
 
     Δω = (params.out_ωs[end]-params.out_ωs[1])/(size(params.out_ωs,1)-1)
 
 
     if params.kernel_type == "time_bosonic"
-        nb =  n_b(params)
+        
         for ω in 1:nω
             for τ in 1:ngrid
-                K[τ,ω] = Δω*exp(-params.out_ωs[ω]*params.input_grid[τ]) * nb[ω]
+                K[τ,ω] = Δω*exp(-params.out_ωs[ω]*params.input_grid[τ])
             end
         end
     elseif params.kernel_type == "time_bosonic_symmetric"
-        nb = n_b(params)
+        
         for ω in 1:nω
             for τ in 1:ngrid
-                K[τ,ω] = 0.5 * Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) * nb[ω]
+                K[τ,ω] =   Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) 
             end
         end
     elseif params.kernel_type == "time_fermionic"
@@ -68,18 +69,3 @@ function generate_K(params::DEACParameters)
 end # generate_K()
 
 
-# calculate Bose factor * ω, 
-function n_b(params::DEACParameters)
-    close = 1.0e-6
-    nω = size(params.out_ωs,1)
-    arr = zeros(Float64,nω)
-    for ω in 1:nω
-        # L'hopital
-        if abs(params.out_ωs[ω]) < close
-            arr[ω] = 1.0 /params.β
-        else
-            arr[ω] = params.out_ωs[ω] / (1.0 - exp(-params.β * params.out_ωs[ω]))
-        end
-    end 
-    return arr
-end # n_b()

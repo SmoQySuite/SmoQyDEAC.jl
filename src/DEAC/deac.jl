@@ -305,7 +305,22 @@ function run_DEAC(Greens_tuple,
         
     # Utilize the correct kernel
     K = generate_K(params)
+    normalize = occursin("time",params.kernel_type)
+    normK = ones(Float64,(1,size(params.out_ωs,1))) .* Δω
+    target_zeroth = 1.0
+    if normalize && occursin("bosonic",params.kernel_type)
+        if Greens_tuple[2] == nothing
+            target_zeroth =  mean(Greens_tuple[1][:,1])
+        else
+            target_zeroth =  Greens_tuple[1][1]
+        end
+        if (params.kernel_type == "time_bosonic_symmetric") && normalize
+            normK[1,:] =   K[1,:] 
+            
+        end
+    end
     
+
     # prevent race conditions when threads finish
     thread_lock = ReentrantLock()
 
@@ -331,7 +346,7 @@ function run_DEAC(Greens_tuple,
                 calculated_zeroth_moment = chk_dict["zeroth"]
                 fitness = chk_dict["fitness"]
             else
-                println("Checkpoint found at ",joinpath(params.checkpoint_directory,"DEAC_checkpoint.jld2"))
+                println("Checkpoint found at ",params.checkpoint_file)
                 println("Mismatched parameters. Exiting")
                 exit()
             end
@@ -343,6 +358,7 @@ function run_DEAC(Greens_tuple,
 
     # Matrices for calculating fit
     W, Kp, corr_avg_p, full_eigen = calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenvalue_ratio_min)
+    
     
     
     ### Fitness Floor Finder
@@ -400,11 +416,12 @@ function run_DEAC(Greens_tuple,
                     mutant_indices = get_mutant_indices(rng,params.population_size)
                     
                     # if mutate_indices, do mutation, else keep same
-                    propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params)
+                    propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params,normalize,normK,target_zeroth)
                     
                     # calculate new fitness
                     GEMM!(model,Kp,population_new,use_SIMD)
                     fitness_new = Χ²(corr_avg_p,model,W) #./ size(params.input_grid,1)
+
 
                     # update populations if fitness improved
                     update_populations!(fitness_old,crossover_probability_old,differential_weights_old,population_old,fitness_new,crossover_probability_new,differential_weights_new,population_new)
@@ -484,6 +501,8 @@ function run_DEAC(Greens_tuple,
             # Randomly set initial populations, initialize arrays
             population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
             population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+
+            
             model = zeros(eltype(Greens_tuple[1]),(size(Kp,1),size(population_old,2)))
             mutate_indices = Array{Float64}(undef,(size(params.out_ωs,1),params.population_size))
 
@@ -510,7 +529,7 @@ function run_DEAC(Greens_tuple,
                 mutant_indices = get_mutant_indices(rng,params.population_size)
                 
                 # if mutate_indices, do mutation, else keep same
-                propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params)
+                propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params,normalize,normK,target_zeroth)
                 
                 # get new fitness
                 GEMM!(model,Kp,population_new,use_SIMD)
@@ -544,8 +563,16 @@ function run_DEAC(Greens_tuple,
 
                 numgen = numgen + 1
             end # generations
-            
-            
+
+            if numgen ≥ params.number_of_generations
+                fit_data, fit_idx = findmin(fitness_old)
+                cur_best_pop = population_old[:,fit_idx]
+                for current_fit ∈ current_fit_idx:size(tmp_fit_data,1)
+                    tmp_fit_data[current_fit] = fit_data
+                    tmp_run_data[current_fit] = cur_best_pop
+                    tmp_generations[current_fit] = params.number_of_generations
+                end
+            end
             # lock to prevent race conditions
             lock(thread_lock) do 
                 

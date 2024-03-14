@@ -44,7 +44,7 @@ end
 #         end
 #     end
 # end
-function propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params)
+function propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params,normalize,normK,target_zeroth)
     @turbo for pop in 1:params.population_size, ω in 1:size(params.out_ωs,1)
         population_new[ω,pop] = population_old[ω,pop]*(1.0-mutate_indices[ω,pop]) + # If false keep old gene
                                 #if true do update
@@ -52,6 +52,14 @@ function propose_populations!(population_new,population_old,mutate_indices,diffe
                                 (population_old[ω,mutant_indices[2,pop]]-population_old[ω,mutant_indices[3,pop]]))
                                 
     end # pop
+    if normalize #&& false
+        norms = (normK * population_new)
+        
+        @turbo for pop in 1:params.population_size, ω in 1:size(params.out_ωs,1)
+             population_new[ω,pop] = population_new[ω,pop] * target_zeroth / norms[1,pop]
+        end
+        
+    end
 end
 
 
