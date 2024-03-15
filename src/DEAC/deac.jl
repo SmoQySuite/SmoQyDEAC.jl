@@ -569,7 +569,7 @@ function run_DEAC(Greens_tuple,
                 cur_best_pop = population_old[:,fit_idx]
                 for current_fit ∈ current_fit_idx:size(tmp_fit_data,1)
                     tmp_fit_data[current_fit] = fit_data
-                    tmp_run_data[current_fit] = cur_best_pop
+                    tmp_run_data[:,current_fit] = cur_best_pop
                     tmp_generations[current_fit] = params.number_of_generations
                 end
             end

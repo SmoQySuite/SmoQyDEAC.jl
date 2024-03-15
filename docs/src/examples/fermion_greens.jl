@@ -138,8 +138,10 @@ output_dictionary_ωₙ_std = DEAC_Std(
 )
 
 # Accessing output
-#md ## Spectral function, 1D array size (nω)
+#md ## Spectral function, 2D array size (nω,nFitness)
+#md ## nFitness is the number of fitnesses you set. In this case, 1
 A = output_dictionary_τ["A"];
+fitnesses = output_dictionary_τ["fitness"];
 #md ## Spectral function error, 1D array size (nω)
 A_σ = output_dictionary_τ["σ"];
 #md ## ω grid, 1D array size (nω)
@@ -155,6 +157,11 @@ avg_generations = output_dictionary_τ["avg_generations"];
 bin_data = output_dictionary_τ["bin_data"];
 #md ## zeroth moment, 1D array (nbins)
 bin_zeroth = output_dictionary_τ["bin_zeroth_moment"];
+#md ## full eigenvalues - only applies to DEAC_Binned
+#md ## These are the eigenvalues of the covariance matrix.
+#md ## Eigenvectors whose eigenvalues are a factor eigenvalue_ratio_min less than the highest eigenvalue
+#md ## are dropped since not all correlation function inputs are linearly independent
+full_eigenvalues = output_dictionary_τ["full_eigenvalues"];
 
 
 # The dictionary will automatically be saved

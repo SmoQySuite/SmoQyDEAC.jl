@@ -57,7 +57,7 @@ output_dictionary_τ_std = DEAC_Std(
     output_file,
     checkpoint_file;
     base_seed = base_seed,
-    find_ideal_fitness=false,
+    find_fitness_floor=false,
     keep_bin_data = keep_bin_data,
     number_of_generations = 10000,
     verbose = true
@@ -74,8 +74,8 @@ output_dictionary_ωₙ = DEAC_Binned(
     checkpoint_file;
     base_seed = base_seed,
     keep_bin_data = keep_bin_data,
-    stop_minimum_fitness=1.0,
-    find_ideal_fitness=false,
+    fitness=1.0,
+    find_fitness_floor=false,
     number_of_generations = 20000,
     verbose = true
 )
@@ -92,13 +92,14 @@ output_dictionary_ωₙ_std = DEAC_Std(
     checkpoint_file;
     base_seed = base_seed,
     keep_bin_data = keep_bin_data,
-    stop_minimum_fitness = 1.0,
-    find_ideal_fitness = false,
+    fitness = 1.0,
+    find_fitness_floor = false,
     number_of_generations = 20000,
     verbose = true
 )
 
 A = output_dictionary_τ["A"];
+fitnesses = output_dictionary_τ["fitness"];
 A_σ = output_dictionary_τ["σ"];
 ωs_out = output_dictionary_τ["ωs"];
 zeroth_calc = output_dictionary_τ["zeroth_moment"];
@@ -107,7 +108,9 @@ avg_generations = output_dictionary_τ["avg_generations"];
 
 bin_data = output_dictionary_τ["bin_data"];
 bin_zeroth = output_dictionary_τ["bin_zeroth_moment"];
+full_eigenvalues = output_dictionary_τ["full_eigenvalues"];
 
 test_dictionary = FileIO.load(output_file)
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
+

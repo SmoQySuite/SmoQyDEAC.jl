@@ -59,10 +59,11 @@ output_dictionary_τ = DEAC_Binned(
     base_seed = base_seed,
     keep_bin_data = keep_bin_data,
     user_mutation! = user_mut_vec!,
-    stop_minimum_fitness = 1.0,
-    find_ideal_fitness = false,
+    fitness = 1.0,
+    find_fitness_floor = false,
     number_of_generations = 10000,
     verbose = true
 )
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
+

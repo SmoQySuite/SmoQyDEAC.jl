@@ -31,7 +31,26 @@ DEAC_Std
 
 To add additional mutations to the base DEAC algorithm you utilize the ```user_mutation!``` functionality. ```user_mutation!``` is a user defined function which takes three (3) parameters, ```(population_new, population_old, rng)```. The result in ```population_new``` is treated as a new trial population, and if the fitness improves for a population, the trial population is stored.
 
-```population_new``` and ```population_old``` are of the shape ```[1:nω, 1:population_size]```. Note, there is no guarantee that ```population_new``` is a copy of ```population_old```, so the user should update the entire array. See `Example 3: User Mutation` for an implementation.
+```population_new``` and ```population_old``` are of the shape ```[1:nω, 1:population_size]```. Note, there is no guarantee that ```population_new``` is a copy of ```population_old```, so the user should update the entire array. See `Example 3: User Mutation` for an example implementation.
+
+## Output
+
+### Default Keys
+Both API functions return a ```Dict{String,Any}``` object as well as save that dictionary to the location specified in the parameter ```output_file```. The dictionary has the following keys
+- `A`: 2D array of shape (n$\omega$,nFitness), where nFitness is the number of fitness targets in the run. 
+- `fitness`: 1D array with all fitnesses associated with the run in descending order
+- `σ`: The calculated standard error for the run. NOTE: DEAC is non-ergodic, so this does not correspond actual error bars!
+- `ωs`: The $\omega$ values corresponding to the first dimenson of `A`.
+- `avg_generations`: number of generations to reach lowest target fitness
+- `runtime`: Total run time in seconds
+- `zeroth_moment`: 1D array of the calculated zeroth moments for the reported range of `$\omega$s` for each fitness
+- `zeroth_moment_σ`: Standard error for `zeroth_moment`.
+- `full_eigenvalues`: Only pertinent for binned data. When finding the eigenbasis for the covariance matrix near-zero eigenvalues may arise due to linear correlations in your data. Those below the value eigenvalue_ratio_min*maximum(eigenvalues) will be ignored and their eigenvectors not used.
+
+### Bin data
+If `keep_bin_data==true` then the following keys are also in the output dictionary
+- `bin_data`: 3D array of size (n$\omega$,nBins,nFitness) with data from each bin.
+- `bin_zeroth_moment`: Same as `zeroth_moment` but on a bin by bin basis.
 
 ## Kernels
 The following are the supported kernels
