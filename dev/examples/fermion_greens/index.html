@@ -95,18 +95,20 @@ output_dictionary_ωₙ_std = DEAC_Std(
     number_of_generations = 20000,
     verbose = true
 )</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 11 entries:
-  &quot;A&quot;                 =&gt; [0.00698984; 0.00765355; … ; 0.00808224; 0.0134773;;]
+  &quot;A&quot;                 =&gt; [0.00699301; 0.00765457; … ; 0.00808714; 0.0134719;;]
   &quot;avg_generations&quot;   =&gt; 5766.6
   &quot;ωs&quot;                =&gt; [-10.0, -9.95, -9.9, -9.85, -9.8, -9.75, -9.7, -9.65, …
   &quot;full_eigenvalues&quot;  =&gt; nothing
-  &quot;bin_zeroth_moment&quot; =&gt; [1.01857 1.01999;;;]
+  &quot;bin_zeroth_moment&quot; =&gt; [1.01884 1.01972;;;]
   &quot;zeroth_moment&quot;     =&gt; 1.01928
   &quot;zeroth_moment_σ&quot;   =&gt; NaN
-  &quot;bin_data&quot;          =&gt; [0.00277798 0.0112017; 0.0133871 0.00191999; … ; 0.004…
+  &quot;bin_data&quot;          =&gt; [0.00276389 0.0112221; 0.00402985 0.0112793; … ; 0.000…
   &quot;fitness&quot;           =&gt; [1.0]
-  &quot;σ&quot;                 =&gt; [0.00421187; 0.00573356; … ; 0.0036441; 0.00987057;;]
-  &quot;runtime&quot;           =&gt; 4.59836</code></pre><p>Accessing output</p><pre><code class="language-julia hljs"># Spectral function, 1D array size (nω)
+  &quot;σ&quot;                 =&gt; [0.00422912; 0.00362472; … ; 0.00745406; 0.00644197;;]
+  &quot;runtime&quot;           =&gt; 4.48557</code></pre><p>Accessing output</p><pre><code class="language-julia hljs"># Spectral function, 2D array size (nω,nFitness)
+# nFitness is the number of fitnesses you set. In this case, 1
 A = output_dictionary_τ[&quot;A&quot;];
+fitnesses = output_dictionary_τ[&quot;fitness&quot;];
 # Spectral function error, 1D array size (nω)
 A_σ = output_dictionary_τ[&quot;σ&quot;];
 # ω grid, 1D array size (nω)
@@ -118,17 +120,22 @@ zeroth_σ = output_dictionary_τ[&quot;zeroth_moment_σ&quot;];
 avg_generations = output_dictionary_τ[&quot;avg_generations&quot;];</code></pre><p>Binned information - not available if <code>keep_bin_data=false</code></p><pre><code class="language-julia hljs"># Bin data, 2D array size (nω,nbins)
 bin_data = output_dictionary_τ[&quot;bin_data&quot;];
 # zeroth moment, 1D array (nbins)
-bin_zeroth = output_dictionary_τ[&quot;bin_zeroth_moment&quot;];</code></pre><p>The dictionary will automatically be saved</p><pre><code class="language-julia hljs"># Example of loading the data from the jld2
+bin_zeroth = output_dictionary_τ[&quot;bin_zeroth_moment&quot;];
+# full eigenvalues - only applies to DEAC_Binned
+# These are the eigenvalues of the covariance matrix.
+# Eigenvectors whose eigenvalues are a factor eigenvalue_ratio_min less than the highest eigenvalue
+# are dropped since not all correlation function inputs are linearly independent
+full_eigenvalues = output_dictionary_τ[&quot;full_eigenvalues&quot;];</code></pre><p>The dictionary will automatically be saved</p><pre><code class="language-julia hljs"># Example of loading the data from the jld2
 test_dictionary = FileIO.load(output_file)
 # This is identical to output_dictionary_ωₙ_std</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 11 entries:
   &quot;avg_generations&quot;   =&gt; 5766.6
   &quot;full_eigenvalues&quot;  =&gt; nothing
-  &quot;bin_zeroth_moment&quot; =&gt; [1.01857 1.01999;;;]
+  &quot;bin_zeroth_moment&quot; =&gt; [1.01884 1.01972;;;]
   &quot;zeroth_moment_σ&quot;   =&gt; NaN
   &quot;fitness&quot;           =&gt; [1.0]
-  &quot;σ&quot;                 =&gt; [0.00421187; 0.00573356; … ; 0.0036441; 0.00987057;;]
-  &quot;A&quot;                 =&gt; [0.00698984; 0.00765355; … ; 0.00808224; 0.0134773;;]
+  &quot;σ&quot;                 =&gt; [0.00422912; 0.00362472; … ; 0.00745406; 0.00644197;;]
+  &quot;A&quot;                 =&gt; [0.00699301; 0.00765457; … ; 0.00808714; 0.0134719;;]
   &quot;ωs&quot;                =&gt; [-10.0, -9.95, -9.9, -9.85, -9.8, -9.75, -9.7, -9.65, …
   &quot;zeroth_moment&quot;     =&gt; 1.01928
-  &quot;bin_data&quot;          =&gt; [0.00277798 0.0112017; 0.0133871 0.00191999; … ; 0.004…
-  &quot;runtime&quot;           =&gt; 4.59836</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../SmoQyDQMC/">Example 2: Load from SmoQyDQMC and run SmoQyDEAC »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Monday 26 February 2024 16:59">Monday 26 February 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  &quot;bin_data&quot;          =&gt; [0.00276389 0.0112221; 0.00402985 0.0112793; … ; 0.000…
+  &quot;runtime&quot;           =&gt; 4.48557</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../SmoQyDQMC/">Example 2: Load from SmoQyDQMC and run SmoQyDEAC »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Friday 15 March 2024 16:58">Friday 15 March 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
