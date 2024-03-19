@@ -7,7 +7,7 @@ using Printf
 using LinearAlgebra
 using JLD2
 using LoopVectorization
-using BenchmarkTools
+using Chairmarks
 
 
 include("DEAC/types.jl")

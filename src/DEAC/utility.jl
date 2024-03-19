@@ -58,10 +58,10 @@ function useSIMD(K,M,N)
     B = Random.rand(Float64,(K, N))
 
     # Benchmark
-    BenchmarkTools.DEFAULT_PARAMETERS.seconds=1.0
-    t_linAlg = @belapsed mul!($C,$A,$B)
-    t_avx = @belapsed gemmSIMD!($C,$A,$B)
-    use_SIMD = t_avx < t_linAlg
+    
+    t_linAlg = @b mul!($C,$A,$B)
+    t_avx = @b gemmSIMD!($C,$A,$B)
+    use_SIMD = t_avx.time < t_linAlg.time
     if use_SIMD
         println("SIMD GEMM faster than BLAS, using SmoQyDEAC's gemmSIMD!()")
     else
