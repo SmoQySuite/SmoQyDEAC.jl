@@ -20,7 +20,7 @@ This work was supported by the U.S. Department of Energy, Office of Science, Off
 
 - [`LoopVectorization.jl`](https://github.com/JuliaSIMD/LoopVectorization.jl): Utilizes SIMD instructions (AVX,SSE) to vectorize loops
 - [`JLD2.jl`](https://github.com/JuliaIO/JLD2.jl): Package used to write data to binary files in an HDF5 compatible format. 
-- [`BenchmarkTools.jl`](https://github.com/JuliaCI/BenchmarkTools.jl): Used to determine if internal SIMD double general matrix multiply (DGEMM) is faster than installed linear algebra package.
+- [`Chairmarks.jl`](https://github.com/LilithHafner/Chairmarks.jl): Used to determine if internal SIMD double general matrix multiply (DGEMM) is faster than installed linear algebra package.
 
 
 
