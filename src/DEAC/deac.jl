@@ -374,7 +374,8 @@ function run_DEAC(Greens_tuple,
         fitness_floor = zeros(Float64,nfinder)
 
         Δt = @elapsed begin
-            Threads.@threads for thd in 1:nfinder
+            # Threads.@threads 
+            for thd in 1:nfinder
                 
                 # Setup RNG
                 seed = params.base_seed + thd
@@ -383,6 +384,7 @@ function run_DEAC(Greens_tuple,
                 # Allocate arrays, set random initial state
                 population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
                 population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
+                norm_array = zeros(Float64,(1,params.population_size))
                 
                 model = zeros(eltype(Greens_tuple[1]),(size(Kp,1),size(population_old,2)))
 
@@ -396,7 +398,7 @@ function run_DEAC(Greens_tuple,
 
                 mutate_indices = Array{Float64}(undef,(size(params.out_ωs,1),params.population_size))
 
-                fitness_old = initial_fit!(population_old,model,corr_avg_p,Kp,W,params,use_SIMD)
+                fitness_old = initial_fit!(population_old,model,corr_avg_p,Kp,W,params,use_SIMD,normalize,normK,target_zeroth,norm_array)
                 
                 # FFF tracker variables
                 lastDelta = typemax(Float64)
@@ -416,13 +418,12 @@ function run_DEAC(Greens_tuple,
                     mutant_indices = get_mutant_indices(rng,params.population_size)
                     
                     # if mutate_indices, do mutation, else keep same
-                    propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params,normalize,normK,target_zeroth)
+                    propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params,normalize,normK,target_zeroth,norm_array,use_SIMD)
                     
                     # calculate new fitness
                     GEMM!(model,Kp,population_new,use_SIMD)
                     fitness_new = Χ²(corr_avg_p,model,W) #./ size(params.input_grid,1)
-
-
+                    
                     # update populations if fitness improved
                     update_populations!(fitness_old,crossover_probability_old,differential_weights_old,population_old,fitness_new,crossover_probability_new,differential_weights_new,population_new)
 
@@ -501,12 +502,12 @@ function run_DEAC(Greens_tuple,
             # Randomly set initial populations, initialize arrays
             population_old  = reshape(Random.rand(rng,size(params.out_ωs,1)*params.population_size),(size(params.out_ωs,1),params.population_size))
             population_new = zeros(Float64,(size(params.out_ωs,1),params.population_size))
-
+            norm_array = zeros(Float64,(1,params.population_size))
             
             model = zeros(eltype(Greens_tuple[1]),(size(Kp,1),size(population_old,2)))
             mutate_indices = Array{Float64}(undef,(size(params.out_ωs,1),params.population_size))
 
-            fitness_old = initial_fit!(population_old,model,corr_avg_p,Kp,W,params,use_SIMD)
+            fitness_old = initial_fit!(population_old,model,corr_avg_p,Kp,W,params,use_SIMD,normalize,normK,target_zeroth,norm_array)
           
             # track number of generations to get to fitness
             numgen = 0
@@ -529,7 +530,7 @@ function run_DEAC(Greens_tuple,
                 mutant_indices = get_mutant_indices(rng,params.population_size)
                 
                 # if mutate_indices, do mutation, else keep same
-                propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params,normalize,normK,target_zeroth)
+                propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params,normalize,normK,target_zeroth,norm_array,use_SIMD)
                 
                 # get new fitness
                 GEMM!(model,Kp,population_new,use_SIMD)
