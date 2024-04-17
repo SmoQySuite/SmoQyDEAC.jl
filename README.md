@@ -18,7 +18,7 @@ This work was supported by the U.S. Department of Energy, Office of Science, Off
 
 ## Notable Package Dependencies
 
-- [`LoopVectorization.jl`](https://github.com/JuliaSIMD/LoopVectorization.jl): Utilizes SIMD instructions (AVX,SSE) to vectorize loops
+- [`LoopVectorization.jl`](https://github.com/JuliaSIMD/LoopVectorization.jl): Utilizes SIMD instructions (AVX,SSE) to vectorize loops. Note, LoopVectorization will be depracated in Julia 1.11+ but should not break this package.
 - [`JLD2.jl`](https://github.com/JuliaIO/JLD2.jl): Package used to write data to binary files in an HDF5 compatible format. 
 - [`Chairmarks.jl`](https://github.com/LilithHafner/Chairmarks.jl): Used to determine if internal SIMD double general matrix multiply (DGEMM) is faster than installed linear algebra package.
 

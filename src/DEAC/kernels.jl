@@ -63,6 +63,9 @@ function generate_K(params::DEACParameters)
             end
         end
     end # kernel_type
+
+    
+
     return K
 end # generate_K()
 
