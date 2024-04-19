@@ -2,9 +2,11 @@
 # χ² fit for real correlation functions
 function Χ²(observed::AbstractVector{T},calculated::AbstractMatrix{T},W::AbstractVector{T}) where {T<:Real}
     Χ = zeros(T,(size(calculated,2),))
+
     for pop in 1:size(calculated,2)
         @inbounds Χ[pop] = sum( ((observed .- calculated[:,pop]).^2) .* W )
     end
+# println(Χ);  exit()
     return Χ
 end # χ²
 
@@ -104,43 +106,110 @@ end
 
 # Calculate matrices used to go from ω to τ space and χ² fit
 function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenvalue_ratio_min)
+
     if Greens_tuple[2] == nothing
         # Covariance Methods
               
-        corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
+        
         mask = get_covariance_mask(params)
 
-        
+
+        # datas = Greens_tuple[1]# * U1
+        corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
         # Find eigenbasis for covariance matrix 
         cov_matrix = Statistics.cov(Greens_tuple[1],dims=1,corrected=true)
         F = eigen(cov_matrix)
         max_eig = maximum(F.values)
-
+        # println(F.values)
         # catch near-zero eigenvalues not found using get_covariance_mask
-        mask = mask .&& (F.values .> max_eig * eigenvalue_ratio_min)
+        mask = (F.values .> max_eig * eigenvalue_ratio_min) .&& mask 
+        # println(mask)
+        println(size(F.vectors))
         
-        U = F.vectors[:,mask]
-        corr_avg_p = Array{eltype(corr_avg)}(undef,size(corr_avg[:,mask]))
+        U = F.vectors#[:,mask]
+        corr_avg_p = corr_avg * U
         
         # Rotate correlation functions
         GEMM!(corr_avg_p,corr_avg,U,use_SIMD)
+        # corr_avg_p = corr_avg_p * U1
+        K = transpose(U) * K
         corr_avg_p = corr_avg_p[1,:]
+        # exit()
         
-        Kp = similar(K[mask,:])
-        GEMM!(Kp,transpose(U),K,use_SIMD)
+
+        ################################
+        S = svd(K)
+        println(size(K), " K")
+        svd_ratio = 1e-14
+        println(S.S)
+        # exit()
         
+        minval = maximum(S.S) * svd_ratio
+        S2 = S.S[S.S .> minval]
+        nS2 = size(S2,1)
+        U1 = S.U[:,1:nS2] 
+        
+        println(nS2, " nS2")
+        Kp =  Diagonal(S2) * S.Vt[1:nS2,:]
+        # println("\n",K2[1,:])
+        # println("\n",K[1,:])
+        corr_avg_p = (U1' *corr_avg_p)[:,1]
+        println(size(corr_avg_p))
+        # println(size(U1' * U1))
+        # println(size((S.Vt[1:nS2,:])'))
+        # println(size(Greens_tuple[1]))
+        # println(size(Greens_tuple[1] * U1))
+        # println(diag(U1' * U1),"\n")
+        # println((U1' * U1)[2,:],"\n")
+        # exit()
+        err = U1' * F.values#[mask] 
+        
+        #############################
+        println(err)
+
         Nsteps = size(corr_avg_p)
-        Nbins =  (bootstrap) ? 1.0 : size(Greens_tuple[1],1)
+        Nbins =  (bootstrap) ? 1.0 : size(err,1)
         
-        W = 0.5 .* Nbins ./ abs.(F.values[mask] .* Nsteps)
+        W = 0.5 .* Nbins ./ abs.(err .* Nsteps)
         full_eigen = F.values
+        # println(F.values)
+        # exit()
 
     else
         # Diagonal error method
+        S = svd(K)
+        println(size(K))
+        svd_ratio = 1e-14
+        println(S.S)
+        # exit()
+        println(size(S.U))
+        println(size(S.S))
+        println(size(S.Vt))
+        minval = maximum(S.S) * svd_ratio
+        S2 = S.S[S.S .> minval]
+        nS2 = size(S2,1)
+        U1 = S.U[:,1:nS2] 
+        
+        println(nS2, " nS2")
+        K2 =  Diagonal(S2) * S.Vt[1:nS2,:]
+        # println("\n",K2[1,:])
+        # println("\n",K[1,:])
+        
+        # println(size(U1' * U1))
+        # println(size((S.Vt[1:nS2,:])'))
+        # println(size(Greens_tuple[1]))
+        # println(size(Greens_tuple[1] * U1))
+        # println(diag(U1' * U1),"\n")
+        # println((U1' * U1)[2,:],"\n")
+        # exit()
+        err = (reshape(Greens_tuple[2],(1,:))*U1)[1,:]
+        # println(size(err))
+        # exit()
+
         Nsteps = size(Greens_tuple[1],1)
-        W = 0.5 ./ real.(Greens_tuple[2] .* conj.(Greens_tuple[2]) .* Nsteps)
-        Kp = K
-        corr_avg_p = Greens_tuple[1]
+        W = 0.5 ./ real.(err .* conj.(err) .* Nsteps)
+        Kp = K2
+        corr_avg_p = (reshape(Greens_tuple[1],(1,:))*U1)[1,:]
         full_eigen = nothing
     end
     return W, Kp, corr_avg_p, full_eigen
