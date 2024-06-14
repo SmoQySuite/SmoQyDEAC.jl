@@ -112,7 +112,7 @@ function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenva
               
         
         mask = get_covariance_mask(params)
-
+        n_in = size(Greens_tuple[1],1)
 
         # datas = Greens_tuple[1]# * U1
         corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
@@ -168,7 +168,9 @@ function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenva
         println(err)
 
         Nsteps = size(corr_avg_p)
-        Nbins =  (bootstrap) ? 1.0 : size(err,1)
+        # println(bootstrap)
+        # exit()
+        Nbins =  (bootstrap) ? 1.0  : size(err,1)
         
         W = 0.5 .* Nbins ./ abs.(err .* Nsteps)
         full_eigen = F.values
@@ -206,7 +208,7 @@ function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenva
         # println(size(err))
         # exit()
 
-        Nsteps = size(Greens_tuple[1],1)
+        Nsteps = nS2#size(Greens_tuple[1],1)
         W = 0.5 ./ real.(err .* conj.(err) .* Nsteps)
         Kp = K2
         corr_avg_p = (reshape(Greens_tuple[1],(1,:))*U1)[1,:]
