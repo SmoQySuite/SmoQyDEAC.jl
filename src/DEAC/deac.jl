@@ -460,10 +460,11 @@ function run_DEAC(Greens_tuple,
         fitness[1:veclen] = old_params
         fitness[end] = true_fitness
         
-        println("Target fitnesses now: ",fitness,"\n")
         
     end # IFF
 
+    println("Target fitnesses are: ",fitness,"\n")
+        
     if bin_data == nothing
         bin_data = zeros(Float64,(size(params.out_ωs,1),params.num_bins,size(fitness,1)))
         generations = zeros(UInt64,(params.num_bins,size(fitness,1)))
@@ -630,7 +631,7 @@ function run_DEAC(Greens_tuple,
     println("Run Statistics")
     if occursin("fermionic",params.kernel_type)
         println(@sprintf(" Expected 0th moment:   1.00") )
-        println(@sprintf(" DEAC 0th moment:       %01.3f ± %01.3f",zero_avg[1],zero_err[1]))
+        println(@sprintf(" DEAC 0th moment:       %01.3f",zero_avg[1]))
         println(@sprintf(" 0th moment difference: %01.3f%%",differential))
     end
     println(@sprintf(" Mean generations/run:  %01.3f",gen_per_run))
