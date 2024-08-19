@@ -89,7 +89,7 @@ function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,cur
         # Bosonic time kernels steal a factor of ω from the spectral function.
         # Multiply it back in if needed
     
-        if  occursin("bosonic",params.kernel_type)
+        if  occursin("bosonic",params.kernel_type) && (params.kernel_type != "time_bosonic_symmetric_w")
             bin_data[:,curbin,fit_idx] = @. 0.5 * bin_data[:,curbin,fit_idx] * (1- exp(-params.β * params.out_ωs))
         end
     end    
