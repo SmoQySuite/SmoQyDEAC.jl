@@ -95,17 +95,17 @@ output_dictionary_ωₙ_std = DEAC_Std(
     number_of_generations = 20000,
     verbose = true
 )</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 11 entries:
-  &quot;A&quot;                 =&gt; [0.000552062; 0.000516781; … ; 0.000634482; 0.0241782;…
+  &quot;A&quot;                 =&gt; [0.000552107; 0.000516976; … ; 0.000635614; 0.0241892;…
   &quot;avg_generations&quot;   =&gt; 12745.9
   &quot;ωs&quot;                =&gt; [-10.0, -9.95, -9.9, -9.85, -9.8, -9.75, -9.7, -9.65, …
   &quot;full_eigenvalues&quot;  =&gt; nothing
-  &quot;bin_zeroth_moment&quot; =&gt; [1.01742 1.01506;;;]
+  &quot;bin_zeroth_moment&quot; =&gt; [1.01805 1.01442;;;]
   &quot;zeroth_moment&quot;     =&gt; 1.01624
   &quot;zeroth_moment_σ&quot;   =&gt; NaN
-  &quot;bin_data&quot;          =&gt; [0.000160936 0.000943187; 0.000616378 0.000417183; … ;…
+  &quot;bin_data&quot;          =&gt; [0.000179796 0.000924418; 0.000584122 0.00044983; … ; …
   &quot;fitness&quot;           =&gt; [1.0]
-  &quot;σ&quot;                 =&gt; [0.000391126; 9.95973e-5; … ; 0.000523277; 0.0229286;;]
-  &quot;runtime&quot;           =&gt; 9.16271</code></pre><p>Accessing output</p><pre><code class="language-julia hljs"># Spectral function, 2D array size (nω,nFitness)
+  &quot;σ&quot;                 =&gt; [0.000372311; 6.7146e-5; … ; 0.000338593; 0.0229412;;]
+  &quot;runtime&quot;           =&gt; 9.02933</code></pre><p>Accessing output</p><pre><code class="language-julia hljs"># Spectral function, 2D array size (nω,nFitness)
 # nFitness is the number of fitnesses you set. In this case, 1
 A = output_dictionary_τ[&quot;A&quot;];
 fitnesses = output_dictionary_τ[&quot;fitness&quot;];
@@ -130,12 +130,12 @@ test_dictionary = FileIO.load(output_file)
 # This is identical to output_dictionary_ωₙ_std</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 11 entries:
   &quot;avg_generations&quot;   =&gt; 12745.9
   &quot;full_eigenvalues&quot;  =&gt; nothing
-  &quot;bin_zeroth_moment&quot; =&gt; [1.01742 1.01506;;;]
+  &quot;bin_zeroth_moment&quot; =&gt; [1.01805 1.01442;;;]
   &quot;zeroth_moment_σ&quot;   =&gt; NaN
   &quot;fitness&quot;           =&gt; [1.0]
-  &quot;σ&quot;                 =&gt; [0.000391126; 9.95973e-5; … ; 0.000523277; 0.0229286;;]
-  &quot;A&quot;                 =&gt; [0.000552062; 0.000516781; … ; 0.000634482; 0.0241782;…
+  &quot;σ&quot;                 =&gt; [0.000372311; 6.7146e-5; … ; 0.000338593; 0.0229412;;]
+  &quot;A&quot;                 =&gt; [0.000552107; 0.000516976; … ; 0.000635614; 0.0241892;…
   &quot;ωs&quot;                =&gt; [-10.0, -9.95, -9.9, -9.85, -9.8, -9.75, -9.7, -9.65, …
   &quot;zeroth_moment&quot;     =&gt; 1.01624
-  &quot;bin_data&quot;          =&gt; [0.000160936 0.000943187; 0.000616378 0.000417183; … ;…
-  &quot;runtime&quot;           =&gt; 9.16271</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../SmoQyDQMC/">Example 2: Load from SmoQyDQMC and run SmoQyDEAC »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Wednesday 26 June 2024 18:01">Wednesday 26 June 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  &quot;bin_data&quot;          =&gt; [0.000179796 0.000924418; 0.000584122 0.00044983; … ; …
+  &quot;runtime&quot;           =&gt; 9.02933</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../SmoQyDQMC/">Example 2: Load from SmoQyDQMC and run SmoQyDEAC »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Monday 19 August 2024 15:36">Monday 19 August 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
