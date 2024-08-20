@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Example 3: User Mutation · SmoQyDEAC.jl</title><meta name="title" content="Example 3: User Mutation · SmoQyDEAC.jl"/><meta property="og:title" content="Example 3: User Mutation · SmoQyDEAC.jl"/><meta property="twitter:title" content="Example 3: User Mutation · SmoQyDEAC.jl"/><meta name="description" content="Documentation for SmoQyDEAC.jl."/><meta property="og:description" content="Documentation for SmoQyDEAC.jl."/><meta property="twitter:description" content="Documentation for SmoQyDEAC.jl."/><meta property="og:url" content="https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/examples/user_mutation/"/><meta property="twitter:url" content="https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/examples/user_mutation/"/><link rel="canonical" href="https://SmoQySuite.github.io/SmoQyDEAC.jl/stable/examples/user_mutation/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SmoQyDEAC.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../fermion_greens/">Example 1: Fermion Greens function</a></li><li><a class="tocitem" href="../SmoQyDQMC/">Example 2: Load from SmoQyDQMC and run SmoQyDEAC</a></li><li class="is-active"><a class="tocitem" href>Example 3: User Mutation</a></li></ul></li><li><a class="tocitem" href="../../derivations/">Derivations</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Example 3: User Mutation</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Example 3: User Mutation</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/SmoQySuite/SmoQyDEAC.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Example-3:-User-Mutation"><a class="docs-heading-anchor" href="#Example-3:-User-Mutation">Example 3: User Mutation</a><a id="Example-3:-User-Mutation-1"></a><a class="docs-heading-anchor-permalink" href="#Example-3:-User-Mutation" title="Permalink"></a></h1><p>Usage:</p><p><code>$ julia --threads=auto user_mutation.jl</code></p><p>SmoQyDEAC uses multithreading for parallelizing runs. Multithreading it recommended.   –threads=auto will run a thread for each core available, or 2x for hyperthreading cores</p><p>In this example we will show how to add an additional user-defined mutation to the DEAC base algorithm</p><pre><code class="language-julia hljs"># First we import all required packages
+using SmoQyDEAC
+using FileIO
+using Statistics
+using LoopVectorization
+using Random</code></pre><p>We now load the data provided in our source file. This is the same as example 1, but we are just loading the binned τ data.</p><pre><code class="language-julia hljs">loadfile = &quot;greens.jld2&quot;;
+input_dictionary = load(loadfile);
+Gτ_bin =  input_dictionary[&quot;Gτ&quot;];
+τs = collect(input_dictionary[&quot;τs&quot;]);
+β = τs[end];</code></pre><p>Make an output folder for checkpoint file and output file</p><pre><code class="language-julia hljs">output_directory = &quot;user_mutation_output/&quot;;
+mkpath(output_directory);</code></pre><p>Define necessary parameters for the DEAC run. Typically you will want at least 1,000 for number<em>of</em>bins * runs<em>per</em>bin. For speed&#39;s sake we only do 2*5 in this example.</p><pre><code class="language-julia hljs">number_of_bins = 2;
+runs_per_bin = 5 ;
+output_file = joinpath(output_directory, &quot;user_mutation_out.jld2&quot;);
+checkpoint_file = joinpath(output_directory,&quot;DEAC_checkpoint.jld2&quot;);
+nω = 401;
+ωmin = -10.;
+ωmax = 10.;
+ωs = collect(LinRange(ωmin,ωmax,nω));</code></pre><p>Set optional parameters</p><pre><code class="language-julia hljs">base_seed = 1000000;
+keep_bin_data = false;</code></pre><p>Define an additional mutation function which takes two populations of [1:nω,1:n_population] size and a random number generator. Per Julia convention, the first argument is the one which is updated. For those new to Julia, the &quot;!&quot; at the end of the function name means the function will mutate at least one of the arguments. This mutation just puts a slight blur on odd indexed ω values. This is not something I imagine you&#39;d want to do, but, this is a simple example</p><pre><code class="language-julia hljs">function user_mut!(pop_new,pop_old,rng)
+    npop = size(pop_old,2)
+    nω = size(pop_old,1)
+    for ω ∈ 1:nω
+        if (ω%2) == 1
+            pop_new[ω,:] = pop_old[ω,:] .+ 0.05 .* (0.5 .- rand(rng,Float64,npop))
+        else
+            pop_new[ω,:] = pop_old[ω,:]
+        end
+    end
+    return nothing
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">user_mut! (generic function with 1 method)</code></pre><p>Vectorized version of the same function using the LoopVectorization.jl package.</p><pre><code class="language-julia hljs">function user_mut_vec!(pop_new,pop_old,rng)
+    rng_pop = rand(rng,Float64,(size(pop_new,1),size(pop_new,2)))
+    @turbo for pop ∈ axes(pop_new,2), ω ∈ axes(pop_new,1)
+        pop_new[ω,pop] = pop_old[ω,pop] + (0.05 * (ω%2) * (0.5 - rng_pop[ω,pop]))
+    end
+    return nothing
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">user_mut_vec! (generic function with 1 method)</code></pre><p>Now we run DEAC with the additional mutation Note, number<em>of</em>generations is set low for the example&#39;s run time</p><pre><code class="language-julia hljs">output_dictionary_τ = DEAC_Binned(
+    Gτ_bin,
+    β,
+    τs,
+    ωs,
+    &quot;time_fermionic&quot;,
+    number_of_bins,
+    runs_per_bin,
+    output_file,
+    checkpoint_file;
+    base_seed = base_seed,
+    keep_bin_data = keep_bin_data,
+    user_mutation! = user_mut_vec!,
+    fitness = 1.0,
+    find_fitness_floor = false,
+    number_of_generations = 10000,
+    verbose = true
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Any} with 9 entries:
+  &quot;zeroth_moment&quot;    =&gt; 0.999766
+  &quot;A&quot;                =&gt; [-0.164632; 0.0476081; … ; 0.0355373; -0.0748786;;]
+  &quot;zeroth_moment_σ&quot;  =&gt; NaN
+  &quot;fitness&quot;          =&gt; [1.0]
+  &quot;avg_generations&quot;  =&gt; 10000.0
+  &quot;σ&quot;                =&gt; [0.0285817; 0.0112798; … ; 0.00122446; 0.0575279;;]
+  &quot;runtime&quot;          =&gt; 8.67186
+  &quot;ωs&quot;               =&gt; [-10.0, -9.95, -9.9, -9.85, -9.8, -9.75, -9.7, -9.65, -…
+  &quot;full_eigenvalues&quot; =&gt; [-3.30872e-23, 3.47538e-11, 3.84e-11, 4.52247e-11, 5.69…</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../SmoQyDQMC/">« Example 2: Load from SmoQyDQMC and run SmoQyDEAC</a><a class="docs-footer-nextpage" href="../../derivations/">Derivations »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Tuesday 20 August 2024 12:59">Tuesday 20 August 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
