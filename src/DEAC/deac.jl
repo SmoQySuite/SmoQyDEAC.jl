@@ -374,8 +374,7 @@ function run_DEAC(Greens_tuple,
         fitness_floor = zeros(Float64,nfinder)
 
         Δt = @elapsed begin
-            # Threads.@threads 
-            for thd in 1:nfinder
+            Threads.@threads for thd in 1:nfinder
                 
                 # Setup RNG
                 seed = params.base_seed + thd
