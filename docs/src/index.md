@@ -77,3 +77,26 @@ SmoQyDEAC utilizes Julia's `Threads.@threads` multithreading capability. To take
 # Funding
 This work was supported by the U.S. Department of Energy, Office of Science, Office of Basic Energy Sciences, under Award Number DE-SC0022311. N.S.N. was supported by the Argonne Leadership Computing Facility, which is a U.S. Department of Energy Office of Science User Facility operated under contract DE-AC02-06CH11357. 
 
+# Citation
+If you found this library to be useful in the course of academic work, please consider citing us:
+
+```bibtex
+@misc{SmoQyDEAC.hl,
+      title={SmoQyDEAC.jl: A differential evolution package for the analytic continuation of imaginary time correlation functions}, 
+      author={James Neuhaus and Nathan S. Nichols and Debshikha Banerjee and Benjamin Cohen-Stead and Thomas A. Maier and Adrian Del Maestro and Steven Johnston},
+      year={2024},
+      eprint={2407.04568},
+      archivePrefix={arXiv},
+      primaryClass={cond-mat.stat-mech},
+      url={https://arxiv.org/abs/2407.04568}, 
+}
+```
+
+## Contact Us
+
+For question and comments regarding this package, please email either James Neuhaus at [jneuhau1@utk.edu](mailto:jneuhau1@utk.edu) or Professor Steven Johnston at [sjohn145@utk.edu](mailto:sjohn145@utk.edu).
+
+# Publication List
+```@bibliography
+*
+```
