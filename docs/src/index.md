@@ -81,7 +81,7 @@ This work was supported by the U.S. Department of Energy, Office of Science, Off
 If you found this library to be useful in the course of academic work, please consider citing us:
 
 ```bibtex
-@misc{SmoQyDEAC.hl,
+@misc{SmoQyDEAC.jl,
       title={SmoQyDEAC.jl: A differential evolution package for the analytic continuation of imaginary time correlation functions}, 
       author={James Neuhaus and Nathan S. Nichols and Debshikha Banerjee and Benjamin Cohen-Stead and Thomas A. Maier and Adrian Del Maestro and Steven Johnston},
       year={2024},
