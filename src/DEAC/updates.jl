@@ -12,11 +12,11 @@ function initial_fit!(pop,model,avg_p,Kp,W,params,use_SIMD,normalize,normK,targe
 end
 
 # Normalize a population
-function normalize!(pop,norm_array,params,use_SIMD,normK,target_zeroth)
-    GEMM!(norm_array,normK,pop,use_SIMD)
+function normalize!(pop_array,norm_array,params,use_SIMD,normK,target_zeroth)
+    GEMM!(norm_array,normK,pop_array,use_SIMD)
     
     @turbo for  pop in 1:params.population_size, ω in 1:size(params.out_ωs,1)
-            pop[ω,pop] = pop[ω,pop] * target_zeroth / norm_array[1,pop]
+            pop_array[ω,pop] = pop_array[ω,pop] * target_zeroth / norm_array[1,pop]
     end
     
     return
