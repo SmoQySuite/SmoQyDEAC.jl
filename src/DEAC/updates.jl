@@ -16,7 +16,7 @@ function normalize!(pop_array,norm_array,params,use_SIMD,normK,target_zeroth)
     GEMM!(norm_array,normK,pop_array,use_SIMD)
     
     @turbo for  pop in 1:params.population_size, ω in 1:size(params.out_ωs,1)
-            pop_array[ω,pop] = pop_array[ω,pop] * target_zeroth / norm_array[1,pop]
+            pop_array[ω,pop] *= target_zeroth / norm_array[1,pop]
     end
     
     return
