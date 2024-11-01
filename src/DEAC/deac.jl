@@ -1,6 +1,3 @@
-using Profile
-using AllocCheck
-
 @doc raw"""
     DEAC_Std(correlation_function::AbstractVector,
          correlation_function_error::AbstractVector,
