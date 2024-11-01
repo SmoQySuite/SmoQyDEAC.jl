@@ -1,13 +1,13 @@
 # Calculate the initial fits
-function initial_fit!(pop,model,avg_p,Kp,W,params,use_SIMD,normalize,normK,target_zeroth,norm_array)
+function initial_fit!(pop,fitness,model,avg_p,Kp,W,params,use_SIMD,normalize,normK,target_zeroth,norm_array)
     if normalize 
         normalize!(pop, norm_array,params,use_SIMD,normK,target_zeroth)
     end
     GEMM!(model,Kp,pop,use_SIMD)
     
-    fitness = Χ²(avg_p,model,W) 
+    Χ²!(fitness,avg_p,model,W) 
 
-    return fitness
+    # return fitness
 
 end
 
@@ -32,11 +32,16 @@ function update_weights!(cp_new,dw_new,cp_old,dw_old,rng,params)
 end
 
 # Determine which genes mutate
-function rand_mutate_array!(mutate_indices,crossover_probability_new,rng,params)
-    mutate_indices_rnd = Random.rand(rng,Float64, (size(params.out_ωs,1),params.population_size)) 
+function rand_mutate_array!(mutate_indices,mutate_indices_rnd,crossover_probability_new,rng,params)
+    Random.rand!(rng,mutate_indices_rnd) 
     for pop in 1:params.population_size
-        @. mutate_indices[:,pop] = Float64(mutate_indices_rnd[:,pop] < crossover_probability_new[pop])
+        for i in 1:size(params.out_ωs,1)
+            mutate_indices[i,pop] = Float64(mutate_indices_rnd[i,pop] < crossover_probability_new[pop])
+        end
+        # @. mutate_indices[:,pop] = Float64(mutate_indices_rnd[:,pop] < crossover_probability_new[pop])
     end
+    
+    
 end
 
 
@@ -77,7 +82,10 @@ function update_populations!(fitness_old,crossover_probability_old,differential_
             fitness_old[pop] = fitness_new[pop]
             crossover_probability_old[pop] = crossover_probability_new[pop]
             differential_weights_old[pop] = differential_weights_new[pop]
-            population_old[:,pop] = population_new[:,pop]
+            for ω in axes(population_old,1)
+
+                population_old[ω,pop] = population_new[ω,pop]
+            end
         end
     end
 end

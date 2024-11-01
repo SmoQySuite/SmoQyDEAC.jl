@@ -1,3 +1,6 @@
+using Profile
+using AllocCheck
+
 @doc raw"""
     DEAC_Std(correlation_function::AbstractVector,
          correlation_function_error::AbstractVector,
@@ -397,7 +400,10 @@ function run_DEAC(Greens_tuple,
 
                 mutate_indices = Array{Float64}(undef,(size(params.out_ωs,1),params.population_size))
 
-                fitness_old = initial_fit!(population_old,model,corr_avg_p,Kp,W,params,use_SIMD,normalize,normK,target_zeroth,norm_array)
+                fitness_new = zeros(Float64,params.population_size)
+                fitness_old = zeros(Float64,params.population_size)
+                initial_fit!(population_old,fitness_old,model,corr_avg_p,Kp,W,params,use_SIMD,normalize,normK,target_zeroth,norm_array)
+            
                 
                 # FFF tracker variables
                 lastDelta = typemax(Float64)
@@ -405,27 +411,32 @@ function run_DEAC(Greens_tuple,
                 last2Fitness = typemax(Float64)
                 Delta = typemax(Float64)
 
+                mutate_indices_rnd = zeros(Float64, (size(params.out_ωs,1),params.population_size))
+                mutant_indices = zeros(Int64,(3,params.population_size))
+
                 # main loop
                 for gen in 1:params.number_of_generations
                     
                     update_weights!(crossover_probability_new,differential_weights_new,crossover_probability_old,differential_weights_old,rng,params)
-
+                
                     # Randomly set some ω points to 'mutate'
-                    rand_mutate_array!(mutate_indices,crossover_probability_new,rng,params)
-
+                    rand_mutate_array!(mutate_indices,mutate_indices_rnd,crossover_probability_new,rng,params)
+                    
                     # Set triplet of other populations for mutations
-                    mutant_indices = get_mutant_indices(rng,params.population_size)
+                    get_mutant_indices!(mutant_indices,rng,params.population_size)
                     
                     # if mutate_indices, do mutation, else keep same
                     propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params,normalize,normK,target_zeroth,norm_array,use_SIMD)
                     
-                    # calculate new fitness
+                    # get new fitness
                     GEMM!(model,Kp,population_new,use_SIMD)
-                    fitness_new = Χ²(corr_avg_p,model,W) #./ size(params.input_grid,1)
                     
-                    # update populations if fitness improved
+                    # fitness_new =  
+                    Χ²!(fitness_new,corr_avg_p,model,W) #./ size(params.input_grid,1)
+                    
+                    # if improved do updates
                     update_populations!(fitness_old,crossover_probability_old,differential_weights_old,population_old,fitness_new,crossover_probability_new,differential_weights_new,population_new)
-
+                    
                     # check for low improvement for two consecutive slices, break if so
                     if (gen % fit_check_frequency) == 0
                         
@@ -477,7 +488,9 @@ function run_DEAC(Greens_tuple,
     finished_runs = (start_bin -1) * params.runs_per_bin
     Δt = @elapsed begin
         # loop over bins*runs_per_bin
-        Threads.@threads for thd in start_thread:total_runs
+        total = Base.gc_total_bytes(Base.gc_num())
+        # Threads.@threads 
+        for thd in start_thread:total_runs
 
             # Track fits in case there are multiple fits.
             current_fit_idx = 1
@@ -506,39 +519,46 @@ function run_DEAC(Greens_tuple,
             
             model = zeros(eltype(Greens_tuple[1]),(size(Kp,1),size(population_old,2)))
             mutate_indices = Array{Float64}(undef,(size(params.out_ωs,1),params.population_size))
-
-            fitness_old = initial_fit!(population_old,model,corr_avg_p,Kp,W,params,use_SIMD,normalize,normK,target_zeroth,norm_array)
+            fitness_new = zeros(Float64,params.population_size)
+            fitness_old = zeros(Float64,params.population_size)
+            initial_fit!(population_old,fitness_old,model,corr_avg_p,Kp,W,params,use_SIMD,normalize,normK,target_zeroth,norm_array)
           
             # track number of generations to get to fitness
             numgen = 0
 
-
+            
+            
+            mutate_indices_rnd = zeros(Float64, (size(params.out_ωs,1),params.population_size))
+            mutant_indices = zeros(Int64,(3,params.population_size))
+            
             # Loop over generations until number_of_generations or fitness is achieved
             for gen in 1:params.number_of_generations
-            
+                
+
                 # If fitness achieved, exit loop
                 if (minimum(fitness_old) <= fitness[end]) break; end
                     
                 # Modify DEAC parameters stochastically
                 update_weights!(crossover_probability_new,differential_weights_new,crossover_probability_old,differential_weights_old,rng,params)
-
-
+                
                 # Randomly set some ω points to 'mutate'
-                rand_mutate_array!(mutate_indices,crossover_probability_new,rng,params)
-
+                rand_mutate_array!(mutate_indices,mutate_indices_rnd,crossover_probability_new,rng,params)
+                
                 # Set triplet of other populations for mutations
-                mutant_indices = get_mutant_indices(rng,params.population_size)
+                get_mutant_indices!(mutant_indices,rng,params.population_size)
                 
                 # if mutate_indices, do mutation, else keep same
                 propose_populations!(population_new,population_old,mutate_indices,differential_weights_new,mutant_indices,params,normalize,normK,target_zeroth,norm_array,use_SIMD)
                 
                 # get new fitness
                 GEMM!(model,Kp,population_new,use_SIMD)
-                fitness_new = Χ²(corr_avg_p,model,W) #./ size(params.input_grid,1)
-
+                
+                # fitness_new =  
+                Χ²!(fitness_new,corr_avg_p,model,W) #./ size(params.input_grid,1)
+                
                 # if improved do updates
                 update_populations!(fitness_old,crossover_probability_old,differential_weights_old,population_old,fitness_new,crossover_probability_new,differential_weights_new,population_new)
-
+                
                 # do user mutation if applicable
                 if (user_mutation! != nothing)
                     user_mutation!(population_new,population_old,rng)
@@ -561,10 +581,10 @@ function run_DEAC(Greens_tuple,
                     current_fit_idx += 1
                     if current_fit_idx > size(fitness,1); break; end
                 end
-
+            
                 numgen = numgen + 1
             end # generations
-
+            
             if numgen ≥ params.number_of_generations
                 fit_data, fit_idx = findmin(fitness_old)
                 cur_best_pop = population_old[:,fit_idx]
@@ -587,7 +607,7 @@ function run_DEAC(Greens_tuple,
                     weight_data[curbin,fit_idx] += 1.0 / (tmp_fit_data[fit_idx])
                     generations[curbin,fit_idx] += tmp_generations[fit_idx] 
                 end
-                
+            
                 # setting seed to 0 allows culling of used seeds in the checkpoint
                 # ensuring each seed is used once
                 seed_vec[1+thd-start_thread] = 0

@@ -1,28 +1,36 @@
 
-# χ² fit for real correlation functions
-function Χ²(observed::AbstractVector{T},calculated::AbstractMatrix{T},W::AbstractVector{T}) where {T<:Real}
-    Χ = zeros(T,(size(calculated,2),))
+
+
+function Χ²!(Χ::AbstractVector{T},observed::AbstractVector{T},calculated::AbstractMatrix{T},W::AbstractVector{T}) where {T<:Real}
+    # Χ = zeros(T,(size(calculated,2),))
+    Χ .= 0.0
     for pop in 1:size(calculated,2)
-        @inbounds Χ[pop] = sum( ((observed .- calculated[:,pop]).^2) .* W )
+        for τ in 1:size(calculated,1)
+            @inbounds Χ[pop] += (observed[τ] - calculated[τ,pop])^2 * W[τ]
+        end
+        
     end
-    return Χ
+    
 end # χ²
 
 # χ² fit for complex correlation functions
-function Χ²(observed::AbstractVector{U},calculated::AbstractMatrix{U},W::AbstractVector{T}) where {T<:Real, U<:Complex}
-    Χ = zeros(T,(size(calculated,2),))
+function Χ²!(Χ::AbstractVector{T},observed::AbstractVector{U},calculated::AbstractMatrix{U},W::AbstractVector{T}) where {T<:Real, U<:Complex}
+    Χ .= 0.0
     for pop in 1:size(calculated,2)
-        @inbounds Χ[pop] = sum( (normsq.(observed .- calculated[:,pop])) .* W )
+        for τ in 1:size(calculated,1)
+            @inbounds Χ[pop] += normsq.(observed[τ] - calculated[τ,pop]) * W[τ]
+        end
+        
     end
-    return Χ
+    
 end # χ²
 
 
 
 # return mutant indices
 # links our genomes together for mutation
-function get_mutant_indices(rng,pop_size)
-    indices = zeros(Int64,(3,pop_size))
+function get_mutant_indices!(indices,rng,pop_size)
+    # indices = zeros(Int64,(3,pop_size))
     for pop in 1:pop_size
         indices[:,pop] .= pop
         while (indices[1,pop] == pop)
@@ -35,7 +43,7 @@ function get_mutant_indices(rng,pop_size)
             indices[3,pop] = 1 + mod(Random.rand(rng,Int64),pop_size)
         end
     end
-    return indices
+    # return indices
 end # get_mutant_indices
 
 # Loop vectorized Matrix Multiply

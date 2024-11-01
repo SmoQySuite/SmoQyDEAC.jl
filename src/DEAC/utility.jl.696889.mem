@@ -1,0 +1,176 @@
+        - 
+        - # χ² fit for real correlation functions
+        - function Χ²(observed::AbstractVector{T},calculated::AbstractMatrix{T},W::AbstractVector{T}) where {T<:Real}
+    14048     Χ = zeros(T,(size(calculated,2),))
+      304     for pop in 1:size(calculated,2)
+  7018936         @inbounds Χ[pop] = sum( ((observed .- calculated[:,pop]).^2) .* W )
+     8176     end
+       80     return Χ
+        - end # χ²
+        - 
+        - # χ² fit for complex correlation functions
+        - function Χ²(observed::AbstractVector{U},calculated::AbstractMatrix{U},W::AbstractVector{T}) where {T<:Real, U<:Complex}
+        -     Χ = zeros(T,(size(calculated,2),))
+        -     for pop in 1:size(calculated,2)
+        -         @inbounds Χ[pop] = sum( (normsq.(observed .- calculated[:,pop])) .* W )
+        -     end
+        -     return Χ
+        - end # χ²
+        - 
+        - 
+        - 
+        - # return mutant indices
+        - # links our genomes together for mutation
+        - function get_mutant_indices(rng,pop_size)
+   280352     indices = zeros(Int64,(3,pop_size))
+    17520     for pop in 1:pop_size
+   507504         indices[:,pop] .= pop
+   441936         while (indices[1,pop] == pop)
+   505792             indices[1,pop] = 1 + mod(Random.rand(rng,Int64),pop_size)
+        -         end
+   840024         while (indices[2,pop] == pop) || (indices[2,pop] == indices[1,pop])
+   456864             indices[2,pop] = 1 + mod(Random.rand(rng,Int64),pop_size)
+        -         end
+  1205296         while (indices[3,pop] == pop) || (indices[3,pop] == indices[1,pop]) || (indices[3,pop] == indices[2,pop])
+   511280             indices[3,pop] = 1 + mod(Random.rand(rng,Int64),pop_size)
+        -         end
+   144656     end
+      192     return indices
+        - end # get_mutant_indices
+        - 
+        - # Loop vectorized Matrix Multiply
+        - function gemmSIMD!(C::AbstractMatrix{T}, A::AbstractMatrix{T}, B::AbstractMatrix{T}) where {T}
+        -     @turbo for m ∈ axes(A,1), n ∈ axes(B,2)
+        -         Cmn = zero(T)
+        -         for k ∈ axes(A,2)
+        -             Cmn += A[m,k] * B[k,n]
+        -         end
+        -         C[m,n] = Cmn
+        -     end
+        - end
+        - 
+        - # Determine if to use gemmavx! or LinearAlgebra mul!
+        - function useSIMD(K,M,N)
+        - 
+        -     # Matrices for GEMM
+    32272     C = Matrix{Float64}(undef, M, N)
+   966544     A = Random.rand(Float64,(M, K))
+    96272     B = Random.rand(Float64,(K, N))
+        - 
+        -     # Benchmark
+        -     
+       32     t_linAlg = @b mul!($C,$A,$B)
+       32     t_avx = @b gemmSIMD!($C,$A,$B)
+        0     use_SIMD = t_avx.time < t_linAlg.time
+        0     if use_SIMD
+        0         println("SIMD GEMM faster than BLAS, using SmoQyDEAC's gemmSIMD!()")
+        -     else
+       16         println("SIMD GEMM slower than BLAS, using BLAS mul!()")
+        -     end
+        -     
+        0     return use_SIMD
+        - end
+        - 
+        - # GEMM wrapper to select appropriate method
+        - function GEMM!(C,A,B,use_SIMD)
+        0     if use_SIMD && eltype(C) <: Real
+        0         gemmSIMD!(C,A,B)
+        -     else
+        0         mul!(C,A,B)
+        -     end
+        - end
+        - 
+        - # Calculate binned data and save to a checkpoint
+        - function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,curbin,Δω,Greens_tuple,fitness,seed_vec,generations,params)
+        -     for fit_idx ∈ 1:size(fitness,1)
+        -         bin_data[:,curbin,fit_idx] = run_data[:,curbin,fit_idx] ./  sum(weight_data[curbin,fit_idx])
+        -         calculated_zeroth_moment[1,curbin,fit_idx] = sum(bin_data[:,curbin,fit_idx]) .* Δω 
+        -     
+        -         # Bosonic time kernels steal a factor of ω from the spectral function.
+        -         # Multiply it back in if needed
+        -     
+        -         if  occursin("bosonic",params.kernel_type) && (params.kernel_type != "time_bosonic_symmetric_w")
+        -             bin_data[:,curbin,fit_idx] = @. 0.5 * bin_data[:,curbin,fit_idx] * (1- exp(-params.β * params.out_ωs))
+        -         end
+        -     end    
+        -     
+        -     if curbin != params.num_bins
+        -         save_checkpoint(bin_data,generations,curbin,params,Greens_tuple,calculated_zeroth_moment,fitness,seed_vec)
+        -     end
+        -     
+        -     println("Finished bin ",curbin," of ",params.num_bins)
+        -     
+        - end
+        - 
+        - # Calculate matrices used to go from ω to τ space and χ² fit
+        - function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenvalue_ratio_min)
+        -     if Greens_tuple[2] == nothing
+        -         # Covariance Methods
+        -               
+        0         corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
+        0         mask = get_covariance_mask(params)
+        - 
+        -         
+        -         # Find eigenbasis for covariance matrix 
+        0         cov_matrix = Statistics.cov(Greens_tuple[1],dims=1,corrected=true)
+        0         F = eigen(cov_matrix)
+        0         max_eig = maximum(F.values)
+        - 
+        -         # catch near-zero eigenvalues not found using get_covariance_mask
+       80         mask = mask .&& (F.values .> max_eig * eigenvalue_ratio_min)
+        -         
+      224         U = F.vectors[:,mask]
+      176         corr_avg_p = Array{eltype(corr_avg)}(undef,size(corr_avg[:,mask]))
+        -         
+        -         # Rotate correlation functions
+        0         GEMM!(corr_avg_p,corr_avg,U,use_SIMD)
+       16         corr_avg_p = corr_avg_p[1,:]
+        -         
+      240         Kp = similar(K[mask,:])
+       16         GEMM!(Kp,transpose(U),K,use_SIMD)
+        -         
+       16         Nsteps = size(corr_avg_p)
+        0         Nbins =  (bootstrap) ? 1.0 : size(Greens_tuple[1],1)
+        -         
+      144         W = 0.5 .* Nbins ./ abs.(F.values[mask] .* Nsteps)
+        0         full_eigen = F.values
+        - 
+        -     else
+        -         # Diagonal error method
+        -         Nsteps = size(Greens_tuple[1],1)
+        -         W = 0.5 ./ real.(Greens_tuple[2] .* conj.(Greens_tuple[2]) .* Nsteps)
+        -         Kp = K
+        -         corr_avg_p = Greens_tuple[1]
+        -         full_eigen = nothing
+        -     end
+      160     return W, Kp, corr_avg_p, full_eigen
+        - 
+        - end
+        - 
+        - function normsq(val)
+        -     return @. val * conj(val)
+        - end
+        - 
+        - # eliminate ≈0.0 eigenvalues from diagonalized covariance matrix which arise due to symmetries
+        - function get_covariance_mask(params)
+        0     grid = params.input_grid
+      272     mask = Array{Bool}(undef,size(grid,1))
+        0     mask .= true
+        - 
+        -     # Fermions G(τ)+G(0) = 1.0
+        0     if params.kernel_type == "time_fermionic"
+        0         if findfirst(==(params.β),params.input_grid) != nothing
+        0             mask = .!(params.input_grid .≈ 0.0)
+        -         end
+        -     # Bosons G(τ) = G(β-τ)
+        0     elseif params.kernel_type == "time_bosonic_symmetric"
+        0         β2 = params.β / 2.0
+        0         for (τi,τ) in enumerate(params.input_grid)
+        0             if τ < β2
+        0                 mask[τi] = !(findfirst(≈(τ),params.input_grid) != nothing)
+        -             end
+        0         end
+        -     end
+        0     return mask
+        - 
+        - end

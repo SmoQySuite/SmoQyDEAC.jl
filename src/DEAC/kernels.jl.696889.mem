@@ -1,0 +1,94 @@
+        - 
+        - # Generate Kernel * Δω
+        - # Notably, for bosonic kernels we multiply in a factor of ω in the n_b routine.
+        - # This makes the kernel and the spectral function positive and analytic for all ω
+        - # Before we return data, though, we will multiply bosonic functions by ω
+        - function generate_K(params::DEACParameters)
+        0     nω = size(params.out_ωs,1)
+        0     ngrid = size(params.input_grid,1)
+        0     if occursin("frequency_fermionic",params.kernel_type)
+        0         K = zeros(ComplexF64,(ngrid,nω))
+        -     else
+   966544         K = zeros(Float64,(ngrid,nω))
+        -     end
+        -     
+        - 
+        0     Δω = (params.out_ωs[end]-params.out_ωs[1])/(size(params.out_ωs,1)-1)
+        - 
+        - 
+        0     if params.kernel_type == "time_bosonic"
+        -         
+        0         for ω in 1:nω
+        0             for τ in 1:ngrid
+        0                 K[τ,ω] = Δω*exp(-params.out_ωs[ω]*params.input_grid[τ])
+        0             end
+        0         end
+        0     elseif params.kernel_type == "time_bosonic_symmetric"
+        -         
+        0         for ω in 1:nω
+        0             for τ in 1:ngrid
+        0                 K[τ,ω] =   Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) 
+        0             end
+        0         end
+        0     elseif params.kernel_type == "time_bosonic_symmetric_w"
+        0         nb = n_b(params)
+        0         for ω in 1:nω
+        0             for τ in 1:ngrid
+        0                 K[τ,ω] =   0.5 * Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) * nb[ω]
+        0             end
+        0         end
+        0     elseif params.kernel_type == "time_fermionic"
+        0         for ω in 1:nω
+        0             for τ in 1:ngrid
+        0                 K[τ,ω] = Δω / (exp(params.out_ωs[ω] * params.input_grid[τ]) + exp(-params.out_ωs[ω] * (params.β - params.input_grid[τ])))
+        0             end
+        0         end
+        0     elseif params.kernel_type == "frequency_fermionic"
+        0         for (iω, ω) in enumerate(params.out_ωs)
+        0             for (iωn, ωn) in enumerate(params.input_grid)
+        0                 K[iωn,iω] = - Δω / (1im*ωn - ω)  #(1im * ωn + ω )/ ( ωn^2 + ω^2 )
+        0             end
+        0         end
+        0     elseif params.kernel_type == "frequency_bosonic"
+        0         for (iω, ω) in enumerate(params.out_ωs)
+        0             for (iωn, ωn) in enumerate(params.input_grid)
+        0                 if ωn == 0.0 && ω ≈ 0.0
+        0                     K[iωn,iω] = -1.0 * Δω
+        -                 else
+        0                     K[iωn,iω] =  Δω * ω / (1im * ωn - ω )
+        -                 end
+        0             end
+        0         end
+        0     elseif params.kernel_type == "frequency_bosonic_symmetric"
+        0         for (iω, ω) in enumerate(params.out_ωs)
+        0             for (iωn, ωn) in enumerate(params.input_grid)
+        0                 if ωn == 0.0 && ω ≈ 0.0
+        0                     K[iωn,iω] = 2.0 * Δω 
+        -                 else
+        0                     K[iωn,iω] =  2.0 * Δω * ω * ω / ( ωn^2 + ω^2 )
+        -                 end
+        0             end
+        0         end
+        -     end # kernel_type
+        - 
+        -     
+        - 
+        0     return K
+        - end # generate_K()
+        - 
+        - # calculate Bose factor * ω, 
+        - function n_b(params::DEACParameters)
+        -     close = 1.0e-6
+        0     nω = size(params.out_ωs,1)
+        0     arr = zeros(Float64,nω)
+        0     for ω in 1:nω
+        -         # L'hopital
+        0         if abs(params.out_ωs[ω]) < close
+        0             arr[ω] = 1.0 /params.β
+        -         else
+        0             arr[ω] = params.out_ωs[ω] / (1.0 - exp(-params.β * params.out_ωs[ω]))
+        -         end
+        0     end 
+        0     return arr
+        - end # n_b()
+        - 
