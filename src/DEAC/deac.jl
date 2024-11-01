@@ -560,7 +560,7 @@ function run_DEAC(Greens_tuple,
                 if (user_mutation! != nothing)
                     user_mutation!(population_new,population_old,rng)
                     GEMM!(model,Kp,population_new,use_SIMD)
-                    fitness_new = Χ²(corr_avg_p,model,W) #./ size(params.input_grid,1)
+                    Χ²!(fitness_new,corr_avg_p,model,W) #./ size(params.input_grid,1)
                     
                     for pop in axes(fitness_old,1)
                         if fitness_new[pop] <= fitness_old[pop]
