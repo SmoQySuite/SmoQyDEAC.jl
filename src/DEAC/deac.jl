@@ -468,7 +468,7 @@ function run_DEAC(Greens_tuple,
         fitness[end] = true_fitness
         
         
-    end # IFF
+    end # FFF
 
     println("Target fitnesses are: ",fitness,"\n")
         
@@ -485,9 +485,8 @@ function run_DEAC(Greens_tuple,
     finished_runs = (start_bin -1) * params.runs_per_bin
     Δt = @elapsed begin
         # loop over bins*runs_per_bin
-        total = Base.gc_total_bytes(Base.gc_num())
-        # Threads.@threads 
-        for thd in start_thread:total_runs
+        
+        Threads.@threads for thd in start_thread:total_runs
 
             # Track fits in case there are multiple fits.
             current_fit_idx = 1
