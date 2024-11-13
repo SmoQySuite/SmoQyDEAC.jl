@@ -81,14 +81,15 @@ This work was supported by the U.S. Department of Energy, Office of Science, Off
 If you found this library to be useful in the course of academic work, please consider citing us:
 
 ```bibtex
-@misc{SmoQyDEAC.jl,
-      title={SmoQyDEAC.jl: A differential evolution package for the analytic continuation of imaginary time correlation functions}, 
-      author={James Neuhaus and Nathan S. Nichols and Debshikha Banerjee and Benjamin Cohen-Stead and Thomas A. Maier and Adrian Del Maestro and Steven Johnston},
-      year={2024},
-      eprint={2407.04568},
-      archivePrefix={arXiv},
-      primaryClass={cond-mat.stat-mech},
-      url={https://arxiv.org/abs/2407.04568}, 
+@Article{10.21468/SciPostPhysCodeb.39,
+	title={{SmoQyDEAC.jl: A differential evolution package for the analytic continuation of imaginary time correlation functions}},
+	author={James Neuhaus and Nathan S. Nichols and Debshikha Banerjee and Benjamin Cohen-Stead and Thomas A. Maier and Adrian Del Maestro and Steven Johnston},
+	journal={SciPost Phys. Codebases},
+	pages={39},
+	year={2024},
+	publisher={SciPost},
+	doi={10.21468/SciPostPhysCodeb.39},
+	url={https://scipost.org/10.21468/SciPostPhysCodeb.39},
 }
 ```
 

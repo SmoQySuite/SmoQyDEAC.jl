@@ -22,6 +22,21 @@ This work was supported by the U.S. Department of Energy, Office of Science, Off
 - [`JLD2.jl`](https://github.com/JuliaIO/JLD2.jl): Package used to write data to binary files in an HDF5 compatible format. 
 - [`Chairmarks.jl`](https://github.com/LilithHafner/Chairmarks.jl): Used to determine if internal SIMD double general matrix multiply (DGEMM) is faster than installed linear algebra package.
 
+## Citation
+If you found this library to be useful in the course of academic work, please consider citing us:
+
+```bibtex
+@Article{10.21468/SciPostPhysCodeb.39,
+	title={{SmoQyDEAC.jl: A differential evolution package for the analytic continuation of imaginary time correlation functions}},
+	author={James Neuhaus and Nathan S. Nichols and Debshikha Banerjee and Benjamin Cohen-Stead and Thomas A. Maier and Adrian Del Maestro and Steven Johnston},
+	journal={SciPost Phys. Codebases},
+	pages={39},
+	year={2024},
+	publisher={SciPost},
+	doi={10.21468/SciPostPhysCodeb.39},
+	url={https://scipost.org/10.21468/SciPostPhysCodeb.39},
+}
+```
 
 
 ## Contact us
