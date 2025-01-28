@@ -23,7 +23,7 @@ function generate_K(params::DEACParameters)
                 K[τ,ω] = Δω*exp(-params.out_ωs[ω]*params.input_grid[τ])
             end
         end
-    elseif params.kernel_type == "time_bosonic_symmetric"
+    elseif params.kernel_type == "time_bosonic_symmetric" 
         
         for ω in 1:nω
             for τ in 1:ngrid
@@ -34,7 +34,7 @@ function generate_K(params::DEACParameters)
         nb = n_b(params)
         for ω in 1:nω
             for τ in 1:ngrid
-                K[τ,ω] =   0.5 * Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) * nb[ω]
+                K[τ,ω] =    0.5 * Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) * nb[ω]
             end
         end
     elseif params.kernel_type == "time_fermionic"

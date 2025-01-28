@@ -1,7 +1,7 @@
 name = "SmoQyDEAC"
 uuid = "9c442b74-637f-4296-b43a-959aa316565a"
 authors = ["James Neuhaus <james.neuhaus@gmail.com>"]
-version = "1.1.4"
+version = "1.1.5"
 
 [deps]
 Chairmarks = "0ca39b1e-fe0b-4e98-acfc-b1656634c4de"

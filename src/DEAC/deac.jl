@@ -314,7 +314,7 @@ function run_DEAC(Greens_tuple,
         else
             target_zeroth =  Greens_tuple[1][1]
         end
-        if (params.kernel_type == "time_bosonic_symmetric") && normalize
+        if (params.kernel_type == "time_bosonic_symmetric" || params.kernel_type == "time_bosonic_symmetric_w") && normalize
             normK[1,:] =   K[1,:] 
             
         end
@@ -483,6 +483,9 @@ function run_DEAC(Greens_tuple,
     weight_data = zeros(Float64,(params.num_bins,size(fitness,1)))
     
     finished_runs = (start_bin -1) * params.runs_per_bin
+
+    nbose = n_b(params)
+
     Δt = @elapsed begin
         # loop over bins*runs_per_bin
         
