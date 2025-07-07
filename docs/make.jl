@@ -2,6 +2,8 @@
 using SmoQyDEAC
 using Documenter
 using Literate
+using DocumenterCitations
+
 
 example_names = ["fermion_greens","SmoQyDQMC","user_mutation"]
 example_literate_sources = [joinpath(@__DIR__,"src/examples/$name.jl") for name in example_names]
@@ -9,7 +11,10 @@ example_script_destinations = [joinpath(@__DIR__,"../scripts") for name in examp
 example_documentation_destination = joinpath(@__DIR__,"src/examples")
 example_documentation_paths = [("examples/$name.md") for name in example_names]
 
-
+bib = CitationBibliography(
+    joinpath(@__DIR__, "src", "references.bib");
+    style=:numeric
+)
 
 DocMeta.setdocmeta!(SmoQyDEAC, :DocTestSetup, :(using SmoQyDEAC); recursive=true)
 
@@ -22,6 +27,7 @@ end
 
 makedocs(;
     modules=[SmoQyDEAC],
+    plugins=[bib],
     authors="James Neuhaus <jneuhau1@utk.edu>",
     repo="https://github.com/SmoQySuite/SmoQyDEAC.jl",
     sitename="SmoQyDEAC.jl",

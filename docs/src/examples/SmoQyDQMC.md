@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "<unknown>/src/examples/SmoQyDQMC.jl"
+EditURL = "SmoQyDQMC.jl"
 ```
 
 # Example 2: Load from SmoQyDQMC and run SmoQyDEAC
@@ -19,26 +19,26 @@ desired correlation function prior to using the loading script.
 This example utilizes the script [`SmoQyDQMCloader.jl`](https://github.com/SmoQySuite/SmoQyDEAC.jl/blob/main/scripts/SmoQyDQMCloader.jl) to parse
 [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) csv files. This script may be moved to another repository at a future date.
 
-```@example SmoQyDQMC
+````@example SmoQyDQMC
 # First we import our SmoQyDQMC csv parser and needed packages for the example
 include("SmoQyDQMCloader.jl")
 using FileIO
 using SmoQyDEAC
-```
+````
 
 Create directory for outputs
 
-```@example SmoQyDQMC
+````@example SmoQyDQMC
 output_directory = "SmoQyDQMC_DEAC_Out/";
 mkpath(output_directory);
 nothing #hide
-```
+````
 
 Load data from fermion greens correlation functions
 This puts `real` in the format
 `real["ORBITAL\_ID\_1","ORBITAL\_ID\_2","TAU","K\_1","K\_2","K\_3","BIN","PID"]``
 
-```@example SmoQyDQMC
+````@example SmoQyDQMC
 # This example was from a 1D Holstein run with β = 20.0,
 #   ORBITAL\_ID\_1 ∈ {1},
 #  ORBITAL\_ID\_2 ∈ {1},
@@ -60,18 +60,18 @@ dims,real,image,sgnr,sgni,β = load_from_SmoQyDQMC(simulationfolder=input_direct
                                                 type="time_displaced",bin=true);
 # dims is a dictionary which tells you what each dimension corresponds to.
 println(dims)
-```
+````
 
 Eliminate unnecessary dimensions
 
-```@example SmoQyDQMC
+````@example SmoQyDQMC
 Gτ = real[1,1,:,:,1,1,:,1];
 println(size(Gτ))
-```
+````
 
 Set parameters for DEAC
 
-```@example SmoQyDQMC
+````@example SmoQyDQMC
 τs = collect(LinRange(0.0,β,size(Gτ,1)))
 Nkx = size(Gτ,2)
 number_of_bins = 2;
@@ -82,12 +82,12 @@ nω = 401;
 ωmax = 10.;
 ωs = collect(LinRange(ωmin,ωmax,nω));
 nothing #hide
-```
+````
 
 Run DEAC over all k points in the x direction.
 For speed in this example I run 1:1 instead of 1:Nkx
 
-```@example SmoQyDQMC
+````@example SmoQyDQMC
 for kx in 1:1 # 1:Nkx
     output_file = joinpath(output_directory, string(kx) * ".jld2");
     # put in [bins,τ] shape
@@ -108,7 +108,7 @@ for kx in 1:1 # 1:Nkx
         verbose = true
     )
 end
-```
+````
 
 Note, these did not converge to a fitness of 1.0 within 20,000 generations. The number of generations is limited for speed when running this example.
 

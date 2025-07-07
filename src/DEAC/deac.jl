@@ -13,7 +13,7 @@
          find_fitness_floor::Bool=true
          population_size::Int64=8,
          base_seed::Integer=8675309,
-         number_of_generations::Int64=1000000,
+         number_of_generations::Int64=20_000,
          keep_bin_data=true,
          autoresume_from_checkpoint=false,
          verbose::Bool=false,
@@ -88,7 +88,7 @@ function DEAC_Std(correlation_function::AbstractVector,
                   self_adapting_differential_weight_probability::Float64=0.1,
                   self_adapting_differential_weight::Float64=0.9,
                   fitness=1.0,
-                  number_of_generations::Int64=1000000,
+                  number_of_generations::Int64=20_000,
                   autoresume_from_checkpoint=false,
                   keep_bin_data=true,
                   find_fitness_floor::Bool=false,
@@ -136,7 +136,7 @@ end # DEAC_Std
          find_fitness_floor::Bool = false,
          population_size::Int64 = 8,
          base_seed::Integer = 8675309,
-         number_of_generations::Int64 = 1000000,
+         number_of_generations::Int64 = 20_000,
          keep_bin_data = true,
          autoresume_from_checkpoint = false,
          verbose::Bool = false,
@@ -180,7 +180,7 @@ Runs the DEAC algorithm on data passed in `correlation_function` using $\Chi^2$ 
 - `self_adapting_differential_weight_probability::Float64 = 0.1`: Likelihood of SAD changing
 - `self_adapting_differential_weight::Float64 = 0.9`: SAD
 - `user_mutation! = nothing`: User passed function to add additional mutation to each iteration. See below for more information
-- `eigenvalue_ratio_min::Float64 = 1e-8`: Cutoff to mask out eigenvectors with eigenvalues ≈ 0.0 that arise due to symmetries in input data
+- `eigenvalue_ratio_min::Float64 = 1e-8`: Cutoff to mask out eigenvectors with eigenvalues ≈ 0.0 that may arise due to symmetries in input data
 
 Each run will use its own seed. E.g. if you run 10 bins with 100 runs per bin, you will use seeds `base_seed:base_seed+999`. 
 You may increment your base seed by 1000, use another output file name, and generate more statistics later.
@@ -211,7 +211,7 @@ function DEAC_Binned(correlation_function::AbstractMatrix,
                   self_adapting_differential_weight_probability::Float64=0.1,
                   self_adapting_differential_weight::Float64=0.9,
                   fitness=1.0,
-                  number_of_generations::Int64=1000000,
+                  number_of_generations::Int64=20_000,
                   autoresume_from_checkpoint::Bool = false,
                   keep_bin_data::Bool = true,
                   bootstrap_bins::Int = 0,

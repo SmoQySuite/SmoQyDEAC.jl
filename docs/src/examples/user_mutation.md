@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "<unknown>/src/examples/user_mutation.jl"
+EditURL = "user_mutation.jl"
 ```
 
 # Example 3: User Mutation
@@ -13,39 +13,39 @@ EditURL = "<unknown>/src/examples/user_mutation.jl"
 
 In this example we will show how to add an additional user-defined mutation to the DEAC base algorithm
 
-```@example user_mutation
+````@example user_mutation
 # First we import all required packages
 using SmoQyDEAC
 using FileIO
 using Statistics
 using LoopVectorization
 using Random
-```
+````
 
 We now load the data provided in our source file. This is the same as example 1, but we are just loading the binned τ data.
 
-```@example user_mutation
+````@example user_mutation
 loadfile = "greens.jld2";
 input_dictionary = load(loadfile);
 Gτ_bin =  input_dictionary["Gτ"];
 τs = collect(input_dictionary["τs"]);
 β = τs[end];
 nothing #hide
-```
+````
 
 Make an output folder for checkpoint file and output file
 
-```@example user_mutation
+````@example user_mutation
 output_directory = "user_mutation_output/";
 mkpath(output_directory);
 nothing #hide
-```
+````
 
 Define necessary parameters for the DEAC run.
 Typically you will want at least 1,000 for number_of_bins * runs_per_bin.
 For speed's sake we only do 2*5 in this example.
 
-```@example user_mutation
+````@example user_mutation
 number_of_bins = 2;
 runs_per_bin = 5 ;
 output_file = joinpath(output_directory, "user_mutation_out.jld2");
@@ -55,21 +55,21 @@ nω = 401;
 ωmax = 10.;
 ωs = collect(LinRange(ωmin,ωmax,nω));
 nothing #hide
-```
+````
 
 Set optional parameters
 
-```@example user_mutation
+````@example user_mutation
 base_seed = 1000000;
 keep_bin_data = false;
 nothing #hide
-```
+````
 
 Define an additional mutation function which takes two populations of [1:nω,1:n_population] size and a random number generator.
 Per Julia convention, the first argument is the one which is updated. For those new to Julia, the "!" at the end of the function name means the function will mutate at least one of the arguments.
 This mutation just puts a slight blur on odd indexed ω values. This is not something I imagine you'd want to do, but, this is a simple example
 
-```@example user_mutation
+````@example user_mutation
 function user_mut!(pop_new,pop_old,rng)
     npop = size(pop_old,2)
     nω = size(pop_old,1)
@@ -82,11 +82,11 @@ function user_mut!(pop_new,pop_old,rng)
     end
     return nothing
 end
-```
+````
 
 Vectorized version of the same function using the LoopVectorization.jl package.
 
-```@example user_mutation
+````@example user_mutation
 function user_mut_vec!(pop_new,pop_old,rng)
     rng_pop = rand(rng,Float64,(size(pop_new,1),size(pop_new,2)))
     @turbo for pop ∈ axes(pop_new,2), ω ∈ axes(pop_new,1)
@@ -94,12 +94,12 @@ function user_mut_vec!(pop_new,pop_old,rng)
     end
     return nothing
 end
-```
+````
 
 Now we run DEAC with the additional mutation
 Note, number_of_generations is set low for the example's run time
 
-```@example user_mutation
+````@example user_mutation
 output_dictionary_τ = DEAC_Binned(
     Gτ_bin,
     β,
@@ -118,7 +118,7 @@ output_dictionary_τ = DEAC_Binned(
     number_of_generations = 10000,
     verbose = true
 )
-```
+````
 
 ---
 

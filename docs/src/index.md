@@ -74,10 +74,10 @@ SmoQyDEAC utilizes Julia's `Threads.@threads` multithreading capability. To take
 - For bosonic correlations SmoQyDEAC returns the spectral function, e.g. $\mathcal{A}(\omega)$ not $\frac{\mathcal{A}(\omega)}{\omega}$ as some MaxEnt codes do.
 - Different simulation codes may report correlation functions slightly differently. E.g. for [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) `phonon_greens` $=\langle X(\tau)X(0)\rangle$ not the actual phonon green's function of $-2\Omega_0\langle X(\tau)X(0)\rangle$. While the negative sign will cancel out by our choice of Kernel, you may need to postprocess the spectral function you recover. In this case $\mathcal{A}\rightarrow \dfrac{\mathcal{A}}{2\Omega_0}$. 
 
-# Funding
+## Funding
 This work was supported by the U.S. Department of Energy, Office of Science, Office of Basic Energy Sciences, under Award Number DE-SC0022311. N.S.N. was supported by the Argonne Leadership Computing Facility, which is a U.S. Department of Energy Office of Science User Facility operated under contract DE-AC02-06CH11357. 
 
-# Citation
+## Citation
 If you found this library to be useful in the course of academic work, please consider citing us:
 
 ```bibtex
@@ -92,6 +92,16 @@ If you found this library to be useful in the course of academic work, please co
 	url={https://scipost.org/10.21468/SciPostPhysCodeb.39},
 }
 ```
+
+## Publication List
+
+This sections lists of some of the publications that report results generated
+using the [SmoQyDEAC.jl](https://github.com/SmoQySuite/SmoQyDEAC.jl) package.
+
+```@bibliography
+*
+```
+
 
 ## Contact Us
 

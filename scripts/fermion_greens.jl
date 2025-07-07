@@ -113,4 +113,3 @@ full_eigenvalues = output_dictionary_τ["full_eigenvalues"];
 test_dictionary = FileIO.load(output_file)
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-
