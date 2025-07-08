@@ -105,4 +105,4 @@ using the [SmoQyDEAC.jl](https://github.com/SmoQySuite/SmoQyDEAC.jl) package.
 
 ## Contact Us
 
-For question and comments regarding this package, please email either James Neuhaus at [jneuhau1@utk.edu](mailto:jneuhau1@utk.edu) or Professor Steven Johnston at [sjohn145@utk.edu](mailto:sjohn145@utk.edu).
+For question and comments regarding this package, please email either (preferably) James Neuhaus at [jneuhau1@utk.edu](mailto:jneuhau1@utk.edu) or Professor Steven Johnston at [sjohn145@utk.edu](mailto:sjohn145@utk.edu).
