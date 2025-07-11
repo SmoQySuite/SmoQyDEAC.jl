@@ -6,7 +6,7 @@
 function generate_K(params::DEACParameters)
     nω = size(params.out_ωs,1)
     ngrid = size(params.input_grid,1)
-    if occursin("frequency_fermionic",params.kernel_type)
+    if occursin("frequency_fermionic",params.kernel_type)  || occursin("frequency_bosonic", params.kernel_type)
         K = zeros(ComplexF64,(ngrid,nω))
     else
         K = zeros(Float64,(ngrid,nω))
