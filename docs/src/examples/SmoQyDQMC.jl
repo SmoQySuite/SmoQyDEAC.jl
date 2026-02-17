@@ -1,4 +1,4 @@
-# # Example 2: Load from SmoQyDQMC and run SmoQyDEAC
+# # Example 2: Load from SmoQyDQMC v1.x and run SmoQyDEAC
 #
 #  Usage:
 #
@@ -7,13 +7,15 @@
 #   SmoQyDEAC uses multithreading for parallelizing runs. Multithreading it recommended.
 #   `--threads=auto` will run a thread for each core available, or 2x for hyperthreading cores
 #
-# In this example we explicitly load output from [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl).
+# In this example we explicitly load output from [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) v1.x.
 # After running a simulation with [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) you will need to use the 
 # [`correlation_bins_to_csv`](https://smoqysuite.github.io/SmoQyDQMC.jl/dev/api/#SmoQyDQMC.correlation_bins_to_csv) method for the
 # desired correlation function prior to using the loading script.
 #
 # This example utilizes the script [`SmoQyDQMCloader.jl`](https://github.com/SmoQySuite/SmoQyDEAC.jl/blob/main/scripts/SmoQyDQMCloader.jl) to parse
-# [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) csv files. This script may be moved to another repository at a future date.
+# [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) csv files. This script may be moved to another repository at a future date. 
+#
+# Note: This example is for the v1.x version of [`SmoQyDQMC`](https://github.com/SmoQySuite/SmoQyDQMC.jl) and is not compatible with the v2.x version.
 
 
 #md ## First we import our SmoQyDQMC csv parser and needed packages for the example
