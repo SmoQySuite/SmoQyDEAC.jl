@@ -58,6 +58,7 @@ The following are the supported kernels
 - `time_bosonic`$=\frac{e^{-\tau\omega}}{1-e^{-\beta\omega}}$
 - `time_bosonic_symmetric`$=\frac{1}{2}\frac{e^{-\tau\omega}+e^{-(\beta-\tau)\omega}}{1-e^{-\beta\omega}}$
 - `time_bosonic_symmetric_w`$=\frac{\omega}{2}\frac{e^{-\tau\omega}+e^{-(\beta-\tau)\omega}}{1-e^{-\beta\omega}}$
+- `time_bosonic_no_bose_einstein`$e^{-\tau\omega}+e^{-(\beta-\tau)\omega}$
 - `frequency_fermionic`$=\frac{1}{i\omega_n-\omega}$
 - `frequency_bosonic`$=\frac{1}{i\omega_n-\omega}$
 - `frequency_bosonic_symmetric`$=\frac{2 \omega}{\omega_n^2+\omega^2}$

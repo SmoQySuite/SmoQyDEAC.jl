@@ -6,6 +6,7 @@ allowable_kernels = ["time_bosonic",
                      "frequency_bosonic",
                      "frequency_bosonic_symmetric",
                      "time_bosonic_symmetric_w",
+                     "time_bosonic_no_bose_einstein"
                     ]
 
 

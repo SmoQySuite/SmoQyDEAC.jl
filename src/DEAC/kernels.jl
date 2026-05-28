@@ -69,6 +69,12 @@ function generate_K(params::DEACParameters)
                 end
             end
         end
+    elseif params.kernel_type == "time_bosonic_no_bose_einstein"
+        for ω in 1:nω
+            for τ in 1:ngrid
+                K[τ,ω] =     Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) 
+            end
+        end
     end # kernel_type
 
     
