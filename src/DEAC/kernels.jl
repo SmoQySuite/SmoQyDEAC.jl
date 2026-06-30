@@ -32,9 +32,14 @@ function generate_K(params::DEACParameters)
         end
     elseif params.kernel_type == "time_bosonic_symmetric_w"
         nb = n_b(params)
+        if params.input_grid[end] > params.β /2
+            coeff = 0.5
+        else
+            coeff = 0.25
+        end
         for ω in 1:nω
             for τ in 1:ngrid
-                K[τ,ω] =    0.5 * Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) * nb[ω]
+                K[τ,ω] =    coeff * Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) * nb[ω]
             end
         end
     elseif params.kernel_type == "time_fermionic"
@@ -70,9 +75,14 @@ function generate_K(params::DEACParameters)
             end
         end
     elseif params.kernel_type == "time_bosonic_no_bose_einstein"
+        if params.input_grid[end] > params.β /2
+            coeff = 1.0
+        else
+            coeff = 0.5
+        end
         for ω in 1:nω
             for τ in 1:ngrid
-                K[τ,ω] =     Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) 
+                K[τ,ω] =     coeff*Δω*(exp(-params.out_ωs[ω]*params.input_grid[τ]) + exp(-params.out_ωs[ω]*(params.β - params.input_grid[τ]))) 
             end
         end
     end # kernel_type

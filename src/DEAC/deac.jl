@@ -314,7 +314,7 @@ function run_DEAC(Greens_tuple,
         else
             target_zeroth =  Greens_tuple[1][1]
         end
-        if (params.kernel_type == "time_bosonic_symmetric" || params.kernel_type == "time_bosonic_symmetric_w") && normalize
+        if (params.kernel_type == "time_bosonic_symmetric" || params.kernel_type == "time_bosonic_symmetric_w" || params.kernel_type == "time_bosonic_no_bose_einstein") && normalize
             normK[1,:] =   K[1,:] 
             
         end
