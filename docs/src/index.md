@@ -16,14 +16,18 @@ pkg> add SmoQyDEAC
 
 # Running SmoQyDEAC
 
-SmoQyDEAC has a simple API interface with a two callable functions `DEAC_Binned` and `DEAC_Std` for binned data and data with the standard error, respectively.
+SmoQyDEAC has a simple API with three callable functions: `DEAC_Binned` for binned data, `DEAC_Cov` for mean data with a covariance matrix, and `DEAC_Std` for mean data with standard errors.
 
 ## API
 - [`DEAC_Binned`](@ref)
+- [`DEAC_Cov`](@ref)
 - [`DEAC_Std`](@ref)
 
 ```@docs
 DEAC_Binned
+```
+```@docs
+DEAC_Cov
 ```
 ```@docs
 DEAC_Std
@@ -36,7 +40,7 @@ To add additional mutations to the base DEAC algorithm you utilize the ```user_m
 ## Output
 
 ### Default Keys
-Both API functions return a ```Dict{String,Any}``` object as well as save that dictionary to the location specified in the parameter ```output_file```. The dictionary has the following keys
+All API functions return a ```Dict{String,Any}``` object as well as save that dictionary to the location specified in the parameter ```output_file```. The dictionary has the following keys
 - `A`: 2D array of shape (n$\omega$,nFitness), where nFitness is the number of fitness targets in the run. 
 - `fitness`: 1D array with all fitnesses associated with the run in descending order
 - `σ`: The calculated standard error for the run. NOTE: DEAC is non-ergodic, so this does not correspond actual error bars!
