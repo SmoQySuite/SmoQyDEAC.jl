@@ -21,6 +21,7 @@ include("DEAC/updates.jl")
 
 export DEAC_Std
 export DEAC_Binned
+export DEAC_Cov
 
 function __init__()
     BLAS.set_num_threads(1)

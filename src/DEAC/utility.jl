@@ -89,10 +89,10 @@ function GEMM!(C,A,B,use_SIMD)
 end
 
 # Calculate binned data and save to a checkpoint
-function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,curbin,Δω,Greens_tuple,fitness,seed_vec,generations,params)
+function bin_results!(bin_data,calculated_zeroth_moment,run_data,weight_data,curbin,ω_weights,Greens_tuple,fitness,seed_vec,generations,params)
     for fit_idx ∈ 1:size(fitness,1)
         bin_data[:,curbin,fit_idx] = run_data[:,curbin,fit_idx] ./  sum(weight_data[curbin,fit_idx])
-        calculated_zeroth_moment[1,curbin,fit_idx] = sum(bin_data[:,curbin,fit_idx]) .* Δω 
+        calculated_zeroth_moment[1,curbin,fit_idx] = dot(ω_weights, @view bin_data[:,curbin,fit_idx])
     
         # Bosonic time kernels steal a factor of ω from the spectral function.
         # Multiply it back in if needed
@@ -113,7 +113,7 @@ end
 # Calculate matrices used to go from ω to τ space and χ² fit
 function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenvalue_ratio_min)
     if Greens_tuple[2] == nothing
-        # Covariance Methods
+        # Estimate the covariance from binned correlation-function samples.
               
         corr_avg = Statistics.mean(Greens_tuple[1],dims=1)
         mask = get_covariance_mask(params)
@@ -143,6 +143,27 @@ function calculate_fit_matrices(Greens_tuple,K,use_SIMD,bootstrap,params,eigenva
         W = 0.5 .* Nbins ./ abs.(F.values[mask] .* Nsteps)
         full_eigen = F.values
 
+    elseif Greens_tuple[2] isa AbstractMatrix
+        # The covariance of the supplied mean correlation function was provided.
+        corr_avg = Greens_tuple[1]
+        cov_matrix = Greens_tuple[2]
+        mask = get_covariance_mask(params)
+
+        F = eigen(Hermitian(cov_matrix))
+        max_eig = maximum(F.values)
+        max_eig > zero(max_eig) || throw(ArgumentError(
+            "covariance_matrix must have at least one positive eigenvalue"))
+        mask = mask .&& (F.values .> max_eig * eigenvalue_ratio_min)
+        any(mask) || throw(ArgumentError(
+            "eigenvalue_ratio_min excludes every covariance eigenvector"))
+
+        U = F.vectors[:,mask]
+        corr_avg_p = adjoint(U) * corr_avg
+        Kp = adjoint(U) * K
+
+        Nsteps = length(corr_avg_p)
+        W = 0.5 ./ abs.(F.values[mask] .* Nsteps)
+        full_eigen = F.values
     else
         # Diagonal error method
         Nsteps = size(Greens_tuple[1],1)
